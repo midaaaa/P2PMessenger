@@ -1,0 +1,54 @@
+# .github/workflows/iOS-CI.yml
+name: P2PMessenger CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# Отменяем старые запуски при новом пуше 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build P2PMessenger
+    runs-on: macos-latest 
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # кэш для Swift Package Manager
+      - name: Cache SPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.build
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      # Запуск тестов 
+      - name: Run Tests
+        run: |
+          xcodebuild test-without-building \
+            -project "P2PMessenger.xcodeproj" \
+            -scheme "P2PMessenger" \
+            -sdk iphonesimulator \
+            -destination "platform=iOS Simulator,name=iPhone 15,OS=17.2" \
+            ONLY_ACTIVE_ARCH=YES \
+            -quiet
+        # Если тестов пока нет или они падают — можно временно отключить:
+        # if: false
+
+      # Сохраняем собранный .app как артефакт
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: P2PMessenger-Build
+          path: ~/Library/Developer/Xcode/DerivedData/**/Build/Products/Debug-iphonesimulator/P2PMessenger.app
+          retention-days: 7
+          if-no-files-found: warn
