@@ -1,4 +1,3 @@
-# .github/workflows/iOS-CI.yml
 name: P2PMessenger CI
 
 on:
@@ -7,7 +6,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-# Отменяем старые запуски при новом пуше 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -15,13 +13,12 @@ concurrency:
 jobs:
   build:
     name: Build P2PMessenger
-    runs-on: macos-latest 
+    runs-on: macos-latest
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # кэш для Swift Package Manager
       - name: Cache SPM dependencies
         uses: actions/cache@v4
         with:
@@ -30,20 +27,39 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-spm-
 
-      # Запуск тестов 
+      - name: Boot Simulator
+        run: |
+          RUNTIME=$(xcrun simctl list runtimes available -j | jq -r '.runtimes[] | select(.name | contains("17")) | .identifier' | head -n 1)
+          if [ -z "$RUNTIME" ]; then
+            RUNTIME=$(xcrun simctl list runtimes available -j | jq -r '.runtimes[] | select(.isAvailable == true) | .identifier' | head -n 1)
+          fi
+          echo "Using runtime: $RUNTIME"
+          
+          UDID=$(xcrun simctl create "CI iPhone 15" "com.apple.CoreSimulator.SimDeviceType.iPhone-15" "$RUNTIME")
+          xcrun simctl boot "$UDID"
+          echo "UDID=$UDID" >> $GITHUB_ENV
+
+      - name: Build P2PMessenger
+        run: |
+          xcodebuild build-for-testing \
+            -project "P2PMessenger.xcodeproj" \
+            -scheme "P2PMessenger" \
+            -sdk iphonesimulator \
+            -destination "platform=iOS Simulator,id=${{ env.UDID }}" \
+            ONLY_ACTIVE_ARCH=YES \
+            -quiet
+
       - name: Run Tests
         run: |
           xcodebuild test-without-building \
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessenger" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=iPhone 15,OS=17.2" \
+            -destination "platform=iOS Simulator,id=${{ env.UDID }}" \
             ONLY_ACTIVE_ARCH=YES \
             -quiet
-        # Если тестов пока нет или они падают — можно временно отключить:
-        # if: false
+        if: false # Выключено, пока тестов нет
 
-      # Сохраняем собранный .app как артефакт
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         if: always()
