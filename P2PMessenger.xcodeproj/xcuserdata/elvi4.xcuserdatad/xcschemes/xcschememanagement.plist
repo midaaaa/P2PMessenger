@@ -4,10 +4,38 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>P2PMessenger.xcscheme_^#shared#^_</key>
+		<key>P2PMessenger-UITests.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
+		<key>P2PMessenger-UnitTests.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
+		</dict>
+		<key>P2PMessenger.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>D458F7352F7BFA04009867B6</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D458F7442F7BFA05009867B6</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D458F74E2F7BFA06009867B6</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>
