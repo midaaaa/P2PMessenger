@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>P2P Messenger использует Bluetooth для поиска собеседников рядом.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>P2P Messenger использует локальную сеть для прямого обмена сообщениями с устройствами рядом.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_p2p-msg._tcp</string>
+		<string>_p2p-msg._udp</string>
+	</array>
+</dict>
+</plist>
