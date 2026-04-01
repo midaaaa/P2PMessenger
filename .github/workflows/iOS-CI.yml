@@ -33,6 +33,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Generate Xcode Project
+        run: make -f .github/Makefile setup
+
       - name: Boot Simulator
         run: |
           brew install jq
@@ -67,6 +70,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Generate Xcode Project
+        run: make -f .github/Makefile setup
+
       - name: Boot Simulator
         run: |
           brew install jq
@@ -87,7 +93,7 @@ jobs:
         run: |
           xcodebuild test \
             -project "P2PMessenger.xcodeproj" \
-            -scheme "P2PMessenger-UnitTests" \
+            -scheme "P2PMessengerTests" \
             -sdk iphonesimulator \
             -destination "platform=iOS Simulator,id=${{ env.UDID }}" \
             ONLY_ACTIVE_ARCH=YES \
@@ -101,6 +107,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Generate Xcode Project
+        run: make -f .github/Makefile setup
 
       - name: Boot Simulator
         run: |
@@ -122,7 +131,7 @@ jobs:
         run: |
           xcodebuild test \
             -project "P2PMessenger.xcodeproj" \
-            -scheme "P2PMessenger-UITests" \
+            -scheme "P2PMessengerUITests" \
             -sdk iphonesimulator \
             -destination "platform=iOS Simulator,id=${{ env.UDID }}" \
             ONLY_ACTIVE_ARCH=YES \
@@ -136,6 +145,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Generate Xcode Project
+        run: brew install xcodegen && xcodegen generate
 
       - name: Boot Simulator
         run: |
