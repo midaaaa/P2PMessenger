@@ -11,37 +11,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build P2PMessenger
-    runs-on: macos-latest
-    
+  lint:
+    name: SwiftLint
+    runs-on: macos-14
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Cache SPM dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.build
-          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
-          restore-keys: |
-            ${{ runner.os }}-spm-
+      - name: Install SwiftLint
+        run: brew install swiftlint
 
-      - name: Boot Simulator
+      - name: Run Linter
+        run: swiftlint lint --strict
+
+  build-app:
+    name: 🔨 Build App
+    runs-on: macos-latest
+    needs: [lint]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 📱 Boot Simulator
         run: |
-          RUNTIME=$(xcrun simctl list runtimes available -j | jq -r '.runtimes[] | select(.name | contains("17")) | .identifier' | head -n 1)
-          if [ -z "$RUNTIME" ]; then
-            RUNTIME=$(xcrun simctl list runtimes available -j | jq -r '.runtimes[] | select(.isAvailable == true) | .identifier' | head -n 1)
+          brew install jq
+          UDID=$(xcrun simctl list devices available -j | \
+            jq -r '.devices | to_entries[] | select(.key | contains("26")) | .value[] | select(.name == "iPhone 17") | .udid' | head -n 1)
+          if [ -z "$UDID" ]; then
+            UDID=$(xcrun simctl list devices available -j | \
+              jq -r '.devices | to_entries[] | select(.key | contains("26")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -n 1)
           fi
-          echo "Using runtime: $RUNTIME"
-          
-          UDID=$(xcrun simctl create "CI iPhone 15" "com.apple.CoreSimulator.SimDeviceType.iPhone-15" "$RUNTIME")
-          xcrun simctl boot "$UDID"
+          xcrun simctl boot "$UDID" 2>/dev/null || true
           echo "UDID=$UDID" >> $GITHUB_ENV
 
       - name: Build P2PMessenger
         run: |
-          xcodebuild build-for-testing \
+          xcodebuild build \
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessenger" \
             -sdk iphonesimulator \
@@ -49,22 +54,71 @@ jobs:
             ONLY_ACTIVE_ARCH=YES \
             -quiet
 
-      - name: Run Tests
+  test:
+    name: Run Tests
+    runs-on: macos-latest
+    needs: [build-app]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Boot Simulator
         run: |
-          xcodebuild test-without-building \
+          brew install jq
+          UDID=$(xcrun simctl list devices available -j | \
+            jq -r '.devices | to_entries[] | select(.key | contains("26")) | .value[] | select(.name == "iPhone 17") | .udid' | head -n 1)
+          if [ -z "$UDID" ]; then
+            UDID=$(xcrun simctl list devices available -j | \
+              jq -r '.devices | to_entries[] | select(.key | contains("26")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -n 1)
+          fi
+          xcrun simctl boot "$UDID" 2>/dev/null || true
+          echo "UDID=$UDID" >> $GITHUB_ENV
+
+      - name: Test P2PMessenger
+        run: |
+          xcodebuild test \
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessenger" \
             -sdk iphonesimulator \
             -destination "platform=iOS Simulator,id=${{ env.UDID }}" \
             ONLY_ACTIVE_ARCH=YES \
             -quiet
-        if: false # Выключено, пока тестов нет
 
-      - name: Upload build artifact
+  publish:
+    name: Publish Build
+    runs-on: macos-latest
+    needs: [test]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Boot Simulator
+        run: |
+          brew install jq
+          UDID=$(xcrun simctl list devices available -j | \
+            jq -r '.devices | to_entries[] | select(.key | contains("26")) | .value[] | select(.name == "iPhone 17") | .udid' | head -n 1)
+          if [ -z "$UDID" ]; then
+            UDID=$(xcrun simctl list devices available -j | \
+              jq -r '.devices | to_entries[] | select(.key | contains("26")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -n 1)
+          fi
+          xcrun simctl boot "$UDID" 2>/dev/null || true
+          echo "UDID=$UDID" >> $GITHUB_ENV
+
+      - name: Build for Artifact
+        run: |
+          xcodebuild build \
+            -project "P2PMessenger.xcodeproj" \
+            -scheme "P2PMessenger" \
+            -sdk iphonesimulator \
+            -destination "platform=iOS Simulator,id=${{ env.UDID }}" \
+            ONLY_ACTIVE_ARCH=YES \
+            -quiet
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: P2PMessenger-Build
+          name: P2PMessenger-Build-${{ github.run_number }}
           path: ~/Library/Developer/Xcode/DerivedData/**/Build/Products/Debug-iphonesimulator/P2PMessenger.app
-          retention-days: 7
+          retention-days: 14
           if-no-files-found: warn
