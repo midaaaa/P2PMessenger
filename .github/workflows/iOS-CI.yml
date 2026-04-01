@@ -13,7 +13,7 @@ concurrency:
 jobs:
   lint:
     name: SwiftLint
-    runs-on: macos-14
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,14 +25,14 @@ jobs:
         run: swiftlint lint --strict
 
   build-app:
-    name: 🔨 Build App
+    name: Build App
     runs-on: macos-latest
     needs: [lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: 📱 Boot Simulator
+      - name: Boot Simulator
         run: |
           brew install jq
           UDID=$(xcrun simctl list devices available -j | \
@@ -41,8 +41,13 @@ jobs:
             UDID=$(xcrun simctl list devices available -j | \
               jq -r '.devices | to_entries[] | select(.key | contains("26")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -n 1)
           fi
+          if [ -z "$UDID" ]; then
+            echo "No suitable simulator found"
+            exit 1
+          fi
           xcrun simctl boot "$UDID" 2>/dev/null || true
           echo "UDID=$UDID" >> $GITHUB_ENV
+        
 
       - name: Build P2PMessenger
         run: |
