@@ -129,7 +129,7 @@ jobs:
             -quiet
 
   publish:
-    name: 📦 Publish Build
+    name: Publish Build
     runs-on: macos-latest
     needs: [test-unit, test-ui] 
     if: github.ref == 'refs/heads/main'
