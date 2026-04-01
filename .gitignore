@@ -64,3 +64,14 @@ Icon
 *.swp
 *.swo
 *~
+
+# Cursor
+.cursor/
+.cursorignore
+
+# Claude
+.claude/
+.claudeignore
+CLAUDE.md
+
+AGENTS.md
