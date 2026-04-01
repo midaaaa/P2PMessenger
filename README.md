@@ -1,4 +1,4 @@
-# P2PMessenger 📱
+# P2PMessenger 
 
 P2P-мессенджер для iOS
 
