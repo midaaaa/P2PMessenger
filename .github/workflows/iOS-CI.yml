@@ -94,7 +94,7 @@ jobs:
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessenger" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }}" \
+            -destination "generic/platform=iOS Simulator" \
             ONLY_ACTIVE_ARCH=YES | xcbeautify --renderer github-actions
 
   test-unit:
@@ -148,13 +148,31 @@ jobs:
       - name: Generate Xcode Project
         run: make -f .github/Makefile setup
 
+      - name: Resolve iPhone Simulator
+        id: resolve-sim
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          for runtime, devices in sorted(data.get('devices', {}).items()):
+              if 'iOS' not in runtime:
+                  continue
+              for d in devices:
+                  if d.get('isAvailable') and 'iPhone' in d.get('name', ''):
+                      print(d['udid'])
+                      sys.exit(0)
+          sys.exit(1)
+          ")
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          echo "Using iPhone simulator: $UDID"
+
       - name: Run Unit Tests
         run: |
           set -o pipefail && xcodebuild test \
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessengerTests" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }}" \
+            -destination "platform=iOS Simulator,id=${{ steps.resolve-sim.outputs.udid }}" \
             ONLY_ACTIVE_ARCH=YES \
             -parallel-testing-enabled YES \
             -parallel-testing-worker-count 2 | xcbeautify --renderer github-actions
@@ -211,13 +229,31 @@ jobs:
       - name: Generate Xcode Project
         run: make -f .github/Makefile setup
 
+      - name: Resolve iPhone Simulator
+        id: resolve-sim
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          for runtime, devices in sorted(data.get('devices', {}).items()):
+              if 'iOS' not in runtime:
+                  continue
+              for d in devices:
+                  if d.get('isAvailable') and 'iPhone' in d.get('name', ''):
+                      print(d['udid'])
+                      sys.exit(0)
+          sys.exit(1)
+          ")
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          echo "Using iPhone simulator: $UDID"
+
       - name: Run UI Tests
         run: |
           set -o pipefail && xcodebuild test \
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessengerUITests" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }}" \
+            -destination "platform=iOS Simulator,id=${{ steps.resolve-sim.outputs.udid }}" \
             ONLY_ACTIVE_ARCH=YES \
             -parallel-testing-enabled YES \
             -parallel-testing-worker-count 2 | xcbeautify --renderer github-actions
@@ -280,7 +316,7 @@ jobs:
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessenger" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }}" \
+            -destination "generic/platform=iOS Simulator" \
             ONLY_ACTIVE_ARCH=YES | xcbeautify --renderer github-actions
 
       - name: Upload Artifact
