@@ -7,10 +7,24 @@
 
 import SwiftUI
 
+// MARK: - Supporting Types
+
+private enum ChatsSegment: CaseIterable {
+    case messages, requests
+
+    var title: String {
+        switch self {
+        case .messages: "Сообщения"
+        case .requests: "Запросы"
+        }
+    }
+}
+
 // MARK: - ChatsListView
 
 struct ChatsListView: View {
-    @State private var selectedTab = 0
+    @State private var viewModel = ChatsListViewModel()
+    @State private var selectedSegment: ChatsSegment = .messages
 
     var body: some View {
         VStack(spacing: 0) {
@@ -49,8 +63,9 @@ struct ChatsListView: View {
 
     private var segmentControlView: some View {
         HStack(spacing: 0) {
-            segmentTab(title: "Сообщения", badge: nil, index: 0)
-            segmentTab(title: "Запросы", badge: 1, index: 1)
+            ForEach(ChatsSegment.allCases, id: \.self) { segment in
+                segmentTab(segment)
+            }
         }
         .padding(4)
         .background(Color("P2PLightGray"))
@@ -60,16 +75,23 @@ struct ChatsListView: View {
         .background(.white)
     }
 
-    private func segmentTab(title: String, badge: Int?, index: Int) -> some View {
-        let isActive = selectedTab == index
+    private func badge(for segment: ChatsSegment) -> Int? {
+        switch segment {
+        case .messages: viewModel.unreadMessagesCount > 0 ? viewModel.unreadMessagesCount : nil
+        case .requests: viewModel.requestsCount > 0 ? viewModel.requestsCount : nil
+        }
+    }
 
-        return Button { selectedTab = index } label: {
+    private func segmentTab(_ segment: ChatsSegment) -> some View {
+        let isActive = selectedSegment == segment
+
+        return Button { selectedSegment = segment } label: {
             HStack(spacing: 4) {
-                Text(title)
+                Text(segment.title)
                     .font(.system(size: 14, weight: isActive ? .medium : .regular))
                     .foregroundStyle(isActive ? Color("P2PDarkBlue") : Color("P2PDarkGray"))
 
-                if let badge {
+                if let badge = badge(for: segment) {
                     Text("\(badge)")
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(.white)
@@ -94,12 +116,19 @@ struct ChatsListView: View {
 
     // MARK: Chat List
 
+    private var currentChats: [ChatRowModel] {
+        switch selectedSegment {
+        case .messages: viewModel.messageChats
+        case .requests: viewModel.requestChats
+        }
+    }
+
     private var chatListView: some View {
         ScrollView {
             VStack(spacing: 8) {
-                chatRow(name: "Вася", time: "14:32", lastMessage: "Окей, до встречи!", unread: 2, isOnline: true)
-                chatRow(name: "Маша", time: "12:15", lastMessage: "Пришли ссылку позже", unread: 0, isOnline: false)
-                chatRow(name: "Коля", time: "11:00", lastMessage: "Всё понял, спасибо!", unread: 0, isOnline: true)
+                ForEach(currentChats) { chat in
+                    chatRow(chat)
+                }
             }
             .padding(.horizontal, 16)
             .padding(.top, 12)
@@ -107,42 +136,36 @@ struct ChatsListView: View {
         }
     }
 
-    private func chatRow(
-        name: String,
-        time: String,
-        lastMessage: String,
-        unread: Int,
-        isOnline: Bool
-    ) -> some View {
+    private func chatRow(_ chat: ChatRowModel) -> some View {
         Button {} label: {
             HStack(spacing: 0) {
-                avatarView(initial: String(name.prefix(1)), isOnline: isOnline)
+                avatarView(initial: String(chat.name.prefix(1)), isOnline: chat.isOnline)
                     .padding(.leading, 14)
-                
+
                 VStack(alignment: .leading, spacing: 2) {
                     HStack {
-                        Text(name)
+                        Text(chat.name)
                             .font(.system(size: 15, weight: .medium))
                             .foregroundStyle(Color("P2PDarkBlue"))
                             .lineLimit(1)
-                        
+
                         Spacer()
-                        
-                        Text(time)
+
+                        Text(chat.timeOfLastMessage.shortTimeString)
                             .font(.system(size: 12))
                             .foregroundStyle(Color("P2PDarkGray"))
                     }
-                    
+
                     HStack {
-                        Text(lastMessage)
+                        Text(chat.lastMessage)
                             .font(.system(size: 13))
                             .foregroundStyle(Color("P2PDarkGray"))
                             .lineLimit(1)
-                        
+
                         Spacer()
-                        
-                        if unread > 0 {
-                            Text("\(unread)")
+
+                        if chat.unreadCount > 0 {
+                            Text("\(chat.unreadCount)")
                                 .font(.system(size: 10, weight: .semibold))
                                 .foregroundStyle(.white)
                                 .frame(width: 20, height: 20)
