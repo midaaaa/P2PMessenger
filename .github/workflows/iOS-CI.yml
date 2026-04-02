@@ -19,161 +19,205 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install SwiftLint
-        run: brew install swiftlint
+      - name: Cache Homebrew
+        id: cache-brew
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/Homebrew
+            /usr/local/bin/swiftlint
+            /usr/local/bin/xcbeautify
+          key: ${{ runner.os }}-brew-lint-${{ hashFiles('.github/Makefile') }}
+
+      - name: Install Tools
+        if: steps.cache-brew.outputs.cache-hit != 'true'
+        run: |
+          brew install swiftlint xcbeautify
 
       - name: Run Linter
-        run: swiftlint lint --strict
+        run: swiftlint lint --strict | xcbeautify --renderer github-actions
 
   build-app:
     name: Build App
     runs-on: macos-latest
     needs: [lint]
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Cache Homebrew
+        id: cache-brew
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/Homebrew
+            /usr/local/bin/xcodegen
+            /usr/local/bin/xcbeautify
+          key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
+
+      - name: Install Tools
+        if: steps.cache-brew.outputs.cache-hit != 'true'
+        run: |
+          brew install xcodegen xcbeautify
+
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-derived-data-${{ hashFiles('project.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-derived-data-
+
       - name: Generate Xcode Project
         run: make -f .github/Makefile setup
 
-      - name: Boot Simulator
-        run: |
-          brew install jq
-          UDID=$(xcrun simctl list devices available -j | \
-            jq -r '.devices | to_entries[] | select(.key | contains("26")) | .value[] | select(.name == "iPhone 17") | .udid' | head -n 1)
-          if [ -z "$UDID" ]; then
-            UDID=$(xcrun simctl list devices available -j | \
-              jq -r '.devices | to_entries[] | select(.key | contains("26")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -n 1)
-          fi
-          if [ -z "$UDID" ]; then
-            echo "No suitable simulator found"
-            exit 1
-          fi
-          xcrun simctl boot "$UDID" 2>/dev/null || true
-          echo "UDID=$UDID" >> $GITHUB_ENV
-
       - name: Build P2PMessenger
         run: |
-          xcodebuild build \
+          set -o pipefail && xcodebuild build \
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessenger" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,id=${{ env.UDID }}" \
-            ONLY_ACTIVE_ARCH=YES \
-            -quiet
+            -destination "platform=iOS Simulator,name=iPhone 16" \
+            ONLY_ACTIVE_ARCH=YES | xcbeautify --renderer github-actions
 
   test-unit:
     name: Unit Tests
     runs-on: macos-latest
     needs: [build-app]
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Cache Homebrew
+        id: cache-brew
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/Homebrew
+            /usr/local/bin/xcodegen
+            /usr/local/bin/xcbeautify
+          key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
+
+      - name: Install Tools
+        if: steps.cache-brew.outputs.cache-hit != 'true'
+        run: |
+          brew install xcodegen xcbeautify
+
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-derived-data-${{ hashFiles('project.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-derived-data-
+
       - name: Generate Xcode Project
         run: make -f .github/Makefile setup
 
-      - name: Boot Simulator
-        run: |
-          brew install jq
-          UDID=$(xcrun simctl list devices available -j | \
-            jq -r '.devices | to_entries[] | select(.key | contains("26")) | .value[] | select(.name == "iPhone 17") | .udid' | head -n 1)
-          if [ -z "$UDID" ]; then
-            UDID=$(xcrun simctl list devices available -j | \
-              jq -r '.devices | to_entries[] | select(.key | contains("26")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -n 1)
-          fi
-          if [ -z "$UDID" ]; then
-            echo "No suitable simulator found"
-            exit 1
-          fi
-          xcrun simctl boot "$UDID" 2>/dev/null || true
-          echo "UDID=$UDID" >> $GITHUB_ENV
-
       - name: Run Unit Tests
         run: |
-          xcodebuild test \
+          set -o pipefail && xcodebuild test \
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessengerTests" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,id=${{ env.UDID }}" \
+            -destination "platform=iOS Simulator,name=iPhone 16" \
             ONLY_ACTIVE_ARCH=YES \
-            -quiet
+            -parallel-testing-enabled YES \
+            -parallel-testing-worker-count 2 | xcbeautify --renderer github-actions
             
   test-ui:
     name: UI Tests
     runs-on: macos-latest
     needs: [test-unit]
+    timeout-minutes: 20
     if: github.ref == 'refs/heads/main' 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Cache Homebrew
+        id: cache-brew
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/Homebrew
+            /usr/local/bin/xcodegen
+            /usr/local/bin/xcbeautify
+          key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
+
+      - name: Install Tools
+        if: steps.cache-brew.outputs.cache-hit != 'true'
+        run: |
+          brew install xcodegen xcbeautify
+
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-derived-data-${{ hashFiles('project.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-derived-data-
+
       - name: Generate Xcode Project
         run: make -f .github/Makefile setup
 
-      - name: Boot Simulator
-        run: |
-          brew install jq
-          UDID=$(xcrun simctl list devices available -j | \
-            jq -r '.devices | to_entries[] | select(.key | contains("26")) | .value[] | select(.name == "iPhone 17") | .udid' | head -n 1)
-          if [ -z "$UDID" ]; then
-            UDID=$(xcrun simctl list devices available -j | \
-              jq -r '.devices | to_entries[] | select(.key | contains("26")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -n 1)
-          fi
-          if [ -z "$UDID" ]; then
-            echo "No suitable simulator found"
-            exit 1
-          fi
-          xcrun simctl boot "$UDID" 2>/dev/null || true
-          echo "UDID=$UDID" >> $GITHUB_ENV
-
       - name: Run UI Tests
         run: |
-          xcodebuild test \
+          set -o pipefail && xcodebuild test \
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessengerUITests" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,id=${{ env.UDID }}" \
+            -destination "platform=iOS Simulator,name=iPhone 16" \
             ONLY_ACTIVE_ARCH=YES \
-            -quiet
+            -parallel-testing-enabled YES \
+            -parallel-testing-worker-count 2 | xcbeautify --renderer github-actions
 
   publish:
     name: Publish Build
     runs-on: macos-latest
     needs: [test-unit, test-ui] 
+    timeout-minutes: 20
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Generate Xcode Project
-        run: brew install xcodegen && xcodegen generate
+      - name: Cache Homebrew
+        id: cache-brew
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/Homebrew
+            /usr/local/bin/xcodegen
+            /usr/local/bin/xcbeautify
+          key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
 
-      - name: Boot Simulator
+      - name: Install Tools
+        if: steps.cache-brew.outputs.cache-hit != 'true'
         run: |
-          brew install jq
-          UDID=$(xcrun simctl list devices available -j | \
-            jq -r '.devices | to_entries[] | select(.key | contains("26")) | .value[] | select(.name == "iPhone 17") | .udid' | head -n 1)
-          if [ -z "$UDID" ]; then
-            UDID=$(xcrun simctl list devices available -j | \
-              jq -r '.devices | to_entries[] | select(.key | contains("26")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -n 1)
-          fi
-          if [ -z "$UDID" ]; then
-            echo "No suitable simulator found"
-            exit 1
-          fi
-          xcrun simctl boot "$UDID" 2>/dev/null || true
-          echo "UDID=$UDID" >> $GITHUB_ENV
+          brew install xcodegen xcbeautify
+
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-derived-data-${{ hashFiles('project.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-derived-data-
+
+      - name: Generate Xcode Project
+        run: make -f .github/Makefile setup
 
       - name: Build for Artifact
         run: |
-          xcodebuild build \
+          set -o pipefail && xcodebuild build \
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessenger" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,id=${{ env.UDID }}" \
-            ONLY_ACTIVE_ARCH=YES \
-            -quiet
+            -destination "platform=iOS Simulator,name=iPhone 16" \
+            ONLY_ACTIVE_ARCH=YES | xcbeautify --renderer github-actions
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
