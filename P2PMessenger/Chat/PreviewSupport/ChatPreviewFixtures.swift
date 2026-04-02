@@ -19,8 +19,7 @@ enum ChatPreviewFixtures {
                 participant: participant,
                 title: "Глеб",
                 subtitle: "Напишите первое сообщение.\nСобеседник получит запрос на чат."
-            ),
-            composerPlaceholder: "Сообщение..."
+            )
         )
     }()
 
@@ -59,8 +58,7 @@ enum ChatPreviewFixtures {
                     time: "11:09"
                 )
             ],
-            timelineTitle: "Сегодня · Общий чат",
-            composerPlaceholder: "Сообщение всем..."
+            timelineTitle: "Сегодня · Общий чат"
         )
     }()
 }

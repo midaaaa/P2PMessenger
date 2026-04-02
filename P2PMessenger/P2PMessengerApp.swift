@@ -33,9 +33,9 @@ private struct AppRootView: View {
             }
         }
         .task {
-            try? await Task.sleep(for: .milliseconds(650))
+            try? await Task.sleep(for: .milliseconds(AppLaunchConstants.splashDelayMilliseconds))
 
-            withAnimation(.easeOut(duration: 0.2)) {
+            withAnimation(.easeOut(duration: AppLaunchConstants.splashFadeDuration)) {
                 showsSplashScreen = false
             }
         }
@@ -46,14 +46,23 @@ private struct AppRootView: View {
 
 private struct LaunchSplashView: View {
     var body: some View {
-        VStack(spacing: 16) {
-            Image("LaunchLogo")
+        VStack(spacing: AppLaunchConstants.splashVerticalSpacing) {
+            Image(AppLaunchConstants.logoAssetName)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 96, height: 96)
+                .frame(
+                    width: AppLaunchConstants.splashLogoSize,
+                    height: AppLaunchConstants.splashLogoSize
+                )
 
-            Text("P2P Messenger")
-                .font(.system(size: 20, weight: .regular, design: .rounded))
+            Text(AppLaunchConstants.brandTitle)
+                .font(
+                    .system(
+                        size: AppLaunchConstants.splashTitleFontSize,
+                        weight: .regular,
+                        design: .rounded
+                    )
+                )
                 .foregroundStyle(Color.p2pTextPrimary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
