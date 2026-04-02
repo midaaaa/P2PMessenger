@@ -105,7 +105,6 @@ struct ChatsListView: View {
             .padding(.top, 12)
             .padding(.bottom, 16)
         }
-        .scrollIndicators(.hidden)
     }
 
     private func chatRow(
