@@ -7,24 +7,45 @@
 import SwiftUI
 
 struct ChatsRootView: View {
-    //@Bindable var router: ChatsRouter
+    @Bindable var router: ChatsRouter
 
     var body: some View {
-        NavigationStack() {
-            Text("Чаты")
-                .navigationTitle("Список чатов")
-//                .navigationDestination(for: ChatsRoute.self) { route in
-//                    switch route {
-//                    case .dialog(let chatID):
-//                        ChatDialogView(chatID: chatID)
-//
-//                    case .profile(let userID):
-//                        UserProfileView(userID: userID)
-//
-//                    case .media(let chatID):
-//                        ChatMediaView(chatID: chatID)
-//                    }
-//                }
+        NavigationStack(path: $router.path) {
+            Text("Список чатов")
+                .navigationTitle("Чаты")
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            router.push(.searchDialog)
+                        } label: {
+                            Image(systemName: "plus")
+                        }
+                    }
+                }
+                .navigationDestination(for: ChatsRoute.self) { route in
+                    switch route {
+                    case .dialog:
+                        Text("Личная переписка")
+                        // ChatDialogView()
+
+                    case .searchDialog:
+                        VStack(spacing: 16) {
+                            Text("Найти собеседника")
+                            Button("Написать"){
+                                router.push(.addDialog)
+                            }
+                            
+                        }
+                        .navigationTitle("Люди рядом")
+                        .navigationBarTitleDisplayMode(.inline)
+                        // AddDialogView()
+                    case .addDialog:
+                        Text("Отправить запрос на переписку")
+                        Button("На главный экран чатов") {
+                            router.popToRoot()
+                        }
+                    }
+                }
         }
     }
 }

@@ -5,6 +5,8 @@
 //  Created by Иван Иванов on 02.04.2026.
 //
 
+import SwiftUI
+
 struct AppRootView: View {
     @State private var appRouter = AppRouter()
 
@@ -16,17 +18,25 @@ struct AppRootView: View {
                 }
                 .tag(AppTab.chats)
 
-            CommonChatRootView(router: appRouter.commonChatRouter)
+            CommonChatRootView()
                 .tabItem {
                     Label("Общий чат", systemImage: "person.2")
                 }
                 .tag(AppTab.commonChat)
 
-            SettingsRootView(router: appRouter.settingsRouter)
+            SettingsRootView()
                 .tabItem {
                     Label("Настройки", systemImage: "gearshape")
                 }
                 .tag(AppTab.settings)
         }
+        .tint(.p2PBlack)
+
+        
     }
 }
+#if DEBUG
+#Preview {
+    AppRootView()
+}
+#endif
