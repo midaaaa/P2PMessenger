@@ -24,7 +24,6 @@ final class WelcomeScreenVM {
         [
             PermissionItem(id: .bluetooth, title: "Bluetooth", icon: "dot.radiowaves.left.and.right", state: permissionManager.bluetoothState),
             PermissionItem(id: .localNetwork, title: "Локальная сеть", icon: "wifi", state: permissionManager.localNetworkState),
-           // PermissionItem(id: .nearbyDiscovery, title: "Поиск устройств", icon: "magnifyingglass", state: permissionManager.nearbyState),
             PermissionItem(id: .notifications, title: "Уведомления", icon: "bell.badge", state: permissionManager.notificationsState)
         ]
     }

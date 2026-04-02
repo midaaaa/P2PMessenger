@@ -22,6 +22,8 @@ final class PermissionManager: NSObject {
     private var centralManager: CBCentralManager?
     private var localNetworkBrowser: NWBrowser?
     private var mcBrowser: MCNearbyServiceBrowser?
+    
+    private let fakeDisplayName : String = "probe"
 
     private enum Keys {
         static let localNetwork = "permission.localNetwork.granted"
@@ -104,7 +106,7 @@ final class PermissionManager: NSObject {
     }
 
     func requestNearbyDiscovery() {
-        let peerID = MCPeerID(displayName: "probe")
+        let peerID = MCPeerID(displayName: fakeDisplayName)
         mcBrowser = MCNearbyServiceBrowser(peer: peerID, serviceType: "p2p-msg")
         mcBrowser?.delegate = self
         mcBrowser?.startBrowsingForPeers()
