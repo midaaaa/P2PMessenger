@@ -19,11 +19,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install SwiftLint
-        run: brew install swiftlint
+      - name: Cache Homebrew
+        id: cache-brew
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/Homebrew
+            /usr/local/bin/swiftlint
+            /usr/local/bin/xcbeautify
+          key: ${{ runner.os }}-brew-lint-${{ hashFiles('.github/Makefile') }}
+
+      - name: Install Tools
+        if: steps.cache-brew.outputs.cache-hit != 'true'
+        run: |
+          brew install swiftlint xcbeautify
 
       - name: Run Linter
-        run: swiftlint lint --strict
+        run: swiftlint lint --strict | xcbeautify --renderer github-actions
 
   build-app:
     name: Build App
@@ -34,17 +46,40 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Cache Homebrew
+        id: cache-brew
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/Homebrew
+            /usr/local/bin/xcodegen
+            /usr/local/bin/xcbeautify
+          key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
+
+      - name: Install Tools
+        if: steps.cache-brew.outputs.cache-hit != 'true'
+        run: |
+          brew install xcodegen xcbeautify
+
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-derived-data-${{ hashFiles('project.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-derived-data-
+
       - name: Generate Xcode Project
         run: make -f .github/Makefile setup
 
       - name: Build P2PMessenger
         run: |
-          xcodebuild build \
+          set -o pipefail && xcodebuild build \
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessenger" \
             -sdk iphonesimulator \
             -destination "platform=iOS Simulator,name=iPhone 15" \
-            ONLY_ACTIVE_ARCH=YES
+            ONLY_ACTIVE_ARCH=YES | xcbeautify --renderer github-actions
 
   test-unit:
     name: Unit Tests
@@ -55,19 +90,42 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Cache Homebrew
+        id: cache-brew
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/Homebrew
+            /usr/local/bin/xcodegen
+            /usr/local/bin/xcbeautify
+          key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
+
+      - name: Install Tools
+        if: steps.cache-brew.outputs.cache-hit != 'true'
+        run: |
+          brew install xcodegen xcbeautify
+
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-derived-data-${{ hashFiles('project.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-derived-data-
+
       - name: Generate Xcode Project
         run: make -f .github/Makefile setup
 
       - name: Run Unit Tests
         run: |
-          xcodebuild test \
+          set -o pipefail && xcodebuild test \
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessengerTests" \
             -sdk iphonesimulator \
             -destination "platform=iOS Simulator,name=iPhone 15" \
             ONLY_ACTIVE_ARCH=YES \
             -parallel-testing-enabled YES \
-            -parallel-testing-worker-count 2
+            -parallel-testing-worker-count 2 | xcbeautify --renderer github-actions
             
   test-ui:
     name: UI Tests
@@ -79,19 +137,42 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Cache Homebrew
+        id: cache-brew
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/Homebrew
+            /usr/local/bin/xcodegen
+            /usr/local/bin/xcbeautify
+          key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
+
+      - name: Install Tools
+        if: steps.cache-brew.outputs.cache-hit != 'true'
+        run: |
+          brew install xcodegen xcbeautify
+
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-derived-data-${{ hashFiles('project.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-derived-data-
+
       - name: Generate Xcode Project
         run: make -f .github/Makefile setup
 
       - name: Run UI Tests
         run: |
-          xcodebuild test \
+          set -o pipefail && xcodebuild test \
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessengerUITests" \
             -sdk iphonesimulator \
             -destination "platform=iOS Simulator,name=iPhone 15" \
             ONLY_ACTIVE_ARCH=YES \
             -parallel-testing-enabled YES \
-            -parallel-testing-worker-count 2
+            -parallel-testing-worker-count 2 | xcbeautify --renderer github-actions
 
   publish:
     name: Publish Build
@@ -103,17 +184,40 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Cache Homebrew
+        id: cache-brew
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/Homebrew
+            /usr/local/bin/xcodegen
+            /usr/local/bin/xcbeautify
+          key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
+
+      - name: Install Tools
+        if: steps.cache-brew.outputs.cache-hit != 'true'
+        run: |
+          brew install xcodegen xcbeautify
+
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-derived-data-${{ hashFiles('project.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-derived-data-
+
       - name: Generate Xcode Project
         run: make -f .github/Makefile setup
 
       - name: Build for Artifact
         run: |
-          xcodebuild build \
+          set -o pipefail && xcodebuild build \
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessenger" \
             -sdk iphonesimulator \
             -destination "platform=iOS Simulator,name=iPhone 15" \
-            ONLY_ACTIVE_ARCH=YES
+            ONLY_ACTIVE_ARCH=YES | xcbeautify --renderer github-actions
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
