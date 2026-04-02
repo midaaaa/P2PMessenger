@@ -78,7 +78,7 @@ jobs:
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessenger" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=iPhone 15" \
+            -destination "platform=iOS Simulator,name=iPhone 16" \
             ONLY_ACTIVE_ARCH=YES | xcbeautify --renderer github-actions
 
   test-unit:
@@ -122,7 +122,7 @@ jobs:
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessengerTests" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=iPhone 15" \
+            -destination "platform=iOS Simulator,name=iPhone 16" \
             ONLY_ACTIVE_ARCH=YES \
             -parallel-testing-enabled YES \
             -parallel-testing-worker-count 2 | xcbeautify --renderer github-actions
@@ -169,7 +169,7 @@ jobs:
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessengerUITests" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=iPhone 15" \
+            -destination "platform=iOS Simulator,name=iPhone 16" \
             ONLY_ACTIVE_ARCH=YES \
             -parallel-testing-enabled YES \
             -parallel-testing-worker-count 2 | xcbeautify --renderer github-actions
@@ -216,7 +216,7 @@ jobs:
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessenger" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=iPhone 15" \
+            -destination "platform=iOS Simulator,name=iPhone 16" \
             ONLY_ACTIVE_ARCH=YES | xcbeautify --renderer github-actions
 
       - name: Upload Artifact
