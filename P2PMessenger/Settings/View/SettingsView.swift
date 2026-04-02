@@ -22,7 +22,7 @@ struct SettingsView: View {
                     Button {
 
                     } label: {
-                        userCard(username: username)
+                        UserCard(username: username)
                             .tint(.primary)
                     }
                 } header: {
@@ -32,11 +32,11 @@ struct SettingsView: View {
 
                 Section {
                     Toggle(isOn: $visibilityToggle) {
-                        textCard(label: "Разрешить находить меня", text: "Виден пользователям рядом")
+                        TextCard(label: "Разрешить находить меня", text: "Виден пользователям рядом")
                     }
                     .tint(Color("P2PDarkBlue"))
                     Toggle(isOn: $requestToggle) {
-                        textCard(label: "Разрешить запросы на переписку", text: "Принимать новые запросы")
+                        TextCard(label: "Разрешить запросы на переписку", text: "Принимать новые запросы")
                     }
                     .tint(Color("P2PDarkBlue"))
                 } header: {
@@ -46,7 +46,7 @@ struct SettingsView: View {
 
                 Section {
                     Toggle(isOn: $networkToggle) {
-                        textCard(label: "В сети", text: "Активен в P2P сети")
+                        TextCard(label: "В сети", text: "Активен в P2P сети")
                     }
                     .tint(Color("P2PDarkBlue"))
                 } header: {
@@ -55,7 +55,7 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    storageCard(size: spaceTaken, progress: $progress)
+                    StorageCard(size: spaceTaken, progress: $progress)
                 } header: {
                     Text("ДАННЫЕ")
                         .font(.footnote)
@@ -65,7 +65,7 @@ struct SettingsView: View {
                     Button {
 
                     } label: {
-                        deleteCard()
+                        DeleteCard()
                     }
                 }
 
@@ -77,134 +77,6 @@ struct SettingsView: View {
             .navigationTitle("Настройки")
         }
     }
-}
-
-struct userCard: View {
-    var username: String
-
-    var body: some View {
-        HStack {
-            Circle()
-                .fill(.secondary)
-                .stroke(Color.black, lineWidth: Constants.userAvatarStrokeWidth)
-                .frame(width: Constants.userAvatarSize, height: Constants.userAvatarSize)
-                .opacity(Constants.userAvatarOpacity)
-                .overlay {
-                    Text(String(username.uppercased().first ?? "?"))
-                        .font(.title)
-                }
-                .padding(.trailing, Constants.userAvatarPadding)
-
-            VStack(alignment: .leading) {
-                Text("Имя пользователя")
-                    .foregroundStyle(.secondary)
-                    .font(.caption)
-                    .padding(.bottom, Constants.userTextPadding)
-                Text(username)
-                    .font(.title3)
-            }
-            Spacer()
-            Image(systemName: "chevron.right")
-        }
-        .padding(.vertical, Constants.userCardPadding)
-    }
-}
-
-struct textCard: View {
-    var label: String
-    var text: String
-
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text(label)
-                .font(.system(size: Constants.mainFontSize))
-                .padding(.bottom, Constants.textCardPadding)
-            Text(text)
-                .foregroundStyle(.secondary)
-                .font(.caption)
-        }
-        .padding(.vertical, Constants.verticalPadding)
-    }
-}
-
-struct storageCard: View {
-    var size: Int
-    @Binding var progress: Double
-
-    var body: some View {
-        HStack {
-            ZStack {
-                RoundedRectangle(cornerRadius: Constants.storageIconCornerRadius)
-                    .frame(width: Constants.storageIconSize, height: Constants.storageIconSize)
-                    .foregroundStyle(.secondary)
-                    .opacity(Constants.storageIconOpacity)
-                Image(systemName: "server.rack")
-            }
-            .padding(.trailing, Constants.storageIconPadding)
-            VStack(alignment: .leading) {
-                Text("Занято памяти")
-                Text("\(size) МБ ⋅ Чаты и медиафайлы")  // compute size units
-                    .foregroundStyle(.secondary)
-                    .font(.caption)
-            }
-            Spacer()
-            ProgressView(value: progress)
-                .scaleEffect(x: Constants.progressViewWidthScale,
-                             y: Constants.progressViewHeightScale)
-                .tint(.secondary)
-                .frame(maxWidth: Constants.progressViewWidth)
-        }
-        .padding(.vertical, Constants.verticalPadding)
-    }
-}
-
-struct deleteCard: View {
-    var body: some View {
-        HStack {
-            ZStack {
-                RoundedRectangle(cornerRadius: Constants.deleteIconCornerRadius)
-                    .frame(width: Constants.deleteIconSize, height: Constants.deleteIconSize)
-                    .foregroundStyle(.secondary)
-                    .opacity(Constants.deleteIconOpacity)
-                Image(systemName: "trash")
-            }
-            .padding(.trailing, Constants.deleteIconPadding)
-            Text("Удалить все чаты")
-            Spacer()
-            Image(systemName: "chevron.right")
-        }
-        .tint(.primary)
-        .padding(.vertical, Constants.verticalPadding)
-    }
-}
-
-private enum Constants {
-    static let mainFontSize: CGFloat = 16
-
-    static let userAvatarSize: CGFloat = 60
-    static let userAvatarStrokeWidth: CGFloat = 0.5
-    static let userAvatarOpacity: CGFloat = 0.2
-    static let userAvatarPadding: CGFloat = 6
-    static let userTextPadding: CGFloat = 2
-    static let userCardPadding: CGFloat = 5
-
-    static let textCardPadding: CGFloat = 4
-
-    static let storageIconCornerRadius: CGFloat = 20
-    static let storageIconSize: CGFloat = 50
-    static let storageIconOpacity: CGFloat = 0.2
-    static let storageIconPadding: CGFloat = 6
-
-    static let progressViewWidth: CGFloat = 80
-    static let progressViewWidthScale: CGFloat = 1
-    static let progressViewHeightScale: CGFloat = 1.5
-
-    static let deleteIconCornerRadius: CGFloat = 20
-    static let deleteIconSize: CGFloat = 50
-    static let deleteIconOpacity: CGFloat = 0.2
-    static let deleteIconPadding: CGFloat = 6
-
-    static let verticalPadding: CGFloat = 6
 }
 
 #Preview {
