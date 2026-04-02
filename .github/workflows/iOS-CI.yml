@@ -59,7 +59,23 @@ jobs:
       - name: Install Tools
         if: steps.cache-brew.outputs.cache-hit != 'true'
         run: |
-          brew install xcodegen xcbeautify
+          brew install xcodegen xcbeautify jq
+
+      - name: Select Simulator
+        run: |
+          SIMULATOR_NAME=$(xcrun simctl list devices available -j | jq -r '
+            .devices | to_entries 
+            | map(select(.key | contains("iOS"))) 
+            | sort_by(.key) | last 
+            | .value | map(select(.name | contains("iPhone"))) 
+            | first | .name
+          ')
+          if [ -z "$SIMULATOR_NAME" ]; then
+            echo "No available iPhone simulator found"
+            exit 1
+          fi
+          echo "Selected Simulator: $SIMULATOR_NAME"
+          echo "SIMULATOR_NAME=$SIMULATOR_NAME" >> $GITHUB_ENV
 
       - name: Cache DerivedData
         uses: actions/cache@v4
@@ -78,7 +94,7 @@ jobs:
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessenger" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=iPhone 16" \
+            -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }}" \
             ONLY_ACTIVE_ARCH=YES | xcbeautify --renderer github-actions
 
   test-unit:
@@ -103,7 +119,23 @@ jobs:
       - name: Install Tools
         if: steps.cache-brew.outputs.cache-hit != 'true'
         run: |
-          brew install xcodegen xcbeautify
+          brew install xcodegen xcbeautify jq
+
+      - name: Select Simulator
+        run: |
+          SIMULATOR_NAME=$(xcrun simctl list devices available -j | jq -r '
+            .devices | to_entries 
+            | map(select(.key | contains("iOS"))) 
+            | sort_by(.key) | last 
+            | .value | map(select(.name | contains("iPhone"))) 
+            | first | .name
+          ')
+          if [ -z "$SIMULATOR_NAME" ]; then
+            echo "No available iPhone simulator found"
+            exit 1
+          fi
+          echo "Selected Simulator: $SIMULATOR_NAME"
+          echo "SIMULATOR_NAME=$SIMULATOR_NAME" >> $GITHUB_ENV
 
       - name: Cache DerivedData
         uses: actions/cache@v4
@@ -122,7 +154,7 @@ jobs:
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessengerTests" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=iPhone 16" \
+            -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }}" \
             ONLY_ACTIVE_ARCH=YES \
             -parallel-testing-enabled YES \
             -parallel-testing-worker-count 2 | xcbeautify --renderer github-actions
@@ -150,7 +182,23 @@ jobs:
       - name: Install Tools
         if: steps.cache-brew.outputs.cache-hit != 'true'
         run: |
-          brew install xcodegen xcbeautify
+          brew install xcodegen xcbeautify jq
+
+      - name: Select Simulator
+        run: |
+          SIMULATOR_NAME=$(xcrun simctl list devices available -j | jq -r '
+            .devices | to_entries 
+            | map(select(.key | contains("iOS"))) 
+            | sort_by(.key) | last 
+            | .value | map(select(.name | contains("iPhone"))) 
+            | first | .name
+          ')
+          if [ -z "$SIMULATOR_NAME" ]; then
+            echo "No available iPhone simulator found"
+            exit 1
+          fi
+          echo "Selected Simulator: $SIMULATOR_NAME"
+          echo "SIMULATOR_NAME=$SIMULATOR_NAME" >> $GITHUB_ENV
 
       - name: Cache DerivedData
         uses: actions/cache@v4
@@ -169,7 +217,7 @@ jobs:
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessengerUITests" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=iPhone 16" \
+            -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }}" \
             ONLY_ACTIVE_ARCH=YES \
             -parallel-testing-enabled YES \
             -parallel-testing-worker-count 2 | xcbeautify --renderer github-actions
@@ -197,7 +245,23 @@ jobs:
       - name: Install Tools
         if: steps.cache-brew.outputs.cache-hit != 'true'
         run: |
-          brew install xcodegen xcbeautify
+          brew install xcodegen xcbeautify jq
+
+      - name: Select Simulator
+        run: |
+          SIMULATOR_NAME=$(xcrun simctl list devices available -j | jq -r '
+            .devices | to_entries 
+            | map(select(.key | contains("iOS"))) 
+            | sort_by(.key) | last 
+            | .value | map(select(.name | contains("iPhone"))) 
+            | first | .name
+          ')
+          if [ -z "$SIMULATOR_NAME" ]; then
+            echo "No available iPhone simulator found"
+            exit 1
+          fi
+          echo "Selected Simulator: $SIMULATOR_NAME"
+          echo "SIMULATOR_NAME=$SIMULATOR_NAME" >> $GITHUB_ENV
 
       - name: Cache DerivedData
         uses: actions/cache@v4
@@ -216,7 +280,7 @@ jobs:
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessenger" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=iPhone 16" \
+            -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }}" \
             ONLY_ACTIVE_ARCH=YES | xcbeautify --renderer github-actions
 
       - name: Upload Artifact
