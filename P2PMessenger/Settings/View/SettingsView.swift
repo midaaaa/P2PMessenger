@@ -16,64 +16,66 @@ struct SettingsView: View {
     @State var progress = 0.67
 
     var body: some View {
-            List {
-                Section {
-                    Button {
+        List {
+            Section {
+                Button {
 
-                    } label: {
-                        UserCard(username: username)
-                            .tint(.primary)
-                    }
-                } header: {
-                    Text("profileUpper")
-                        .font(.footnote)
+                } label: {
+                    UserCard(username: username)
+                        .tint(.primary)
                 }
+            } header: {
+                Text("profileUpper")
+                    .font(.footnote)
+            }
 
-                Section {
-                    Toggle(isOn: $visibilityToggle) {
-                        TextCard(label: String(localized: "enableToFindMe"), text: String(localized: "observableByOthers"))
-                    }
-                    .tint(Color("P2PDarkBlue"))
-                    Toggle(isOn: $requestToggle) {
-                        TextCard(label: String(localized: "enableRequestsToChat"), text: String(localized: "acceptNewRequests"))
-                    }
-                    .tint(Color("P2PDarkBlue"))
-                } header: {
-                    Text("privacyUpper")
-                        .font(.footnote)
+            Section {
+                Toggle(isOn: $visibilityToggle) {
+                    TextCard(label: String(localized: "enableToFindMe"),
+                             text: String(localized: "observableByOthers"))
                 }
-
-                Section {
-                    Toggle(isOn: $networkToggle) {
-                        TextCard(label: String(localized: "online"), text: String(localized: "observableInP2Pnetwork"))
-                    }
-                    .tint(Color("P2PDarkBlue"))
-                } header: {
-                    Text("networkUpper")
-                        .font(.footnote)
+                .tint(Color("P2PDarkBlue"))
+                Toggle(isOn: $requestToggle) {
+                    TextCard(label: String(localized: "enableRequestsToChat"),
+                             text: String(localized: "acceptNewRequests"))
                 }
+                .tint(Color("P2PDarkBlue"))
+            } header: {
+                Text("privacyUpper")
+                    .font(.footnote)
+            }
 
-                Section {
-                    StorageCard(size: spaceTaken, progress: $progress)
-                } header: {
-                    Text("dataUpper")
-                        .font(.footnote)
+            Section {
+                Toggle(isOn: $networkToggle) {
+                    TextCard(label: String(localized: "online"),
+                             text: String(localized: "observableInP2Pnetwork"))
                 }
+                .tint(Color("P2PDarkBlue"))
+            } header: {
+                Text("networkUpper")
+                    .font(.footnote)
+            }
 
-                Section {
-                    Button {
+            Section {
+                StorageCard(size: spaceTaken, progress: $progress)
+            } header: {
+                Text("dataUpper")
+                    .font(.footnote)
+            }
 
-                    } label: {
-                        DeleteCard()
-                    }
-                }
+            Section {
+                Button {
 
-                Section {} footer: {
-                    Text("appNameAndVersion")
-                        .frame(maxWidth: .infinity, alignment: .center)
+                } label: {
+                    DeleteCard()
                 }
             }
-            
+
+            Section {} footer: {
+                Text("appNameAndVersion")
+                    .frame(maxWidth: .infinity, alignment: .center)
+            }
+        }
     }
 }
 
