@@ -25,6 +25,8 @@ private enum ChatsSegment: CaseIterable {
 struct ChatsListView: View {
     @State private var viewModel = ChatsListViewModel()
     @State private var selectedSegment: ChatsSegment = .messages
+    let plusButtonAction: () -> Void
+    let chatRowButtonAction: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -45,7 +47,7 @@ struct ChatsListView: View {
 
             Spacer()
 
-            Button {} label: {
+            Button (action: plusButtonAction){
                 Image(systemName: "plus")
                     .font(.system(size: 18))
                     .foregroundStyle(.white)
@@ -137,7 +139,7 @@ struct ChatsListView: View {
     }
 
     private func chatRow(_ chat: ChatRowModel) -> some View {
-        Button {} label: {
+        Button (action: chatRowButtonAction){
             HStack(spacing: 0) {
                 avatarView(initial: String(chat.name.prefix(1)), isOnline: chat.isOnline)
                     .padding(.leading, 14)
@@ -209,5 +211,5 @@ struct ChatsListView: View {
 // MARK: - Preview
 
 #Preview {
-    ChatsListView()
+    ChatsListView(plusButtonAction: {}, chatRowButtonAction: {})
 }

@@ -11,22 +11,20 @@ struct ChatsRootView: View {
 
     var body: some View {
         NavigationStack(path: $router.path) {
-            Text("Список чатов")
+            ChatsListView(
+                plusButtonAction: {router.push(.searchDialog)},
+                chatRowButtonAction: {router.push(.dialog)}
+            )
                 .navigationTitle("Чаты")
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            router.push(.searchDialog)
-                        } label: {
-                            Image(systemName: "plus")
-                        }
-                    }
-                }
+                
+                
                 .navigationDestination(for: ChatsRoute.self) { route in
                     switch route {
                     case .dialog:
-                        Text("Личная переписка")
-                        // ChatDialogView()
+                        ChatScreenView(configuration: ChatPreviewFixtures.newChat,
+                                       draftMessage: .constant(""), onBack: router.popToRoot)
+                        .navigationBarBackButtonHidden(true)
+                       
 
                     case .searchDialog:
                         VStack(spacing: 16) {
@@ -38,14 +36,17 @@ struct ChatsRootView: View {
                         }
                         .navigationTitle("Люди рядом")
                         .navigationBarTitleDisplayMode(.inline)
+                        .toolbar(.hidden, for: .tabBar)
                         // AddDialogView()
                     case .addDialog:
                         Text("Отправить запрос на переписку")
                         Button("На главный экран чатов") {
                             router.popToRoot()
                         }
+                        
                     }
                 }
         }
+        .toolbar(router.path.isEmpty ? .visible : .hidden, for: .tabBar)
     }
 }
