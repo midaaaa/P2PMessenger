@@ -9,7 +9,8 @@ import SwiftUI
 
 struct AppRootView: View {
     @State private var appRouter = AppRouter()
-
+    @StateObject private var bluetoothVM = BluetoothStatusViewModel()
+    
     var body: some View {
         
             TabView(selection: $appRouter.selectedTab) {
@@ -32,9 +33,23 @@ struct AppRootView: View {
                     .tag(AppTab.settings)
             }
             .tint(.p2PBlack)
-            
+        
+        .fullScreenCover(isPresented: $bluetoothVM.isBluetoothOff) {
+            NoBluetoothView()
+        }
         
     }
+        func openBluetoothSettings() {
+            guard let settingsURL = URL(string: "App-Prefs:root=Bluetooth") else {
+                return // UIApplication.openSettingsURLString
+            }
+            
+            if UIApplication.shared.canOpenURL(settingsURL) {
+                UIApplication.shared.open(settingsURL)
+            }
+            
+        }
+    
 }
 #if DEBUG
 #Preview {

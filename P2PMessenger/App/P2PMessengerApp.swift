@@ -10,6 +10,11 @@ import SwiftData
 
 @main
 struct P2PMessengerApp: App {
+    
+    init() {
+            _ = BluetoothMonitor.shared
+        }
+    
     var body: some Scene {
         WindowGroup {
             AppRootView()
