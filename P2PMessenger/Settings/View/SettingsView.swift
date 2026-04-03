@@ -16,7 +16,6 @@ struct SettingsView: View {
     @State var progress = 0.67
 
     var body: some View {
-        NavigationStack {
             List {
                 Section {
                     Button {
@@ -74,8 +73,7 @@ struct SettingsView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
             }
-            .navigationTitle("Настройки")
-        }
+            
     }
 }
 
