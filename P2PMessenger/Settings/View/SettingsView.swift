@@ -25,38 +25,38 @@ struct SettingsView: View {
                             .tint(.primary)
                     }
                 } header: {
-                    Text("ПРОФИЛЬ")
+                    Text(.profileUpper)
                         .font(.footnote)
                 }
 
                 Section {
                     Toggle(isOn: $visibilityToggle) {
-                        TextCard(label: "Разрешить находить меня", text: "Виден пользователям рядом")
+                        TextCard(label: String(localized: .enableToFindMe), text: String(localized: .observableByOthers))
                     }
                     .tint(Color("P2PDarkBlue"))
                     Toggle(isOn: $requestToggle) {
-                        TextCard(label: "Разрешить запросы на переписку", text: "Принимать новые запросы")
+                        TextCard(label: String(localized: .enableRequestsToChat), text: String(localized: .acceptNewRequests))
                     }
                     .tint(Color("P2PDarkBlue"))
                 } header: {
-                    Text("ПРИВАТНОСТЬ")
+                    Text(.privacyUpper)
                         .font(.footnote)
                 }
 
                 Section {
                     Toggle(isOn: $networkToggle) {
-                        TextCard(label: "В сети", text: "Активен в P2P сети")
+                        TextCard(label: String(localized: .online), text: String(localized: .observableInP2Pnetwork))
                     }
                     .tint(Color("P2PDarkBlue"))
                 } header: {
-                    Text("СЕТЬ")
+                    Text(.networkUpper)
                         .font(.footnote)
                 }
 
                 Section {
                     StorageCard(size: spaceTaken, progress: $progress)
                 } header: {
-                    Text("ДАННЫЕ")
+                    Text(.dataUpper)
                         .font(.footnote)
                 }
 
@@ -69,7 +69,7 @@ struct SettingsView: View {
                 }
 
                 Section {} footer: {
-                    Text("P2P Messenger ⋅ v0.1.0 beta")
+                    Text(.appNameAndVersion)
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
             }
