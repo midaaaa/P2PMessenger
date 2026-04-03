@@ -87,3 +87,17 @@ struct ChatScreenView: View {
             .clipShape(Capsule())
     }
 }
+
+#Preview("Общий чат") {
+    ChatScreenView(
+        configuration: ChatPreviewFixtures.publicChat,
+        draftMessage: .constant("")
+    )
+}
+
+#Preview("Новый чат") {
+    ChatScreenView(
+        configuration: ChatPreviewFixtures.newChat,
+        draftMessage: .constant("")
+    )
+}
