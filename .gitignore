@@ -54,6 +54,7 @@ Icon
 # Environment
 .env
 .env.local
+local.yml
 
 # Misc
 *.swp
