@@ -117,7 +117,7 @@ extension ChatScreenConfiguration {
         subtitle: String,
         messages: [ChatMessage] = [],
         emptyState: ChatEmptyState? = nil,
-        composerPlaceholder: String = ChatText.directComposerPlaceholder
+        composerPlaceholder: String = String(localized: "Сообщение...")
     ) -> ChatScreenConfiguration {
         ChatScreenConfiguration(
             headerStyle: .direct(participant: participant, subtitle: subtitle),
@@ -132,7 +132,7 @@ extension ChatScreenConfiguration {
         participantsSubtitle: String,
         messages: [ChatMessage],
         timelineTitle: String? = nil,
-        composerPlaceholder: String = ChatText.groupComposerPlaceholder
+        composerPlaceholder: String = String(localized: "Сообщение всем...")
     ) -> ChatScreenConfiguration {
         ChatScreenConfiguration(
             headerStyle: .group(title: title, subtitle: participantsSubtitle),
@@ -143,9 +143,9 @@ extension ChatScreenConfiguration {
     }
 
     static let empty = ChatScreenConfiguration(
-        headerStyle: .group(title: ChatText.defaultChatTitle, subtitle: ChatText.defaultChatSubtitle),
+        headerStyle: .group(title: String(localized: "Чат"), subtitle: ""),
         messages: [],
-        composerPlaceholder: ChatText.directComposerPlaceholder
+        composerPlaceholder: String(localized: "Сообщение...")
     )
 }
 

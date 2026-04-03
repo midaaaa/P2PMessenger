@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 struct ChatHeaderView: View {
     let style: ChatHeaderStyle
@@ -85,7 +86,7 @@ struct ChatHeaderView: View {
             HStack(spacing: ChatUIConstants.Header.backControlSpacing) {
                 Image(systemName: "chevron.left")
                     .font(.system(size: ChatUIConstants.Header.backIconSize, weight: .regular))
-                Text(ChatText.backButtonTitle)
+                Text(String(localized: "Назад"))
                     .font(.system(size: ChatUIConstants.Header.backTextSize, weight: .regular))
             }
             .foregroundStyle(Color.p2pTextSecondary)
