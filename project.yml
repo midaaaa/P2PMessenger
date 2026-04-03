@@ -1,4 +1,5 @@
 name: P2PMessenger
+include: [local.yml]
 options:
   bundleIdPrefix: com.freegatik.p2pmessenger.dev
   deploymentTarget:
@@ -80,3 +81,5 @@ schemes:
     test:
       targets:
         - P2PMessengerUITests
+
+
