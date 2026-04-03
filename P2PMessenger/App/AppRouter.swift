@@ -10,8 +10,10 @@ import SwiftUI
 import Observation
 
 @Observable
-final class AppRouter {
+final class AppRouter: AppRouterProtocol {
     var selectedTab: AppTab = .chats
+    
+    var activeChatId: String? = nil
 
     let chatsRouter = ChatsRouter()
 

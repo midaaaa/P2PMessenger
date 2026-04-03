@@ -8,11 +8,14 @@
 import SwiftUI
 
 struct AppRootView: View {
-    @State private var appRouter = AppRouter()
+    @EnvironmentObject var container: DependencyContainer
 
     var body: some View {
-        TabView(selection: $appRouter.selectedTab) {
-            ChatsRootView(router: appRouter.chatsRouter)
+        TabView(selection: Binding(
+            get: { container.router.selectedTab },
+            set: { container.router.selectedTab = $0 }
+        )) {
+            ChatsRootView(router: container.router.chatsRouter)
                 .tabItem {
                     Label("Чаты", systemImage: "message")
                 }
@@ -35,8 +38,8 @@ struct AppRootView: View {
         
     }
 }
-#if DEBUG
+
 #Preview {
     AppRootView()
+        .environmentObject(DependencyContainer())
 }
-#endif

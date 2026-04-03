@@ -10,9 +10,18 @@ import SwiftData
 
 @main
 struct P2PMessengerApp: App {
+    
+    @StateObject private var container = DependencyContainer()
+    
+    @UIApplicationDelegateAdaptor(AppNotificationDelegate.self) var appDelegate
+    
     var body: some Scene {
         WindowGroup {
             AppRootView()
+                .environmentObject(container)
+                .onAppear {
+                    appDelegate.container = container
+                }
         }
     }
 }
