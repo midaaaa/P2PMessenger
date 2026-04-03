@@ -129,7 +129,7 @@ struct ChatsListView: View {
         ScrollView {
             VStack(spacing: 8) {
                 ForEach(currentChats) { chat in
-                    chatRow(chat)
+                    ChatRowView(content: .chats(chat))
                 }
             }
             .padding(.horizontal, 16)
@@ -137,79 +137,12 @@ struct ChatsListView: View {
             .padding(.bottom, 16)
         }
     }
-
-    private func chatRow(_ chat: ChatRowModel) -> some View {
-        Button (action: chatRowButtonAction){
-            HStack(spacing: 0) {
-                avatarView(initial: String(chat.name.prefix(1)), isOnline: chat.isOnline)
-                    .padding(.leading, 14)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack {
-                        Text(chat.name)
-                            .font(.system(size: 15, weight: .medium))
-                            .foregroundStyle(Color("P2PDarkBlue"))
-                            .lineLimit(1)
-
-                        Spacer()
-
-                        Text(chat.timeOfLastMessage.shortTimeString)
-                            .font(.system(size: 12))
-                            .foregroundStyle(Color("P2PDarkGray"))
-                    }
-
-                    HStack {
-                        Text(chat.lastMessage)
-                            .font(.system(size: 13))
-                            .foregroundStyle(Color("P2PDarkGray"))
-                            .lineLimit(1)
-
-                        Spacer()
-
-                        if chat.unreadCount > 0 {
-                            Text("\(chat.unreadCount)")
-                                .font(.system(size: 10, weight: .semibold))
-                                .foregroundStyle(.white)
-                                .frame(width: 20, height: 20)
-                                .background(Color("P2PDarkBlue"))
-                                .clipShape(Circle())
-                        }
-                    }
-                }
-                .padding(.leading, 12)
-                .padding(.trailing, 14)
-            }
-            .frame(height: 78)
-            .background(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(Color("P2PLightGray"), lineWidth: 1)
-            )
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func avatarView(initial: String, isOnline: Bool) -> some View {
-        ZStack(alignment: .bottomTrailing) {
-            Text(initial)
-                .font(.system(size: 15, weight: .medium))
-                .foregroundStyle(Color("P2PDarkGray"))
-                .frame(width: 48, height: 48)
-                .background(Color("P2PLightGray"))
-                .clipShape(Circle())
-                .overlay(Circle().stroke(Color("P2PLightGray"), lineWidth: 1))
-
-            Circle()
-                .fill(isOnline ? Color("P2PGreen") : Color("P2PDarkGray"))
-                .frame(width: 12, height: 12)
-                .overlay(Circle().stroke(.white, lineWidth: 2))
-        }
-    }
 }
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview {
     ChatsListView(plusButtonAction: {}, chatRowButtonAction: {})
 }
+#endif
