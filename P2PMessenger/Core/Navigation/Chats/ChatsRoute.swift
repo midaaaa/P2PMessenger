@@ -5,7 +5,7 @@
 //  Created by Иван Иванов on 02.04.2026.
 //
 
-enum ChatsRoute: Hashable {
+public enum ChatsRoute: Hashable {
     case dialog
     case searchDialog
     case addDialog
