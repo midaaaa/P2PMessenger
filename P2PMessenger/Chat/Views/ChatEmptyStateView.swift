@@ -14,14 +14,14 @@ struct ChatEmptyStateView: View {
         VStack(spacing: ChatUIConstants.EmptyState.verticalSpacing) {
             ZStack {
                 Circle()
-                    .fill(Color.p2pLightGray)
+                    .fill(Color("P2PLightGray"))
                     .frame(
                         width: ChatUIConstants.EmptyState.outerCircleSize,
                         height: ChatUIConstants.EmptyState.outerCircleSize
                     )
 
                 Circle()
-                    .fill(Color.p2pBorder)
+                    .fill(Color("P2PBorder"))
                     .frame(
                         width: ChatUIConstants.EmptyState.innerCircleSize,
                         height: ChatUIConstants.EmptyState.innerCircleSize
@@ -29,18 +29,18 @@ struct ChatEmptyStateView: View {
                     .overlay {
                         Text(state.participant.avatarInitial)
                             .font(.system(size: ChatUIConstants.EmptyState.initialFontSize, weight: .medium))
-                            .foregroundStyle(Color.p2pTextSecondary)
+                            .foregroundStyle(Color("P2PTextSecondary"))
                     }
             }
 
             Text(state.title)
                 .font(.system(size: ChatUIConstants.EmptyState.titleFontSize, weight: .semibold))
-                .foregroundStyle(Color.p2pTextPrimary)
+                .foregroundStyle(Color("P2PTextPrimary"))
 
             Text(state.subtitle)
                 .font(.system(size: ChatUIConstants.EmptyState.subtitleFontSize))
                 .multilineTextAlignment(.center)
-                .foregroundStyle(Color.p2pTextTertiary)
+                .foregroundStyle(Color("P2PTextTertiary"))
         }
         .padding(.horizontal, ChatUIConstants.EmptyState.horizontalPadding)
     }

@@ -46,7 +46,7 @@ struct ChatMessageRowView: View {
             VStack(alignment: .leading, spacing: ChatUIConstants.MessageRow.participantNameSpacing) {
                 Text(participant.name)
                     .font(.system(size: ChatUIConstants.MessageRow.participantNameSize))
-                    .foregroundStyle(Color.p2pTextTertiary)
+                    .foregroundStyle(Color("P2PTextTertiary"))
 
                 ChatBubbleView(
                     text: message.text,
@@ -99,12 +99,12 @@ private struct ChatBubbleView: View {
 
     private var backgroundView: some View {
         bubbleShape
-            .fill(style == .outgoing ? Color.p2pDarkBlue : Color.p2pSurface)
+            .fill(style == .outgoing ? Color("P2PDarkBlue") : Color("P2PSurface"))
     }
 
     private var incomingBorder: some View {
         bubbleShape
-            .stroke(Color.p2pBorder, lineWidth: ChatUIConstants.MessageRow.bubbleBorderWidth)
+            .stroke(Color("P2PBorder"), lineWidth: ChatUIConstants.MessageRow.bubbleBorderWidth)
     }
 
     private var bubbleShape: UnevenRoundedRectangle {
@@ -133,10 +133,10 @@ private struct ChatBubbleView: View {
     }
 
     private var textColor: Color {
-        style == .outgoing ? .white : .p2pTextPrimary
+        style == .outgoing ? .white : Color("P2PTextPrimary")
     }
 
     private var timeColor: Color {
-        style == .outgoing ? Color.p2pTextTertiary.opacity(0.9) : .p2pTextTertiary
+        style == .outgoing ? Color("P2PTextTertiary").opacity(0.9) : Color("P2PTextTertiary")
     }
 }

@@ -30,7 +30,7 @@ struct ChatScreenView: View {
             ChatHeaderView(style: configuration.headerStyle, onBack: onBack)
 
             Divider()
-                .overlay(Color.p2pBorder)
+                .overlay(Color("P2PBorder"))
 
             contentSection
 
@@ -42,7 +42,7 @@ struct ChatScreenView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background {
-            Color.p2pBackground
+            Color("P2PBackground")
                 .ignoresSafeArea()
         }
     }
@@ -80,10 +80,10 @@ struct ChatScreenView: View {
     private func timelineBadge(title: String) -> some View {
         Text(title)
             .font(.system(size: ChatUIConstants.Screen.timelineFontSize))
-            .foregroundStyle(Color.p2pTextSecondary)
+            .foregroundStyle(Color("P2PTextSecondary"))
             .padding(.horizontal, ChatUIConstants.Screen.timelineHorizontalPadding)
             .padding(.vertical, ChatUIConstants.Screen.timelineVerticalPadding)
-            .background(Color.p2pBorder)
+            .background(Color("P2PBorder"))
             .clipShape(Capsule())
     }
 }

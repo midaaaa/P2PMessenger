@@ -16,16 +16,16 @@ struct ChatComposerView: View {
         HStack(spacing: ChatUIConstants.Composer.horizontalSpacing) {
             TextField(placeholder, text: $text)
                 .font(.system(size: ChatUIConstants.Composer.textFontSize))
-                .foregroundStyle(Color.p2pTextPrimary)
+                .foregroundStyle(Color("P2PTextPrimary"))
                 .padding(.horizontal, ChatUIConstants.Composer.textHorizontalPadding)
                 .frame(height: ChatUIConstants.Composer.textHeight)
                 .background {
                     RoundedRectangle(cornerRadius: ChatUIConstants.Composer.textCornerRadius, style: .continuous)
-                        .fill(Color.p2pBackground)
+                        .fill(Color("P2PBackground"))
                 }
                 .overlay {
                     RoundedRectangle(cornerRadius: ChatUIConstants.Composer.textCornerRadius, style: .continuous)
-                        .strokeBorder(Color.p2pBorder, lineWidth: ChatUIConstants.Composer.textBorderWidth)
+                        .strokeBorder(Color("P2PBorder"), lineWidth: ChatUIConstants.Composer.textBorderWidth)
                 }
                 .textFieldStyle(.plain)
                 .submitLabel(.send)
@@ -34,12 +34,12 @@ struct ChatComposerView: View {
             Button(action: sendMessage) {
                 Image(systemName: "paperplane")
                     .font(.system(size: ChatUIConstants.Composer.sendIconSize, weight: .medium))
-                    .foregroundStyle(Color.p2pTextTertiary)
+                    .foregroundStyle(Color("P2PTextTertiary"))
                     .frame(
                         width: ChatUIConstants.Composer.sendButtonSize,
                         height: ChatUIConstants.Composer.sendButtonSize
                     )
-                    .background(Color.p2pLightGray)
+                    .background(Color("P2PLightGray"))
                     .clipShape(Circle())
             }
             .buttonStyle(.plain)
@@ -49,10 +49,10 @@ struct ChatComposerView: View {
         .padding(.horizontal, ChatUIConstants.Composer.horizontalPadding)
         .padding(.top, ChatUIConstants.Composer.topPadding)
         .padding(.bottom, ChatUIConstants.Composer.bottomPadding)
-        .background(Color.p2pSurface)
+        .background(Color("P2PSurface"))
         .overlay(alignment: .top) {
             Rectangle()
-                .fill(Color.p2pBorder)
+                .fill(Color("P2PBorder"))
                 .frame(height: 1)
         }
     }

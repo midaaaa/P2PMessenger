@@ -35,12 +35,12 @@ struct AvatarView: View {
                     .clipShape(Circle())
             } else {
                 Circle()
-                    .fill(Color.p2pBorder)
+                    .fill(Color("P2PBorder"))
                     .frame(width: size, height: size)
                     .overlay {
                         Text(initial)
                             .font(.system(size: size * 0.42, weight: .medium))
-                            .foregroundStyle(Color.p2pTextSecondary)
+                            .foregroundStyle(Color("P2PTextSecondary"))
                     }
             }
         }
@@ -50,13 +50,13 @@ struct AvatarView: View {
                 .frame(width: size * 0.24, height: size * 0.24)
                 .overlay {
                     Circle()
-                        .stroke(Color.p2pSurface, lineWidth: size * 0.05)
+                        .stroke(Color("P2PSurface"), lineWidth: size * 0.05)
                 }
                 .padding(size * 0.03)
         }
     }
 
     private var statusColor: Color {
-        isOnline ? Color.p2pTextSecondary : Color.p2pBorder
+        isOnline ? Color("P2PTextSecondary") : Color("P2PBorder")
     }
 }

@@ -41,18 +41,18 @@ struct ChatHeaderView: View {
             VStack(alignment: .leading, spacing: ChatUIConstants.Header.directInfoSpacing) {
                 Text(participant.name)
                     .font(.system(size: ChatUIConstants.Header.directTitleSize, weight: .semibold))
-                    .foregroundStyle(Color.p2pTextPrimary)
+                    .foregroundStyle(Color("P2PTextPrimary"))
 
                 Text(subtitle)
                     .font(.system(size: ChatUIConstants.Header.directSubtitleSize))
-                    .foregroundStyle(Color.p2pTextTertiary)
+                    .foregroundStyle(Color("P2PTextTertiary"))
             }
 
             Spacer()
         }
         .padding(.horizontal, ChatUIConstants.Header.horizontalPadding)
         .frame(height: ChatUIConstants.Header.directHeight)
-        .background(Color.p2pSurface)
+        .background(Color("P2PSurface"))
     }
 
     private func groupHeader(title: String, subtitle: String) -> some View {
@@ -65,18 +65,18 @@ struct ChatHeaderView: View {
             VStack(spacing: 0) {
                 Text(title)
                     .font(.system(size: ChatUIConstants.Header.groupTitleSize, weight: .semibold))
-                    .foregroundStyle(Color.p2pTextPrimary)
+                    .foregroundStyle(Color("P2PTextPrimary"))
                     .lineLimit(1)
 
                 Text(subtitle)
                     .font(.system(size: ChatUIConstants.Header.groupSubtitleSize))
-                    .foregroundStyle(Color.p2pTextTertiary)
+                    .foregroundStyle(Color("P2PTextTertiary"))
                     .lineLimit(1)
             }
         }
         .padding(.horizontal, ChatUIConstants.Header.horizontalPadding)
         .frame(height: ChatUIConstants.Header.groupHeight)
-        .background(Color.p2pSurface)
+        .background(Color("P2PSurface"))
     }
 
     // MARK: - Навигационные элементы
@@ -89,7 +89,7 @@ struct ChatHeaderView: View {
                 Text(String(localized: "Назад"))
                     .font(.system(size: ChatUIConstants.Header.backTextSize, weight: .regular))
             }
-            .foregroundStyle(Color.p2pTextSecondary)
+            .foregroundStyle(Color("P2PTextSecondary"))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
