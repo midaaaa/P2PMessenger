@@ -16,6 +16,7 @@ struct ChatsRootView: View {
                 chatRowButtonAction: {router.push(.dialog)}
             )
                 .navigationTitle("Чаты")
+                .navigationBarTitleDisplayMode(.inline)
                 
                 
                 .navigationDestination(for: ChatsRoute.self) { route in

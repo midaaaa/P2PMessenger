@@ -56,12 +56,7 @@ struct ChatHeaderView: View {
     }
 
     private func groupHeader(title: String, subtitle: String) -> some View {
-        ZStack {
-            HStack {
-                backButton
-                Spacer()
-            }
-
+        HStack(alignment: .center) {
             VStack(spacing: 0) {
                 Text(title)
                     .font(.system(size: ChatUIConstants.Header.groupTitleSize, weight: .semibold))
@@ -76,6 +71,7 @@ struct ChatHeaderView: View {
         }
         .padding(.horizontal, ChatUIConstants.Header.horizontalPadding)
         .frame(height: ChatUIConstants.Header.groupHeight)
+        .frame(maxWidth: .infinity)
         .background(Color("P2PSurface"))
     }
 
