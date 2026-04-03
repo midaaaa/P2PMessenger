@@ -9,6 +9,7 @@ import SwiftUI
 
 struct NearbyUsersView: View {
     @State private var viewModel = NearbyUserViewModel()
+    let onUserButtonTap: () -> Void
 
     var body: some View {
         ScrollView {
@@ -86,7 +87,7 @@ struct NearbyUsersView: View {
     private var usersList: some View {
         VStack(spacing: 8) {
             ForEach(viewModel.users) { user in
-                ChatRowView(content: .nearbyusrs(user))
+                ChatRowView(content: .nearbyusrs(user), onUserButtonTap: onUserButtonTap)
             }
         }
     }
@@ -122,7 +123,7 @@ private struct ScanningDotsView: View {
 #if DEBUG
 #Preview {
     NavigationStack {
-        NearbyUsersView()
+        NearbyUsersView(onUserButtonTap: {})
     }
 }
 #endif

@@ -9,9 +9,10 @@ import SwiftUI
 
 struct ChatRowView: View {
     let content: ChatRowContent
+    let onUserButtonTap : () -> Void
 
     var body: some View {
-        Button {} label: {
+        Button (action: onUserButtonTap) {
             HStack(spacing: 0) {
                 avatarView
                     .padding(.leading, 14)
@@ -166,8 +167,9 @@ private struct NearbyUserRowContent: View {
         lastMessage: "Окей, до встречи!",
         unreadCount: 2,
         isOnline: true,
-        status: .active
-    )))
+        status: .active)
+    ),
+    onUserButtonTap: {})
     .padding()
 }
 
@@ -175,8 +177,9 @@ private struct NearbyUserRowContent: View {
     ChatRowView(content: .nearbyusrs(NearbyUserModel(
         id: UUID(),
         name: "Глеб",
-        isOnline: true
-    )))
+        isOnline: true)
+    ),
+    onUserButtonTap: {})
     .padding()
 }
 #endif

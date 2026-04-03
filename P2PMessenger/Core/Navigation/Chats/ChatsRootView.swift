@@ -15,8 +15,7 @@ struct ChatsRootView: View {
                 plusButtonAction: {router.push(.searchDialog)},
                 chatRowButtonAction: {router.push(.dialog)}
             )
-                .navigationTitle("Чаты")
-                .navigationBarTitleDisplayMode(.inline)
+                
                 
                 
                 .navigationDestination(for: ChatsRoute.self) { route in
@@ -29,10 +28,7 @@ struct ChatsRootView: View {
 
                     case .searchDialog:
                         VStack(spacing: 16) {
-                            Text("Найти собеседника")
-                            Button("Написать"){
-                                router.push(.addDialog)
-                            }
+                            NearbyUsersView(onUserButtonTap: {router.push(.addDialog)})
                             
                         }
                         .navigationTitle("Люди рядом")
@@ -40,10 +36,11 @@ struct ChatsRootView: View {
                         .toolbar(.hidden, for: .tabBar)
                         // AddDialogView()
                     case .addDialog:
-                        Text("Отправить запрос на переписку")
-                        Button("На главный экран чатов") {
-                            router.popToRoot()
-                        }
+                        ChatScreenView(configuration: ChatPreviewFixtures.newChat,
+                                       draftMessage: .constant(""), onBack: router.popToRoot)
+                        .navigationBarBackButtonHidden(true)
+                        
+                        
                         
                     }
                 }
