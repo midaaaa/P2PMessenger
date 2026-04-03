@@ -12,7 +12,7 @@ import SwiftData
 struct P2PMessengerApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AppRootView()
         }
     }
 }
