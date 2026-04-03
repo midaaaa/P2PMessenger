@@ -25,38 +25,38 @@ struct SettingsView: View {
                             .tint(.primary)
                     }
                 } header: {
-                    Text(.profileUpper)
+                    Text("profileUpper")
                         .font(.footnote)
                 }
 
                 Section {
                     Toggle(isOn: $visibilityToggle) {
-                        TextCard(label: String(localized: .enableToFindMe), text: String(localized: .observableByOthers))
+                        TextCard(label: String(localized: "enableToFindMe"), text: String(localized: "observableByOthers"))
                     }
                     .tint(Color("P2PDarkBlue"))
                     Toggle(isOn: $requestToggle) {
-                        TextCard(label: String(localized: .enableRequestsToChat), text: String(localized: .acceptNewRequests))
+                        TextCard(label: String(localized: "enableRequestsToChat"), text: String(localized: "acceptNewRequests"))
                     }
                     .tint(Color("P2PDarkBlue"))
                 } header: {
-                    Text(.privacyUpper)
+                    Text("privacyUpper")
                         .font(.footnote)
                 }
 
                 Section {
                     Toggle(isOn: $networkToggle) {
-                        TextCard(label: String(localized: .online), text: String(localized: .observableInP2Pnetwork))
+                        TextCard(label: String(localized: "online"), text: String(localized: "observableInP2Pnetwork"))
                     }
                     .tint(Color("P2PDarkBlue"))
                 } header: {
-                    Text(.networkUpper)
+                    Text("networkUpper")
                         .font(.footnote)
                 }
 
                 Section {
                     StorageCard(size: spaceTaken, progress: $progress)
                 } header: {
-                    Text(.dataUpper)
+                    Text("dataUpper")
                         .font(.footnote)
                 }
 
@@ -69,7 +69,7 @@ struct SettingsView: View {
                 }
 
                 Section {} footer: {
-                    Text(.appNameAndVersion)
+                    Text("appNameAndVersion")
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
             }
