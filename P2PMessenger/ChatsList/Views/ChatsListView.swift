@@ -14,8 +14,8 @@ private enum ChatsSegment: CaseIterable {
 
     var title: String {
         switch self {
-        case .messages: "Сообщения"
-        case .requests: "Запросы"
+        case .messages: String(localized: "chats_list_messages")
+        case .requests: String(localized: "chats_list_requests")
         }
     }
 }
@@ -39,7 +39,7 @@ struct ChatsListView: View {
 
     private var headerView: some View {
         HStack {
-            Text("Список чатов")
+            Text(String(localized: "chats_list_title"))
                 .font(.system(size: 20, weight: .semibold))
                 .foregroundStyle(Color("P2PBlack"))
 
