@@ -10,9 +10,9 @@ import Observation
 
 @Observable
 final class DependencyContainer {
-    
+    @ObservationIgnored
     let notificationService: NotificationServiceProtocol
-    
+    @ObservationIgnored
     let router: AppRouter
     
     
