@@ -24,7 +24,7 @@ struct UserCard: View {
                 .padding(.trailing, Constants.userAvatarPadding)
 
             VStack(alignment: .leading) {
-                Text("Имя пользователя")
+                Text("userName")
                     .foregroundStyle(.secondary)
                     .font(.caption)
                     .padding(.bottom, Constants.userTextPadding)

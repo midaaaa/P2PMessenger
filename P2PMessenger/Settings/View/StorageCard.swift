@@ -22,8 +22,8 @@ struct StorageCard: View {
             }
             .padding(.trailing, Constants.storageIconPadding)
             VStack(alignment: .leading) {
-                Text("Занято памяти")
-                Text("\(size) МБ ⋅ Чаты и медиафайлы")  // compute size units
+                Text("spaceTaken")
+                Text(LocalizedStringResource("chatsAndMediafiles", defaultValue: "\(size)"))  // compute size units
                     .foregroundStyle(.secondary)
                     .font(.caption)
             }

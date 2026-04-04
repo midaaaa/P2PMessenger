@@ -18,7 +18,7 @@ struct DeleteCard: View {
                 Image(systemName: "trash")
             }
             .padding(.trailing, Constants.deleteIconPadding)
-            Text("Удалить все чаты")
+            Text("removeAllChats")
             Spacer()
             Image(systemName: "chevron.right")
         }
