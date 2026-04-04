@@ -14,8 +14,9 @@ protocol NotificationServiceProtocol {
 }
 
 extension NotificationServiceProtocol {
-    func sendMessage(title: String, message: String, subtitle: String = "", userInfo: [AnyHashable: Any] = [:]) {
+    func send(title: String, message: String, subtitle: String = "", userInfo: [AnyHashable: Any] = [:]) {
         self.sendMessage(title: title, message: message, subtitle: subtitle, userInfo: userInfo)
     }
-    func sendPeopleCount(count:Int) { self.sendPeopleCount(count: count)}
 }
+
+

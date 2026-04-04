@@ -6,8 +6,10 @@
 //
 
 import Foundation
+import Observation
 
-final class DependencyContainer: ObservableObject {
+@Observable
+final class DependencyContainer {
     
     let notificationService: NotificationServiceProtocol
     

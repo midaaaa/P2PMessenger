@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AppRootView: View {
-    @EnvironmentObject var container: DependencyContainer
+    @Environment(DependencyContainer.self) var container
 
     var body: some View {
         TabView(selection: Binding(
@@ -41,5 +41,5 @@ struct AppRootView: View {
 
 #Preview {
     AppRootView()
-        .environmentObject(DependencyContainer())
+        .environment(DependencyContainer())
 }
