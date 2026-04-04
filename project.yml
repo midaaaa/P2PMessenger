@@ -63,6 +63,7 @@ schemes:
         P2PMessenger: all
     run:
       config: Debug
+      language: ru
     archive:
       config: Release
 
