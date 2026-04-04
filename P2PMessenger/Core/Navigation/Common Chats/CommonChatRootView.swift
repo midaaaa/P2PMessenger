@@ -8,7 +8,9 @@ import SwiftUI
 
 struct CommonChatRootView: View {
     var body: some View {
-        Text("Общий чат")
-            .navigationTitle("Общий чат")
+        ChatScreenView(
+            configuration: ChatPreviewFixtures.publicChat,
+            draftMessage: .constant("")
+        )
     }
 }
