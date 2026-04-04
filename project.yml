@@ -1,7 +1,6 @@
 name: P2PMessenger
 include: [local.yml]
 options:
-  bundleIdPrefix: com.freegatik.p2pmessenger.dev
   deploymentTarget:
     iOS: 17.6
   generateEmptyDirectories: true

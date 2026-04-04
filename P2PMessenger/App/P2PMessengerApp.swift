@@ -12,12 +12,19 @@ import SwiftData
 struct P2PMessengerApp: App {
     
     init() {
-            _ = BluetoothMonitor.shared
-        }
+        _ = BluetoothMonitor.shared
+    }
+    @State private var container = DependencyContainer()
+    
+    @UIApplicationDelegateAdaptor(AppNotificationDelegate.self) var appDelegate
     
     var body: some Scene {
         WindowGroup {
             AppRootView()
+                .environment(container)
+                .onAppear {
+                    appDelegate.container = container
+                }
         }
     }
 }
