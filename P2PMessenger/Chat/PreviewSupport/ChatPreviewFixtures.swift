@@ -9,10 +9,10 @@
 import Foundation
 
 enum ChatPreviewFixtures {
-    static let newChat: ChatScreenConfiguration = {
+    static let newChat: ChatScreenViewModel = {
         let participant = ChatParticipant(name: "Глеб", isOnline: true)
 
-        return ChatScreenConfiguration.directChat(
+        return ChatScreenViewModel.directChat(
             participant: participant,
             subtitle: "Новый чат",
             emptyState: ChatEmptyState(
@@ -23,12 +23,12 @@ enum ChatPreviewFixtures {
         )
     }()
 
-    static let publicChat: ChatScreenConfiguration = {
+    static let publicChat: ChatScreenViewModel = {
         let vasya = ChatParticipant(name: "Вася", isOnline: true)
         let masha = ChatParticipant(name: "Маша", isOnline: true)
         let gleb = ChatParticipant(name: "Глеб", isOnline: true)
 
-        return ChatScreenConfiguration.groupChat(
+        return ChatScreenViewModel.groupChat(
             title: "Общий чат",
             participantsSubtitle: "5 участников",
             messages: [

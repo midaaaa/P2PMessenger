@@ -6,6 +6,6 @@
 //
 
 enum ChatRowContent {
-    case chats(ChatRowModel)
+    case chats(ChatRowViewModel)
     case nearbyusrs(NearbyUserModel)
 }

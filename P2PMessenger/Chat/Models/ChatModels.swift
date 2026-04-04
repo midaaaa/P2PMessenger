@@ -73,28 +73,6 @@ struct ChatEmptyState: Hashable {
     let subtitle: String
 }
 
-struct ChatScreenConfiguration: Hashable {
-    let headerStyle: ChatHeaderStyle
-    let timelineTitle: String?
-    let messages: [ChatMessage]
-    let emptyState: ChatEmptyState?
-    let composerPlaceholder: String
-
-    init(
-        headerStyle: ChatHeaderStyle,
-        timelineTitle: String? = nil,
-        messages: [ChatMessage] = [],
-        emptyState: ChatEmptyState? = nil,
-        composerPlaceholder: String
-    ) {
-        self.headerStyle = headerStyle
-        self.timelineTitle = timelineTitle
-        self.messages = messages
-        self.emptyState = emptyState
-        self.composerPlaceholder = composerPlaceholder
-    }
-}
-
 // MARK: - Вычисляемые свойства сообщения
 
 extension ChatMessage {
@@ -111,15 +89,15 @@ extension ChatMessage {
 
 // MARK: - Конфигурация экрана
 
-extension ChatScreenConfiguration {
+extension ChatScreenViewModel {
     static func directChat(
         participant: ChatParticipant,
         subtitle: String,
         messages: [ChatMessage] = [],
         emptyState: ChatEmptyState? = nil,
         composerPlaceholder: String = String(localized: "Сообщение...")
-    ) -> ChatScreenConfiguration {
-        ChatScreenConfiguration(
+    ) -> ChatScreenViewModel {
+        ChatScreenViewModel(
             headerStyle: .direct(participant: participant, subtitle: subtitle),
             messages: messages,
             emptyState: emptyState,
@@ -133,8 +111,8 @@ extension ChatScreenConfiguration {
         messages: [ChatMessage],
         timelineTitle: String? = nil,
         composerPlaceholder: String = String(localized: "Сообщение всем...")
-    ) -> ChatScreenConfiguration {
-        ChatScreenConfiguration(
+    ) -> ChatScreenViewModel {
+        ChatScreenViewModel(
             headerStyle: .group(title: title, subtitle: participantsSubtitle),
             timelineTitle: timelineTitle,
             messages: messages,
@@ -142,7 +120,7 @@ extension ChatScreenConfiguration {
         )
     }
 
-    static let empty = ChatScreenConfiguration(
+    static let empty = ChatScreenViewModel(
         headerStyle: .group(title: String(localized: "Чат"), subtitle: ""),
         messages: [],
         composerPlaceholder: String(localized: "Сообщение...")
@@ -151,15 +129,15 @@ extension ChatScreenConfiguration {
 
 // MARK: - Иммутабельные изменения конфигурации
 
-extension ChatScreenConfiguration {
-    func appendingOutgoingMessage(text: String, time: String) -> ChatScreenConfiguration {
+extension ChatScreenViewModel {
+    func appendingOutgoingMessage(text: String, time: String) -> ChatScreenViewModel {
         let newMessage = ChatMessage(
             sender: .outgoing,
             text: text,
             time: time
         )
 
-        return ChatScreenConfiguration(
+        return ChatScreenViewModel(
             headerStyle: headerStyle,
             timelineTitle: timelineTitle,
             messages: messages + [newMessage],
