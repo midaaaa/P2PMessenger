@@ -129,7 +129,7 @@ struct ChatsListView: View {
         ScrollView {
             VStack(spacing: 8) {
                 ForEach(currentChats) { chat in
-                    ChatRowView(content: .chats(chat), onUserButtonTap: chatRowButtonAction)
+                    ChatRowView(chat: chat, onTap: chatRowButtonAction)
                 }
             }
             .padding(.horizontal, 16)
