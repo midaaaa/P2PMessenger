@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ChatRowView: View {
-    let chat: ChatRowModel
+    let chat: ChatRowViewModel
     let onTap: () -> Void
 
     var body: some View {
@@ -76,7 +76,7 @@ struct ChatRowView: View {
 #if DEBUG
 #Preview {
     ChatRowView(
-        chat: ChatRowModel(
+        chat: ChatRowViewModel(
             id: UUID(),
             name: "Вася",
             timeOfLastMessage: Date().addingTimeInterval(-3600),

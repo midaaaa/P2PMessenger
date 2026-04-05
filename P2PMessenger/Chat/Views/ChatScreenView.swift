@@ -8,18 +8,18 @@
 import SwiftUI
 
 struct ChatScreenView: View {
-    let configuration: ChatScreenConfiguration
+    private let viewModel: ChatScreenViewModel
     @Binding var draftMessage: String
     let onBack: () -> Void
     let onSend: (String) -> Void
 
     init(
-        configuration: ChatScreenConfiguration,
+        viewModel: ChatScreenViewModel,
         draftMessage: Binding<String>,
         onBack: @escaping () -> Void = {},
         onSend: @escaping (String) -> Void = { _ in }
     ) {
-        self.configuration = configuration
+        self.viewModel = viewModel
         self._draftMessage = draftMessage
         self.onBack = onBack
         self.onSend = onSend
@@ -27,7 +27,7 @@ struct ChatScreenView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            ChatHeaderView(style: configuration.headerStyle, onBack: onBack)
+            ChatHeaderView(style: viewModel.headerStyle, onBack: onBack)
 
             Divider()
                 .overlay(Color("P2PBorder"))
@@ -35,7 +35,7 @@ struct ChatScreenView: View {
             contentSection
 
             ChatComposerView(
-                placeholder: configuration.composerPlaceholder,
+                placeholder: viewModel.composerPlaceholder,
                 text: $draftMessage,
                 onSend: onSend
             )
@@ -51,7 +51,7 @@ struct ChatScreenView: View {
 
     @ViewBuilder
     private var contentSection: some View {
-        if configuration.messages.isEmpty, let emptyState = configuration.emptyState {
+        if viewModel.messages.isEmpty, let emptyState = viewModel.emptyState {
             VStack {
                 Spacer(minLength: 0)
                 ChatEmptyStateView(state: emptyState)
@@ -61,12 +61,12 @@ struct ChatScreenView: View {
         } else {
             ScrollView {
                 VStack(spacing: ChatUIConstants.Screen.messageListVerticalSpacing) {
-                    if let timelineTitle = configuration.timelineTitle {
+                    if let timelineTitle = viewModel.timelineTitle {
                         timelineBadge(title: timelineTitle)
                             .padding(.top, ChatUIConstants.Screen.timelineTopPadding)
                     }
 
-                    ForEach(configuration.messages) { message in
+                    ForEach(viewModel.messages) { message in
                         ChatMessageRowView(message: message)
                     }
                 }
@@ -90,14 +90,14 @@ struct ChatScreenView: View {
 
 #Preview("Общий чат") {
     ChatScreenView(
-        configuration: ChatPreviewFixtures.publicChat,
+        viewModel: ChatPreviewFixtures.publicChat,
         draftMessage: .constant("")
     )
 }
 
 #Preview("Новый чат") {
     ChatScreenView(
-        configuration: ChatPreviewFixtures.newChat,
+        viewModel: ChatPreviewFixtures.newChat,
         draftMessage: .constant("")
     )
 }

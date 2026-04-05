@@ -1,5 +1,5 @@
 //
-//  ChatRowModel.swift
+//  ChatRowViewModel.swift
 //  P2PMessenger
 //
 //  Created by Трофим Чекмарев on 02.04.2026.
@@ -12,7 +12,7 @@ enum ChatStatus {
     case request
 }
 
-struct ChatRowModel: Identifiable {
+struct ChatRowViewModel: Identifiable {
     let id: UUID
     var name: String
     var timeOfLastMessage: Date
