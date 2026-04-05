@@ -87,7 +87,7 @@ struct NearbyUsersView: View {
     private var usersList: some View {
         VStack(spacing: 8) {
             ForEach(viewModel.users) { user in
-                ChatRowView(content: .nearbyusrs(user), onUserButtonTap: onUserButtonTap)
+                NearbyUserRowView(user: user, onTap: onUserButtonTap)
             }
         }
     }
