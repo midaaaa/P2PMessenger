@@ -9,7 +9,7 @@ import SwiftUI
 struct CommonChatRootView: View {
     var body: some View {
         ChatScreenView(
-            configuration: ChatPreviewFixtures.publicChat,
+            viewModel: ChatPreviewFixtures.publicChat,
             draftMessage: .constant("")
         )
     }

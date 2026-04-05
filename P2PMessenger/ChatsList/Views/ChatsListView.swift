@@ -7,26 +7,35 @@
 
 import SwiftUI
 
-// MARK: - Supporting Types
-
-private enum ChatsSegment: CaseIterable {
-    case messages, requests
-
-    var title: String {
-        switch self {
-        case .messages: String(localized: "chats_list_messages")
-        case .requests: String(localized: "chats_list_requests")
-        }
-    }
-}
 
 // MARK: - ChatsListView
 
 struct ChatsListView: View {
-    @State private var viewModel = ChatsListViewModel()
-    @State private var selectedSegment: ChatsSegment = .messages
-    let plusButtonAction: () -> Void
-    let chatRowButtonAction: () -> Void
+    enum ChatsSegment: CaseIterable {
+        case messages, requests
+
+        var title: String {
+            switch self {
+            case .messages: String(localized: "chats_list_messages")
+            case .requests: String(localized: "chats_list_requests")
+            }
+        }
+    }
+    
+    private let viewModel: ChatsListViewModel
+    @State private var selectedSegment: ChatsSegment
+    private let plusButtonAction: () -> Void
+    private let chatRowButtonAction: () -> Void
+    
+    init(viewModel: ChatsListViewModel,
+         selectedSegment: ChatsSegment,
+         plusButtonAction: @escaping () -> Void,
+         chatRowButtonAction: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.selectedSegment = selectedSegment
+        self.plusButtonAction = plusButtonAction
+        self.chatRowButtonAction = chatRowButtonAction
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -118,7 +127,7 @@ struct ChatsListView: View {
 
     // MARK: Chat List
 
-    private var currentChats: [ChatRowModel] {
+    private var currentChats: [ChatRowViewModel] {
         switch selectedSegment {
         case .messages: viewModel.messageChats
         case .requests: viewModel.requestChats
@@ -143,6 +152,12 @@ struct ChatsListView: View {
 
 #if DEBUG
 #Preview {
-    ChatsListView(plusButtonAction: {}, chatRowButtonAction: {})
+    ChatsListView(
+        viewModel: ChatsListViewModel(
+            chats: ChatListPreviewFixtures.stubChats),
+        selectedSegment: .messages,
+        plusButtonAction: {},
+        chatRowButtonAction: {}
+    )
 }
 #endif

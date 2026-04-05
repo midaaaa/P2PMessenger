@@ -76,7 +76,7 @@ struct ChatRowView: View {
 // MARK: - Saved Chat Content
 
 private struct SavedChatRowContent: View {
-    let chat: ChatRowModel
+    let chat: ChatRowViewModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
@@ -160,7 +160,7 @@ private struct NearbyUserRowContent: View {
 
 #if DEBUG
 #Preview("Saved Chat") {
-    ChatRowView(content: .chats(ChatRowModel(
+    ChatRowView(content: .chats(ChatRowViewModel(
         id: UUID(),
         name: "Вася",
         timeOfLastMessage: Date().addingTimeInterval(-3600),
