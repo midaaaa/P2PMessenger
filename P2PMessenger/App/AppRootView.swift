@@ -8,13 +8,15 @@
 import SwiftUI
 
 struct AppRootView: View {
+    
     @Bindable var router: AppRouter
     let bluetoothStatusViewModel: BluetoothStatusViewModel
     let chatsRootView: ChatsRootView
     let commonChatRootView: CommonChatRootView
     let settingsRootView: SettingsRootView
-    let coordinator: PeerSessionCoordinator
+    let welcomeScreenVM: WelcomeScreenVM
     let welcomeScreenView: WelcomeScreenView
+    let coordinator: PeerSessionCoordinator
     @Environment(\.scenePhase) private var scenePhase
     
     @AppStorage("isOnboardingPassed") private var isOnboardingPassed = false
@@ -62,10 +64,8 @@ struct AppRootView: View {
                 default: break
                 }
             }
+        } else {
+            welcomeScreenView
         }
-        else{
-           welcomeScreenView
-        }
-       
     }
 }

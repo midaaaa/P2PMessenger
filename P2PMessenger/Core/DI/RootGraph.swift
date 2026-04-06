@@ -109,8 +109,9 @@ final class RootGraph {
             chatsRootView: chatsRootView,
             commonChatRootView: commonChatRootView,
             settingsRootView: settingsRootView,
-            coordinator: coord,
-            welcomeScreenView: welcomeScreenView
+            welcomeScreenVM: welcomeScreenVM,
+            welcomeScreenView: welcomeScreenView,
+            coordinator: coord
         )
         
         self.chatNotifications = ChatNotificationsController(
