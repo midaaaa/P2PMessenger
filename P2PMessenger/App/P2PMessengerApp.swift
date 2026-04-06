@@ -11,17 +11,17 @@ import SwiftData
 @main
 struct P2PMessengerApp: App {
     
-    @State private var container = DependencyContainer()
+    @State private var container = RootGraph()
     
     @UIApplicationDelegateAdaptor(AppNotificationDelegate.self) var appDelegate
     
     var body: some Scene {
         WindowGroup {
-            AppRootView()
-                .environment(container)
+            container.appRootView
                 .onAppear {
                     appDelegate.container = container
                 }
+                .preferredColorScheme(.light)
         }
     }
 }

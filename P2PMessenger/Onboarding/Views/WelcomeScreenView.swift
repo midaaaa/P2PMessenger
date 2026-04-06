@@ -191,6 +191,6 @@ fileprivate struct PermissionRow: View {
 
 #if DEBUG
 #Preview {
-    WelcomeScreenView(vm: WelcomeScreenVM(permissionManager: PermissionManager()))
+    WelcomeScreenView(vm: WelcomeScreenVM(permissionManager: PermissionManager(notification: NotificationService())))
 }
 #endif

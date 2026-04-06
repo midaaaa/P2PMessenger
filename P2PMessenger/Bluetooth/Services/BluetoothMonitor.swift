@@ -8,6 +8,7 @@
 import CoreBluetooth
 import Observation
 
+@MainActor
 @Observable
 final class BluetoothMonitor: NSObject {
     
@@ -18,15 +19,13 @@ final class BluetoothMonitor: NSObject {
     
     override init() {
         super.init()
-        centralManager = CBCentralManager(delegate: self, queue: nil)
+        centralManager = CBCentralManager(delegate: self, queue: .main)
     }
     
 }
 
-extension BluetoothMonitor: CBCentralManagerDelegate {
+extension BluetoothMonitor: @preconcurrency CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        DispatchQueue.main.async {
-            self.isBluetoothEnabled = (central.state == .poweredOn)
-        }
+        self.isBluetoothEnabled = (central.state == .poweredOn)
     }
 }

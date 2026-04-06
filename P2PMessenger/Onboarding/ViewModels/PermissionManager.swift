@@ -11,6 +11,7 @@ import Network
 import Observation
 import UserNotifications
 
+@MainActor
 @Observable
 final class PermissionManager: NSObject {
 
@@ -19,18 +20,24 @@ final class PermissionManager: NSObject {
     var nearbyState: PermissionState = .needAction
     var notificationsState: PermissionState = .needAction
 
+    @ObservationIgnored
     private var centralManager: CBCentralManager?
+    @ObservationIgnored
     private var localNetworkBrowser: NWBrowser?
+    @ObservationIgnored
     private var mcBrowser: MCNearbyServiceBrowser?
+    @ObservationIgnored
+    private let notificationService: NotificationServiceProtocol
     
-    private let fakeDisplayName : String = "probe"
+    private let fakeDisplayName: String = "probe"
 
     private enum Keys {
         static let localNetwork = "permission.localNetwork.granted"
         static let nearby = "permission.nearby.granted"
     }
 
-    override init() {
+    init(notification: NotificationServiceProtocol) {
+        self.notificationService = notification
         super.init()
         restorePersistedStates()
         checkBluetoothStatus()
@@ -59,8 +66,9 @@ final class PermissionManager: NSObject {
 
     private func checkNotificationsStatus() {
         UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
+            let status = settings.authorizationStatus
             DispatchQueue.main.async {
-                switch settings.authorizationStatus {
+                switch status {
                 case .authorized, .provisional, .ephemeral:
                     self?.notificationsState = .granted
                 default:
@@ -126,14 +134,14 @@ final class PermissionManager: NSObject {
     }
 }
 
-extension PermissionManager: CBCentralManagerDelegate {
+extension PermissionManager: @preconcurrency CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         guard central.state != .unknown && central.state != .resetting else { return }
         bluetoothState = central.state == .poweredOn ? .granted : .needAction
     }
 }
 
-extension PermissionManager: MCNearbyServiceBrowserDelegate {
+extension PermissionManager: @preconcurrency MCNearbyServiceBrowserDelegate {
     func browser(_ browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: Error) {
         DispatchQueue.main.async {
             self.nearbyState = .granted

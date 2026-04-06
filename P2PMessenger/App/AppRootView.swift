@@ -9,29 +9,29 @@ import SwiftUI
 
 struct AppRootView: View {
     
-    @Environment(DependencyContainer.self) var container
+    @Bindable var router: AppRouter
+    let bluetoothStatusViewModel: BluetoothStatusViewModel
+    let chatsRootView: ChatsRootView
+    let commonChatRootView: CommonChatRootView
+    let settingsRootView: SettingsRootView
+    let coordinator: PeerSessionCoordinator
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
-        TabView(selection: Binding(
-            get: { container.router.selectedTab },
-            set: { container.router.selectedTab = $0 }
-        )) {
-            ChatsRootView(
-                viewModel: container.chatsRootViewModel,
-                router: container.router.chatsRouter)
+        TabView(selection: $router.selectedTab) {
+            chatsRootView
             .tabItem {
                 Label("Чаты", systemImage: "message")
             }
             .tag(AppTab.chats)
             
-            CommonChatRootView()
+            commonChatRootView
                 .tabItem {
                     Label("Общий чат", systemImage: "person.2")
                 }
                 .tag(AppTab.commonChat)
             
-            SettingsRootView()
+            settingsRootView
                 .tabItem {
                     Label("Настройки", systemImage: "gearshape")
                 }
@@ -39,37 +39,20 @@ struct AppRootView: View {
         }
         .tint(.p2PBlack)
         .fullScreenCover(isPresented: Binding(
-            get: { container.bluetoothStatusViewModel.isBluetoothOff },
+            get: { bluetoothStatusViewModel.isBluetoothOff },
             set: { _ in }
         )) {
             NoBluetoothView()
         }
         .onAppear {
-            container.coordinator.startIfNeeded()
+            coordinator.startIfNeeded()
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
-            case .active:     container.coordinator.appBecameActive()
-            case .background: container.coordinator.appMovedToBackground()
+            case .active:     coordinator.appBecameActive()
+            case .background: coordinator.appMovedToBackground()
             default: break
             }
         }
     }
-    
-    func openBluetoothSettings() {
-        guard let settingsURL = URL(string: "App-Prefs:root=Bluetooth") else {
-            return
-        }
-        
-        if UIApplication.shared.canOpenURL(settingsURL) {
-            UIApplication.shared.open(settingsURL)
-        }
-        
-    }
-    
-}
-
-#Preview {
-    AppRootView()
-        .environment(DependencyContainer())
 }

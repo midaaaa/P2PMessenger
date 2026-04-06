@@ -7,9 +7,10 @@
 import SwiftUI
 
 struct SettingsRootView: View {
+    let viewModel: SettingsViewModel
 
     var body: some View {
-            SettingsView()
-                .navigationTitle("Настройки")
+        SettingsView(viewModel: viewModel)
+            .navigationTitle("Настройки")
     }
 }
