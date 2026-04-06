@@ -11,7 +11,8 @@ struct AppRootView: View {
     @State private var appRouter = AppRouter()
     @StateObject private var bluetoothVM = BluetoothStatusViewModel()
     @Environment(DependencyContainer.self) var container
-    
+    @Environment(\.scenePhase) private var scenePhase
+
     var body: some View {
         TabView(selection: Binding(
             get: { container.router.selectedTab },
@@ -45,6 +46,16 @@ struct AppRootView: View {
         .tint(.p2PBlack)
         .fullScreenCover(isPresented: $bluetoothVM.isBluetoothOff) {
             NoBluetoothView()
+        }
+        .onAppear {
+            container.coordinator.startIfNeeded()
+        }
+        .onChange(of: scenePhase) { _, phase in
+            switch phase {
+            case .active:     container.coordinator.appBecameActive()
+            case .background: container.coordinator.appMovedToBackground()
+            default: break
+            }
         }
     }
     

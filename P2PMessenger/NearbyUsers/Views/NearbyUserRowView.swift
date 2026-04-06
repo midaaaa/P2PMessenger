@@ -87,7 +87,7 @@ struct NearbyUserRowView: View {
 #if DEBUG
 #Preview {
     NearbyUserRowView(
-        user: NearbyUserRowViewModel(id: UUID(), name: "Глеб", isOnline: true, connectionStatus: .connected),
+        user: NearbyUserRowViewModel(id: "preview", name: "Глеб", connectionStatus: .connected),
         onTap: {}
     )
     .padding()

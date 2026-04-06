@@ -22,8 +22,7 @@ enum ConnectionStatus {
 }
 
 struct NearbyUserRowViewModel: Identifiable {
-    let id: UUID
+    let id: String
     var name: String
-    var isOnline: Bool
     var connectionStatus: ConnectionStatus
 }

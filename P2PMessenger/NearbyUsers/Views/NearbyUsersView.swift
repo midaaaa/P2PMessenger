@@ -124,10 +124,16 @@ private struct ScanningDotsView: View {
 
 // MARK: - Preview
 
-#if DEBUG
-#Preview {
-    NavigationStack {
-        NearbyUsersView(viewModel: NearbyUserViewModel(users: NearbyUsersFixtures.stubNearbyUsers, isScanning: true), onUserButtonTap: {})
-    }
-}
-#endif
+//#if DEBUG
+//#Preview {
+//    NavigationStack {
+//        NearbyUsersView(
+//            viewModel: {
+//                let vm = NearbyUserViewModel(coordinator: MPCNetworkService())
+//                return vm
+//            }(),
+//            onUserButtonTap: {}
+//        )
+//    }
+//}
+//#endif
