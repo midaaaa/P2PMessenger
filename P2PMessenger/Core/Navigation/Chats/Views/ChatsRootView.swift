@@ -33,7 +33,8 @@ struct ChatsRootView: View {
                     
                 case .searchDialog:
                     VStack(spacing: 16) {
-                        NearbyUsersView(viewModel: container.nearbyUserViewModel, onUserButtonTap: { router.push(.addDialog) })
+                        NearbyUsersView(viewModel: viewModel.nearbyUserViewModel,
+                                        onUserButtonTap: {router.push(.addDialog)})
                     }
                     .navigationTitle("Люди рядом")
                     .navigationBarTitleDisplayMode(.inline)

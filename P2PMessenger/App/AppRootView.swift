@@ -18,12 +18,7 @@ struct AppRootView: View {
             set: { container.router.selectedTab = $0 }
         )) {
             ChatsRootView(
-                viewModel: ChatsRootViewModel(
-                    chatListViewModel: ChatsListViewModel(
-                        chats: ChatListPreviewFixtures.stubChats
-                    ),
-                    chatScreenViewModel: ChatPreviewFixtures.newChat
-                ),
+                viewModel: container.chatsRootViewModel,
                 router: container.router.chatsRouter)
             .tabItem {
                 Label("Чаты", systemImage: "message")
