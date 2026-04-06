@@ -16,15 +16,13 @@ final class DependencyContainer {
 
     // MARK: - Network layer
     @ObservationIgnored let networkService: MPCNetworkService
-    @ObservationIgnored let coordinator: PeerSessionCoordinator
 
-    // MARK: - Data layer
-    @ObservationIgnored let messageStore: MessageStore
+    /// Единственный владелец делегата MPCNetworkService.
+    /// Коллеги могут подписаться на сообщения через coordinator.subscribe(onMessage:).
+    @ObservationIgnored let coordinator: PeerSessionCoordinator
 
     // MARK: - ViewModels
     @ObservationIgnored let nearbyUserViewModel: NearbyUserViewModel
-    @ObservationIgnored let meshChatViewModel: MeshChatViewModel
-    @ObservationIgnored let identityViewModel: IdentityViewModel
 
     init(
         notificationService: NotificationServiceProtocol = NotificationService(),
@@ -35,14 +33,9 @@ final class DependencyContainer {
 
         let svc = MPCNetworkService()
         let coord = PeerSessionCoordinator(networkService: svc)
-        let store = MessageStore(coordinator: coord)
 
         self.networkService = svc
         self.coordinator = coord
-        self.messageStore = store
-
         self.nearbyUserViewModel = NearbyUserViewModel(coordinator: coord)
-        self.meshChatViewModel = MeshChatViewModel(networkService: svc, coordinator: coord, store: store)
-        self.identityViewModel = IdentityViewModel(networkService: svc, coordinator: coord)
     }
 }
