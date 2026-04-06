@@ -11,9 +11,6 @@ import SwiftData
 @main
 struct P2PMessengerApp: App {
     
-    init() {
-        _ = BluetoothMonitor.shared
-    }
     @State private var container = DependencyContainer()
     
     @UIApplicationDelegateAdaptor(AppNotificationDelegate.self) var appDelegate

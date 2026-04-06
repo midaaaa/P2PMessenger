@@ -1,5 +1,5 @@
 //
-//  AppRouter.swift
+//  AppRootView.swift
 //  P2PMessenger
 //
 //  Created by Иван Иванов on 02.04.2026.
@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct AppRootView: View {
-    @State private var appRouter = AppRouter()
-    @StateObject private var bluetoothVM = BluetoothStatusViewModel()
+    
     @Environment(DependencyContainer.self) var container
     @Environment(\.scenePhase) private var scenePhase
 
@@ -44,7 +43,10 @@ struct AppRootView: View {
                 .tag(AppTab.settings)
         }
         .tint(.p2PBlack)
-        .fullScreenCover(isPresented: $bluetoothVM.isBluetoothOff) {
+        .fullScreenCover(isPresented: Binding(
+            get: { container.bluetoothStatusViewModel.isBluetoothOff },
+            set: { _ in }
+        )) {
             NoBluetoothView()
         }
         .onAppear {
@@ -61,7 +63,7 @@ struct AppRootView: View {
     
     func openBluetoothSettings() {
         guard let settingsURL = URL(string: "App-Prefs:root=Bluetooth") else {
-            return // UIApplication.openSettingsURLString
+            return
         }
         
         if UIApplication.shared.canOpenURL(settingsURL) {

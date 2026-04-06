@@ -24,12 +24,20 @@ final class DependencyContainer {
     // MARK: - ViewModels
     @ObservationIgnored let nearbyUserViewModel: NearbyUserViewModel
 
+    @ObservationIgnored
+    let bluetoothMonitor: BluetoothMonitor
+    @ObservationIgnored
+    let bluetoothStatusViewModel: BluetoothStatusViewModel
+
     init(
         notificationService: NotificationServiceProtocol = NotificationService(),
-        router: AppRouter = AppRouter()
+        router: AppRouter = AppRouter(),
+        bluetoothMonitor: BluetoothMonitor = BluetoothMonitor()
     ) {
         self.notificationService = notificationService
         self.router = router
+        self.bluetoothMonitor = bluetoothMonitor
+        self.bluetoothStatusViewModel = BluetoothStatusViewModel(monitor: bluetoothMonitor)
 
         let svc = MPCNetworkService()
         let coord = PeerSessionCoordinator(networkService: svc)
