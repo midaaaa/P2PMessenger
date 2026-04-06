@@ -30,6 +30,8 @@ final class DependencyContainer {
     let bluetoothStatusViewModel: BluetoothStatusViewModel
     @ObservationIgnored
     let chatsRootViewModel: ChatsRootViewModel
+    @ObservationIgnored
+    let welcomeScreenVM: WelcomeScreenVM
     
     init(notificationService: NotificationServiceProtocol = NotificationService(),
          router: AppRouter = AppRouter(),
@@ -60,6 +62,8 @@ final class DependencyContainer {
             chatScreenViewModel: ChatPreviewFixtures.newChat,
             nearbyUserViewModel: nearbyUserViewModel
         )
-    }
+        
+        // Onboarding
+        self.welcomeScreenVM = WelcomeScreenVM(permissionManager: PermissionManager())
     }
 }

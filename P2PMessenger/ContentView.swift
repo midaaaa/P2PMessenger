@@ -8,12 +8,14 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(DependencyContainer.self) var container
 
     var body: some View {
-        WelcomeScreenView()
+        WelcomeScreenView(vm: container.welcomeScreenVM)
     }
 }
 
 #Preview {
     ContentView()
+        .environment(DependencyContainer())
 }

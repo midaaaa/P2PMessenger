@@ -16,9 +16,13 @@ final class WelcomeScreenVM {
         BenefitItem(title: "Общайтесь в личных и общих чатах", icon: "3.circle")
     ]
 
-    private let permissionManager = PermissionManager()
+    private let permissionManager: PermissionManager
 
     var userName: String = ""
+
+    init(permissionManager: PermissionManager) {
+        self.permissionManager = permissionManager
+    }
 
     var permissions: [PermissionItem] {
         [
