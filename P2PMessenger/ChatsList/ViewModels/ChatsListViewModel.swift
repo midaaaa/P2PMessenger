@@ -17,18 +17,8 @@ final class ChatsListViewModel {
             .sorted { $0.timeOfLastMessage > $1.timeOfLastMessage }
     }
 
-    var requestChats: [ChatRowViewModel] {
-        chats
-            .filter { $0.status == .request }
-            .sorted { $0.timeOfLastMessage > $1.timeOfLastMessage }
-    }
-
     var unreadMessagesCount: Int {
         messageChats.filter { $0.unreadCount > 0 }.count
-    }
-
-    var requestsCount: Int {
-        requestChats.count
     }
     
     init(chats: [ChatRowViewModel]) {

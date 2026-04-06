@@ -9,17 +9,12 @@ import Foundation
 
 @Observable
 final class NearbyUserViewModel {
-    var users: [NearbyUserModel] = stubNearbyUsers
-    var isScanning: Bool = true
+    private(set) var users: [NearbyUserRowViewModel]
+    private(set) var isScanning: Bool = true
+    
+    init(users: [NearbyUserRowViewModel], isScanning: Bool) {
+        self.users = users
+        self.isScanning = isScanning
+    }
 }
 
-// MARK: - Stubs
-
-private extension NearbyUserViewModel {
-    static let stubNearbyUsers: [NearbyUserModel] = [
-        NearbyUserModel(id: UUID(), name: "Вася", isOnline: true),
-        NearbyUserModel(id: UUID(), name: "Глеб", isOnline: true),
-        NearbyUserModel(id: UUID(), name: "Кирилл", isOnline: false),
-        NearbyUserModel(id: UUID(), name: "Маша", isOnline: true)
-    ]
-}

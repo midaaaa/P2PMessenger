@@ -30,9 +30,13 @@ struct ChatRowView: View {
         }
         .buttonStyle(.plain)
     }
+    
+    private var statusColor: Color {
+        chat.isOnline ? Color("P2PGreen") : Color("P2PDarkGray")
+    }
 
     private var avatarView: some View {
-        UserAvatarView(initial: String(chat.name.prefix(1)), isOnline: chat.isOnline)
+        UserAvatarView(initial: String(chat.name.prefix(1)), statusColor: statusColor)
     }
 
     private var chatContent: some View {

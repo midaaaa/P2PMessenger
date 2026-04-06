@@ -9,7 +9,7 @@ import SwiftUI
 
 struct UserAvatarView: View {
     let initial: String
-    let isOnline: Bool
+    let statusColor: Color
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
@@ -22,7 +22,7 @@ struct UserAvatarView: View {
                 .overlay(Circle().stroke(Color("P2PLightGray"), lineWidth: 1))
 
             Circle()
-                .fill(isOnline ? Color("P2PGreen") : Color("P2PDarkGray"))
+                .fill(statusColor)
                 .frame(width: 12, height: 12)
                 .overlay(Circle().stroke(.white, lineWidth: 2))
         }

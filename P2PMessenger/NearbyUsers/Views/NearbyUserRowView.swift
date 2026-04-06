@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct NearbyUserRowView: View {
-    let user: NearbyUserModel
+    let user: NearbyUserRowViewModel
     let onTap: () -> Void
 
     var body: some View {
@@ -30,9 +30,21 @@ struct NearbyUserRowView: View {
         }
         .buttonStyle(.plain)
     }
+    
+    private var statusColor: Color {
+        switch user.connectionStatus {
+        case .connected:    return Color("P2PGreen")
+        case .connecting:   return Color("P2PYellow")
+        case .notConnected: return Color("P2PDarkGray")
+        }
+    }
 
     private var avatarView: some View {
-        UserAvatarView(initial: String(user.name.prefix(1)), isOnline: user.isOnline)
+        UserAvatarView(initial: String(user.name.prefix(1)), statusColor: statusColor)
+    }
+    
+    private var statusText: String {
+        user.connectionStatus.displayName
     }
 
     private var userContent: some View {
@@ -42,16 +54,14 @@ struct NearbyUserRowView: View {
                     .font(.system(size: 15, weight: .medium))
                     .foregroundStyle(Color("P2PDarkBlue"))
                     .lineLimit(1)
-
-                if user.isOnline {
-                    Text(String(localized: "nearby_user_online_status"))
-                        .font(.system(size: 11))
-                        .foregroundStyle(Color("P2PDarkGray"))
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(Color("P2PLightGray"))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                }
+                
+                Text(statusText)
+                    .font(.system(size: 11))
+                    .foregroundStyle(Color("P2PDarkGray"))
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Color("P2PLightGray"))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
             }
 
             Spacer()
@@ -77,7 +87,7 @@ struct NearbyUserRowView: View {
 #if DEBUG
 #Preview {
     NearbyUserRowView(
-        user: NearbyUserModel(id: UUID(), name: "Глеб", isOnline: true),
+        user: NearbyUserRowViewModel(id: UUID(), name: "Глеб", isOnline: true, connectionStatus: .connected),
         onTap: {}
     )
     .padding()

@@ -19,7 +19,6 @@ struct ChatsRootView: View {
         NavigationStack(path: $router.path) {
             ChatsListView(
                 viewModel: viewModel.chatListViewModel,
-                selectedSegment: .messages,
                 plusButtonAction: {router.push(.searchDialog)},
                 chatRowButtonAction: {router.push(.addDialog)}
             )
@@ -33,7 +32,7 @@ struct ChatsRootView: View {
                     
                 case .searchDialog:
                     VStack(spacing: 16) {
-                        NearbyUsersView(onUserButtonTap: {router.push(.addDialog)})
+                        NearbyUsersView(viewModel: NearbyUserViewModel(users: NearbyUsersFixtures.stubNearbyUsers, isScanning: true), onUserButtonTap: {router.push(.addDialog)})
                         
                     }
                     .navigationTitle("Люди рядом")
