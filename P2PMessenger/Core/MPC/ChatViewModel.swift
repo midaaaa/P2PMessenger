@@ -4,8 +4,8 @@ import SwiftUI
 @MainActor
 final class ChatViewModel: ObservableObject {
     @Published private(set) var localPeer = ChatPeer(id: "local", displayName: "")
-    @Published private(set) var meshMessages: [ChatMessage] = []
-    @Published private(set) var privateMessages: [String: [ChatMessage]] = [:]
+    @Published private(set) var meshMessages: [CoreChatMessage] = []
+    @Published private(set) var privateMessages: [String: [CoreChatMessage]] = [:]
     @Published private(set) var discoveredPeers: [ChatPeer] = []
     @Published private(set) var connectedPeers: [ChatPeer] = []
     @Published private(set) var connectingPeers: [ChatPeer] = []
@@ -90,7 +90,7 @@ final class ChatViewModel: ObservableObject {
         networkService.updateDisplayName(editableName)
     }
 
-    func messages(for peer: ChatPeer) -> [ChatMessage] {
+    func messages(for peer: ChatPeer) -> [CoreChatMessage] {
         privateMessages[peer.id, default: []]
     }
 
@@ -106,7 +106,7 @@ final class ChatViewModel: ObservableObject {
         connectingPeers.contains(where: { $0.id == peer.id })
     }
 
-    private func append(_ message: ChatMessage) {
+    private func append(_ message: CoreChatMessage) {
         guard seenMessageIDs.insert(message.id).inserted else { return }
 
         if let conversationPeerID = message.conversationPeerID {
@@ -120,7 +120,7 @@ final class ChatViewModel: ObservableObject {
         persistState()
     }
 
-    private func insert(_ message: ChatMessage, into messages: inout [ChatMessage]) {
+    private func insert(_ message: CoreChatMessage, into messages: inout [CoreChatMessage]) {
         if let last = messages.last, last.timestamp <= message.timestamp {
             messages.append(message)
             return
@@ -144,12 +144,12 @@ final class ChatViewModel: ObservableObject {
         let decoder = JSONDecoder()
 
         if let meshData = defaults.data(forKey: meshStorageKey),
-           let messages = try? decoder.decode([ChatMessage].self, from: meshData) {
+           let messages = try? decoder.decode([CoreChatMessage].self, from: meshData) {
             meshMessages = messages.sorted { $0.timestamp < $1.timestamp }
         }
 
         if let privateData = defaults.data(forKey: privateStorageKey),
-           let messages = try? decoder.decode([String: [ChatMessage]].self, from: privateData) {
+           let messages = try? decoder.decode([String: [CoreChatMessage]].self, from: privateData) {
             privateMessages = messages.mapValues { conversation in
                 conversation.sorted { $0.timestamp < $1.timestamp }
             }
@@ -163,7 +163,7 @@ final class ChatViewModel: ObservableObject {
 }
 
 extension ChatViewModel: MPCNetworkServiceDelegate {
-    func networkService(_ service: MPCNetworkService, didReceive message: ChatMessage) {
+    func networkService(_ service: MPCNetworkService, didReceive message: CoreChatMessage) {
         if let recipientID = message.recipientID {
             guard recipientID == localPeer.id || message.senderID == localPeer.id else { return }
         }

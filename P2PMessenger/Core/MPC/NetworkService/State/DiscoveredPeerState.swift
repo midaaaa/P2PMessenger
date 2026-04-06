@@ -1,8 +1,8 @@
 //
 //  DiscoveredPeerState.swift
-//  P2PMessenger
+//  Sirius
 //
-//  Created by Екатерина on 03.04.2026.
+//  Created by Екатерина on 04.04.2026.
 //
 
 import Foundation

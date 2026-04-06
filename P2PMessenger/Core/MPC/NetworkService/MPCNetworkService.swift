@@ -1,25 +1,633 @@
-//
-//  MPCNetworkService.swift
-//  P2PMessenger
-//
-//  Created by Екатерина on 03.04.2026.
-//
-
 import Foundation
 import MultipeerConnectivity
 import UIKit
 
-@MainActor
-protocol MPCNetworkServiceDelegate: AnyObject {
-    func networkService(_ service: MPCNetworkService, didReceive message: ChatMessage)
-    func networkService(_ service: MPCNetworkService, peersChanged peers: [ChatPeer])
-    func networkService(_ service: MPCNetworkService, connectedPeersChanged peers: [ChatPeer])
-    func networkService(_ service: MPCNetworkService, connectingPeersChanged peers: [ChatPeer])
-    func networkService(_ service: MPCNetworkService, didUpdateLocalPeer peer: ChatPeer)
-    func networkService(_ service: MPCNetworkService, didEncounter error: NetworkServiceError)
-}
-
 final class MPCNetworkService: NSObject {
     weak var delegate: MPCNetworkServiceDelegate?
 
+    private let defaults: UserDefaults
+    private let topologyCoordinator = MeshTopologyCoordinator()
+    private let scheduler = ConnectionScheduler()
+    private let peerRegistry = PeerRegistry()
+
+    let localUserID: String
+
+    private var myPeerID: MCPeerID
+    var session: MCSession
+    private var advertiser: MCNearbyServiceAdvertiser?
+    var browser: MCNearbyServiceBrowser?
+
+    var lifecycleState = MPCNetworkLifecycleState()
+    var advertiserState = MPCNetworkAdvertiserState()
+
+    private let encoder = JSONEncoder()
+    let decoder = JSONDecoder()
+
+    var groupEpoch: Int {
+        didSet {
+            defaults.set(groupEpoch, forKey: MPCNetworkConstants.userDefaultsGroupEpochKey)
+        }
+    }
+
+    override convenience init() {
+        self.init(defaults: .standard)
+    }
+
+    init(defaults: UserDefaults) {
+        self.defaults = defaults
+
+        let persistedUserID = defaults.string(forKey: MPCNetworkConstants.userDefaultsPeerIDKey) ?? UUID().uuidString
+        defaults.set(persistedUserID, forKey: MPCNetworkConstants.userDefaultsPeerIDKey)
+        self.localUserID = persistedUserID
+
+        let initialDisplayName = Self.validatedDisplayName(
+            defaults.string(forKey: MPCNetworkConstants.userDefaultsDisplayNameKey) ?? UIDevice.current.name
+        ) ?? "Sirius"
+
+        let persistedEpoch = defaults.integer(forKey: MPCNetworkConstants.userDefaultsGroupEpochKey)
+        self.groupEpoch = max(1, persistedEpoch == 0 ? 1 : persistedEpoch)
+
+        self.myPeerID = MCPeerID(displayName: initialDisplayName)
+        self.session = MCSession(peer: myPeerID, securityIdentity: nil, encryptionPreference: .required)
+
+        super.init()
+
+        encoder.dateEncodingStrategy = .iso8601
+        decoder.dateDecodingStrategy = .iso8601
+
+        configureSession()
+    }
+
+    deinit {
+        stopDiscovery()
+        session.disconnect()
+    }
+
+    static func validatedDisplayName(_ rawValue: String) -> String? {
+        let trimmed = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+
+        let collapsedWhitespace = trimmed
+            .components(separatedBy: .whitespacesAndNewlines)
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+
+        let shortened = String(collapsedWhitespace.prefix(MPCNetworkConstants.maxDisplayNameLength))
+        guard !shortened.isEmpty else { return nil }
+        return shortened
+    }
+
+    var localPeer: ChatPeer {
+        ChatPeer(id: localUserID, displayName: myPeerID.displayName)
+    }
+
+    var currentLeaderID: String {
+        topologyCoordinator.currentLeaderID(
+            localUserID: localUserID,
+            connectedPeerIDs: peerRegistry.connectedPeerIDs
+        )
+    }
+
+    var currentClusterSize: Int {
+        topologyCoordinator.currentClusterSize(
+            connectedPeerIDs: peerRegistry.connectedPeerIDs
+        )
+    }
+
+    var isLeader: Bool {
+        topologyCoordinator.isLeader(
+            localUserID: localUserID,
+            connectedPeerIDs: peerRegistry.connectedPeerIDs
+        )
+    }
+
+    func startIfNeeded() {
+        guard !lifecycleState.hasStartedOnce else { return }
+        lifecycleState.hasStartedOnce = true
+        lifecycleState.isSuspended = false
+        startTransport()
+    }
+
+    func resumeIfNeeded() {
+        guard lifecycleState.hasStartedOnce else {
+            startIfNeeded()
+            return
+        }
+        guard lifecycleState.isSuspended else { return }
+
+        lifecycleState.isSuspended = false
+        recreateSession()
+        clearTransientConnectionState()
+        startTransport()
+    }
+
+    func suspendForBackground() {
+        guard lifecycleState.hasStartedOnce else { return }
+        guard !lifecycleState.isSuspended else { return }
+
+        lifecycleState.isSuspended = true
+        stopDiscovery()
+
+        session.disconnect()
+        clearTransientConnectionState()
+
+        publishFoundPeers()
+        publishConnectingPeers()
+        publishConnectedPeers()
+    }
+
+    func restartAfterIdentityChange() {
+        lifecycleState.isSuspended = false
+        stopDiscovery()
+        recreateSession()
+        clearTransientConnectionState()
+        startTransport()
+    }
+
+    func updateDisplayName(_ newName: String) {
+        guard let validatedName = Self.validatedDisplayName(newName) else {
+            publishError(.invalidDisplayName)
+            return
+        }
+        guard validatedName != myPeerID.displayName else { return }
+
+        defaults.set(validatedName, forKey: MPCNetworkConstants.userDefaultsDisplayNameKey)
+
+        groupEpoch += 1
+        myPeerID = MCPeerID(displayName: validatedName)
+        restartAfterIdentityChange()
+    }
+
+    func sendToMesh(text: String) {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            publishError(.emptyMessage)
+            return
+        }
+
+        let peers = session.connectedPeers
+        guard !peers.isEmpty else {
+            publishError(.noConnectedPeers)
+            return
+        }
+
+        let wire = WireMessageDTO(
+            id: UUID(),
+            text: trimmed,
+            senderID: localUserID,
+            senderDisplayName: localPeer.displayName,
+            recipientID: nil,
+            recipientDisplayName: nil,
+            timestamp: Date()
+        )
+
+        guard sendChat(wire, to: peers) else { return }
+        publishLocalCopy(from: wire)
+    }
+
+    func sendPrivate(text: String, to peer: ChatPeer) {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            publishError(.emptyMessage)
+            return
+        }
+
+        guard peerRegistry.connectedPeerIDs.contains(peer.id),
+              let targetPeerID = peerRegistry.peerState(for: peer.id)?.peerID else {
+            publishError(.peerUnavailable)
+            return
+        }
+
+        let wire = WireMessageDTO(
+            id: UUID(),
+            text: trimmed,
+            senderID: localUserID,
+            senderDisplayName: localPeer.displayName,
+            recipientID: peer.id,
+            recipientDisplayName: peer.displayName,
+            timestamp: Date()
+        )
+
+        guard sendChat(wire, to: [targetPeerID]) else { return }
+        publishLocalCopy(from: wire)
+    }
+
+    private func configureSession() {
+        session.delegate = self
+    }
+
+    private func recreateSession() {
+        session = MCSession(peer: myPeerID, securityIdentity: nil, encryptionPreference: .required)
+        configureSession()
+    }
+
+    private func startTransport() {
+        lifecycleState.isRunning = true
+
+        startAdvertiser()
+
+        let browser = MCNearbyServiceBrowser(peer: myPeerID, serviceType: MPCNetworkConstants.serviceType)
+        browser.delegate = self
+        browser.startBrowsingForPeers()
+        self.browser = browser
+
+        notifyLocalPeerChanged()
+        publishFoundPeers()
+        publishConnectingPeers()
+        publishConnectedPeers()
+        scheduleReevaluation(after: 0.8)
+    }
+
+    private func stopDiscovery() {
+        lifecycleState.isRunning = false
+
+        advertiser?.stopAdvertisingPeer()
+        advertiser?.delegate = nil
+        advertiser = nil
+
+        browser?.stopBrowsingForPeers()
+        browser?.delegate = nil
+        browser = nil
+
+        scheduler.cancelReevaluation()
+        scheduler.cancelAllRetries()
+        scheduler.cancelAllInviteExpiry()
+        scheduler.clearAllRetryDates()
+
+        peerRegistry.clearInvitationState()
+
+        advertiserState.lastAdvertisedLeaderID = nil
+        advertiserState.lastAdvertisedClusterSize = nil
+        advertiserState.lastAdvertisedGroupEpoch = nil
+    }
+
+    private func clearTransientConnectionState() {
+        peerRegistry.clearTransientConnectionState()
+    }
+
+    private func startAdvertiser() {
+        advertiser?.stopAdvertisingPeer()
+        advertiser?.delegate = nil
+
+        let advertiser = MCNearbyServiceAdvertiser(
+            peer: myPeerID,
+            discoveryInfo: discoveryInfo(),
+            serviceType: MPCNetworkConstants.serviceType
+        )
+        advertiser.delegate = self
+        advertiser.startAdvertisingPeer()
+        self.advertiser = advertiser
+
+        advertiserState.lastAdvertisedLeaderID = currentLeaderID
+        advertiserState.lastAdvertisedClusterSize = currentClusterSize
+        advertiserState.lastAdvertisedGroupEpoch = groupEpoch
+    }
+
+    func refreshAdvertiserIfNeeded() {
+        guard lifecycleState.isRunning else { return }
+
+        let needsRefresh =
+            advertiserState.lastAdvertisedLeaderID != currentLeaderID ||
+            advertiserState.lastAdvertisedClusterSize != currentClusterSize ||
+            advertiserState.lastAdvertisedGroupEpoch != groupEpoch
+
+        guard needsRefresh else { return }
+        startAdvertiser()
+    }
+
+    func discoveryInfo() -> [String: String] {
+        [
+            MPCNetworkConstants.discoveryUserIDKey: localUserID,
+            MPCNetworkConstants.discoveryDisplayNameKey: localPeer.displayName,
+            MPCNetworkConstants.discoveryLeaderIDKey: currentLeaderID,
+            MPCNetworkConstants.discoveryClusterSizeKey: String(currentClusterSize),
+            MPCNetworkConstants.discoveryGroupEpochKey: String(groupEpoch)
+        ]
+    }
+
+    func invitationContext() -> Data? {
+        let payload = InvitationContextDTO(
+            protocolVersion: MPCNetworkConstants.protocolVersion,
+            senderID: localUserID,
+            senderDisplayName: localPeer.displayName,
+            senderLeaderID: currentLeaderID,
+            senderClusterSize: currentClusterSize,
+            senderGroupEpoch: groupEpoch
+        )
+        return try? encoder.encode(payload)
+    }
+
+    func knownStableID(for peerID: MCPeerID) -> String? {
+        peerRegistry.knownStableID(for: peerID)
+    }
+
+    func updateDiscoveredPeer(peerID: MCPeerID, info: [String: String]?) {
+        guard let peerStableID = peerRegistry.updateDiscoveredPeer(
+            localUserID: localUserID,
+            peerID: peerID,
+            info: info
+        ) else {
+            return
+        }
+
+        publishFoundPeers()
+        refreshConnectedPeers()
+        evaluateConnection(for: peerStableID)
+    }
+
+    func removeDiscoveredPeer(peerID: MCPeerID) {
+        guard let peerStableID = peerRegistry.removeDiscoveredPeer(peerID: peerID) else { return }
+
+        cancelRetry(for: peerStableID)
+        cancelInviteExpiry(for: peerStableID)
+        scheduler.clearRetryDate(for: peerStableID)
+
+        publishFoundPeers()
+        publishConnectingPeers()
+        publishConnectedPeers()
+        handleTopologyChanged()
+    }
+
+    func cleanupPeerState(for peerStableID: String, removeDiscovery: Bool = false) {
+        peerRegistry.cleanupPeerState(for: peerStableID, removeDiscovery: removeDiscovery)
+        cancelRetry(for: peerStableID)
+        cancelInviteExpiry(for: peerStableID)
+        scheduler.clearRetryDate(for: peerStableID)
+    }
+
+    private func sendChat(_ wireMessage: WireMessageDTO, to peers: [MCPeerID]) -> Bool {
+        sendPacket(.chat(wireMessage), to: peers)
+    }
+
+    func sendHello(to peers: [MCPeerID]) {
+        guard !peers.isEmpty else { return }
+
+        let hello = HelloMessageDTO(
+            senderID: localUserID,
+            senderDisplayName: localPeer.displayName,
+            leaderID: currentLeaderID,
+            clusterSize: currentClusterSize,
+            groupEpoch: groupEpoch
+        )
+
+        _ = sendPacket(.hello(hello), to: peers, reportErrors: false)
+    }
+
+    @discardableResult
+    private func sendPacket(_ packet: WirePacketDTO, to peers: [MCPeerID], reportErrors: Bool = true) -> Bool {
+        guard !peers.isEmpty else {
+            if reportErrors {
+                publishError(.peerUnavailable)
+            }
+            return false
+        }
+
+        do {
+            let data = try encoder.encode(packet)
+            try session.send(data, toPeers: peers, with: .reliable)
+            return true
+        } catch {
+            if reportErrors {
+                publishError(.transportFailure(error.localizedDescription))
+            }
+            return false
+        }
+    }
+
+    private func publishLocalCopy(from wire: WireMessageDTO) {
+        let localCopy = CoreChatMessage(
+            id: wire.id,
+            text: wire.text,
+            senderID: wire.senderID,
+            senderDisplayName: wire.senderDisplayName,
+            recipientID: wire.recipientID,
+            recipientDisplayName: wire.recipientDisplayName,
+            timestamp: wire.timestamp,
+            isIncoming: false
+        )
+
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            delegate?.networkService(self, didReceive: localCopy)
+        }
+    }
+
+    func publishFoundPeers() {
+        let peers = peerRegistry.discoveredPeersSorted()
+
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            delegate?.networkService(self, peersChanged: peers)
+        }
+    }
+
+    func publishConnectedPeers() {
+        let peers = peerRegistry.connectedPeersSorted()
+
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            delegate?.networkService(self, connectedPeersChanged: peers)
+        }
+    }
+
+    func publishConnectingPeers() {
+        let peers = peerRegistry.connectingPeersSorted()
+
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            delegate?.networkService(self, connectingPeersChanged: peers)
+        }
+    }
+
+    private func notifyLocalPeerChanged() {
+        let peer = localPeer
+
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            delegate?.networkService(self, didUpdateLocalPeer: peer)
+        }
+    }
+
+    func publishError(_ error: NetworkServiceError) {
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            delegate?.networkService(self, didEncounter: error)
+        }
+    }
+
+    func canAcceptInvitation(
+        from remoteID: String,
+        senderLeaderID: String,
+        senderClusterSize: Int
+    ) -> Bool {
+        topologyCoordinator.canAcceptInvitation(
+            localUserID: localUserID,
+            peerRegistry: peerRegistry,
+            remoteID: remoteID,
+            senderLeaderID: senderLeaderID,
+            senderClusterSize: senderClusterSize
+        )
+    }
+
+    func evaluateConnection(for peerStableID: String) {
+        switch topologyCoordinator.evaluateConnection(
+            for: peerStableID,
+            localUserID: localUserID,
+            lifecycleState: lifecycleState,
+            peerRegistry: peerRegistry,
+            retryAfterByPeerID: currentRetryAfterByPeerID
+        ) {
+        case .none:
+            return
+
+        case .retry(let retryAt):
+            scheduleRetry(for: peerStableID, at: retryAt)
+
+        case .invite(let peerID):
+            peerRegistry.markInvited(peerStableID)
+            peerRegistry.markConnecting(peerStableID)
+            publishConnectingPeers()
+
+            browser?.invitePeer(
+                peerID,
+                to: session,
+                withContext: invitationContext(),
+                timeout: MPCNetworkConstants.invitationTimeout
+            )
+
+            scheduleInviteExpiry(for: peerStableID)
+        }
+    }
+
+    func handleTopologyChanged() {
+        refreshAdvertiserIfNeeded()
+        publishConnectingPeers()
+
+        if topologyCoordinator.shouldScheduleReevaluation(
+            localUserID: localUserID,
+            lifecycleState: lifecycleState,
+            peerRegistry: peerRegistry
+        ) {
+            scheduleReevaluation(after: 0.3)
+        }
+    }
+
+    var currentRetryAfterByPeerID: [String: Date] {
+        peerRegistry.allPeerIDs.reduce(into: [:]) { result, peerID in
+            if let retryDate = scheduler.retryDate(for: peerID) {
+                result[peerID] = retryDate
+            }
+        }
+    }
+
+    func scheduleReevaluation(after delay: TimeInterval = MPCNetworkConstants.reevaluateDelay) {
+        scheduler.scheduleReevaluation(
+            after: delay,
+            isRunning: { [weak self] in self?.lifecycleState.isRunning ?? false },
+            isSuspended: { [weak self] in self?.lifecycleState.isSuspended ?? true }
+        ) { [weak self] in
+            guard let self else { return }
+
+            let ids = self.peerRegistry.allPeerIDs.sorted()
+            for peerStableID in ids {
+                self.evaluateConnection(for: peerStableID)
+            }
+        }
+    }
+
+    func refreshConnectedPeers() {
+        let result = peerRegistry.refreshConnectedPeers(using: session.connectedPeers)
+
+        if result.connectedChanged {
+            publishConnectedPeers()
+            handleTopologyChanged()
+        }
+
+        if result.staleConnectingRemoved {
+            publishConnectingPeers()
+        }
+    }
+
+    func scheduleRetry(for peerStableID: String, at date: Date? = nil) {
+        scheduler.scheduleRetry(
+            for: peerStableID,
+            at: date,
+            isRunning: lifecycleState.isRunning,
+            isSuspended: lifecycleState.isSuspended,
+            defaultBackoff: MPCNetworkConstants.retryBackoff
+        ) { [weak self] in
+            self?.evaluateConnection(for: peerStableID)
+        }
+    }
+
+    func cancelRetry(for peerStableID: String) {
+        scheduler.cancelRetry(for: peerStableID)
+    }
+
+    func scheduleInviteExpiry(for peerStableID: String) {
+        scheduler.scheduleInviteExpiry(
+            for: peerStableID,
+            after: MPCNetworkConstants.inviteReapTime
+        ) { [weak self] in
+            guard let self else { return }
+            guard !self.peerRegistry.connectedPeerIDs.contains(peerStableID) else { return }
+
+            self.peerRegistry.unmarkInvited(peerStableID)
+            self.peerRegistry.unmarkConnecting(peerStableID)
+            self.publishConnectingPeers()
+            self.scheduleRetry(for: peerStableID)
+        }
+    }
+
+    func cancelInviteExpiry(for peerStableID: String) {
+        scheduler.cancelInviteExpiry(for: peerStableID)
+    }
+
+    func clearRetrySchedule(for peerStableID: String) {
+        scheduler.clearRetryDate(for: peerStableID)
+    }
+
+    func markPeerConnected(_ peerStableID: String) {
+        peerRegistry.markConnected(peerStableID)
+    }
+
+    func unmarkPeerConnected(_ peerStableID: String) {
+        peerRegistry.unmarkConnected(peerStableID)
+    }
+
+    func markPeerConnecting(_ peerStableID: String) {
+        peerRegistry.markConnecting(peerStableID)
+    }
+
+    func unmarkPeerConnecting(_ peerStableID: String) {
+        peerRegistry.unmarkConnecting(peerStableID)
+    }
+
+    func markPeerInvited(_ peerStableID: String) {
+        peerRegistry.markInvited(peerStableID)
+    }
+
+    func unmarkPeerInvited(_ peerStableID: String) {
+        peerRegistry.unmarkInvited(peerStableID)
+    }
+
+    func markIncomingInvitation(_ peerStableID: String) {
+        peerRegistry.markIncomingInvitation(peerStableID)
+    }
+
+    func unmarkIncomingInvitation(_ peerStableID: String) {
+        peerRegistry.unmarkIncomingInvitation(peerStableID)
+    }
+
+    func markUnresolvedConnected(_ peerID: MCPeerID) {
+        peerRegistry.markUnresolvedConnected(peerID)
+    }
+
+    func unmarkUnresolvedConnected(_ peerID: MCPeerID) {
+        peerRegistry.unmarkUnresolvedConnected(peerID)
+    }
+
+    func containsDiscoveredPeer(_ peerStableID: String) -> Bool {
+        peerRegistry.peerState(for: peerStableID) != nil
+    }
 }
