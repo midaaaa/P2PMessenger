@@ -35,15 +35,24 @@ struct ChatScreenView: View {
             contentSection
 
             ChatComposerView(
-                placeholder: viewModel.composerPlaceholder,
                 text: $draftMessage,
-                onSend: onSend
+                onSend: onSend,
+                placeholder: chatTypeText
             )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background {
             Color("P2PBackground")
                 .ignoresSafeArea()
+        }
+    }
+    
+    private var chatTypeText: String {
+        switch viewModel.headerStyle {
+        case .direct:
+            return String(localized: "Сообщение ...")
+        case .group:
+            return String(localized: "Сообщение всем ...")
         }
     }
 
@@ -88,16 +97,41 @@ struct ChatScreenView: View {
     }
 }
 
-#Preview("Общий чат") {
+#Preview("Новый чат") {
     ChatScreenView(
-        viewModel: ChatPreviewFixtures.publicChat,
+        viewModel: ChatScreenViewModel(
+            networkService: MPCNetworkService(),
+            headerStyle: .direct(
+                participant: ChatParticipant(
+                    name: "Глеб",
+                    isOnline: true
+                ),
+                subtitle: "Новый чат"
+            ),
+            emptyState: ChatEmptyState(
+                participant: ChatParticipant(
+                    name: "Глеб",
+                    isOnline: true
+                ),
+                title: "Глеб",
+                subtitle: "Напишите первое сообщение.\nСобеседник получит запрос на чат."
+            ),
+        ),
         draftMessage: .constant("")
     )
 }
 
-#Preview("Новый чат") {
+
+#Preview("Новый чат hardcode") {
     ChatScreenView(
         viewModel: ChatPreviewFixtures.newChat,
+        draftMessage: .constant("")
+    )
+}
+
+#Preview("Общий чат hardcode") {
+    ChatScreenView(
+        viewModel: ChatPreviewFixtures.publicChat,
         draftMessage: .constant("")
     )
 }

@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct ChatComposerView: View {
-    let placeholder: String
     @Binding var text: String
     let onSend: (String) -> Void
+    var placeholder: String
 
     var body: some View {
         HStack(spacing: ChatUIConstants.Composer.horizontalSpacing) {
