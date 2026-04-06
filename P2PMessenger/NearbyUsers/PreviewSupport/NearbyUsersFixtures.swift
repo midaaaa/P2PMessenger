@@ -10,9 +10,9 @@ import SwiftUI
 // MARK: - Stubs
 enum NearbyUsersFixtures {
     static let stubNearbyUsers: [NearbyUserRowViewModel] = [
-        NearbyUserRowViewModel(id: UUID(), name: "Вася", isOnline: true, connectionStatus: .connected),
-        NearbyUserRowViewModel(id: UUID(), name: "Глеб", isOnline: true,  connectionStatus: .connecting),
-        NearbyUserRowViewModel(id: UUID(), name: "Кирилл", isOnline: false, connectionStatus: .notConnected),
-        NearbyUserRowViewModel(id: UUID(), name: "Маша", isOnline: true,  connectionStatus: .connected)
+        NearbyUserRowViewModel(id: "1", name: "Вася",   connectionStatus: .connected),
+        NearbyUserRowViewModel(id: "2", name: "Глеб",   connectionStatus: .connecting),
+        NearbyUserRowViewModel(id: "3", name: "Кирилл", connectionStatus: .notConnected),
+        NearbyUserRowViewModel(id: "4", name: "Маша",   connectionStatus: .connected),
     ]
 }

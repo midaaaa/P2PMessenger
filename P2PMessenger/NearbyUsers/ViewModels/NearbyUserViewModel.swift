@@ -7,14 +7,32 @@
 
 import Foundation
 
+/// Преобразует пир-состояние из PeerSessionCoordinator в UI-модель для NearbyUsersView.
+/// Не держит собственного сетевого состояния — всё читается реактивно из coordinator.
+@MainActor
 @Observable
 final class NearbyUserViewModel {
-    private(set) var users: [NearbyUserRowViewModel]
-    private(set) var isScanning: Bool = true
-    
-    init(users: [NearbyUserRowViewModel], isScanning: Bool) {
-        self.users = users
-        self.isScanning = isScanning
-    }
-}
 
+    private let coordinator: PeerSessionCoordinator
+
+    init(coordinator: PeerSessionCoordinator) {
+        self.coordinator = coordinator
+    }
+
+    // MARK: - Computed UI state
+
+    var users: [NearbyUserRowViewModel] {
+        let connectedIDs = Set(coordinator.connectedPeers.map(\.id))
+        let connectingIDs = Set(coordinator.connectingPeers.map(\.id))
+
+        return coordinator.discoveredPeers.map { peer in
+            let status: ConnectionStatus
+            if connectedIDs.contains(peer.id)       { status = .connected }
+            else if connectingIDs.contains(peer.id) { status = .connecting }
+            else                                     { status = .notConnected }
+            return NearbyUserRowViewModel(id: peer.id, name: peer.displayName, connectionStatus: status)
+        }
+    }
+
+    var isScanning: Bool { coordinator.isRunning }
+}
