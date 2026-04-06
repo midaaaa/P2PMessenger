@@ -11,52 +11,62 @@ struct AppRootView: View {
     @State private var appRouter = AppRouter()
     @StateObject private var bluetoothVM = BluetoothStatusViewModel()
     @Environment(DependencyContainer.self) var container
-    @Environment(\.scenePhase) private var scenePhase
 
+    @Environment(\.scenePhase) private var scenePhase
+    
+    @AppStorage("isOnboardingPassed") private var isOnboardingPassed = false
+    
     var body: some View {
-        TabView(selection: Binding(
-            get: { container.router.selectedTab },
-            set: { container.router.selectedTab = $0 }
-        )) {
-            ChatsRootView(
-                viewModel: ChatsRootViewModel(
-                    chatListViewModel: ChatsListViewModel(
-                        chats: ChatListPreviewFixtures.stubChats
+        if isOnboardingPassed {
+            TabView(selection: Binding(
+                get: { container.router.selectedTab },
+                set: { container.router.selectedTab = $0 }
+            )) {
+                ChatsRootView(
+                    viewModel: ChatsRootViewModel(
+                        chatListViewModel: ChatsListViewModel(
+                            chats: ChatListPreviewFixtures.stubChats
+                        ),
+                        chatScreenViewModel: ChatPreviewFixtures.newChat
                     ),
-                    chatScreenViewModel: ChatPreviewFixtures.newChat
-                ),
-                router: container.router.chatsRouter)
-            .tabItem {
-                Label("Чаты", systemImage: "message")
-            }
-            .tag(AppTab.chats)
-            
-            CommonChatRootView()
+                    router: container.router.chatsRouter)
                 .tabItem {
-                    Label("Общий чат", systemImage: "person.2")
+                    Label("Чаты", systemImage: "message")
                 }
-                .tag(AppTab.commonChat)
-            
-            SettingsRootView()
-                .tabItem {
-                    Label("Настройки", systemImage: "gearshape")
+                .tag(AppTab.chats)
+                
+                CommonChatRootView()
+                    .tabItem {
+                        Label("Общий чат", systemImage: "person.2")
+                    }
+                    .tag(AppTab.commonChat)
+                
+                SettingsRootView()
+                    .tabItem {
+                        Label("Настройки", systemImage: "gearshape")
+                    }
+                    .tag(AppTab.settings)
+            }
+            .tint(.p2PBlack)
+            .fullScreenCover(isPresented: $bluetoothVM.isBluetoothOff) {
+                NoBluetoothView()
+            }
+            .onAppear {
+                container.coordinator.startIfNeeded()
+            }
+            .onChange(of: scenePhase) { _, phase in
+                switch phase {
+                case .active:     container.coordinator.appBecameActive()
+                case .background: container.coordinator.appMovedToBackground()
+                default: break
                 }
-                .tag(AppTab.settings)
-        }
-        .tint(.p2PBlack)
-        .fullScreenCover(isPresented: $bluetoothVM.isBluetoothOff) {
-            NoBluetoothView()
-        }
-        .onAppear {
-            container.coordinator.startIfNeeded()
-        }
-        .onChange(of: scenePhase) { _, phase in
-            switch phase {
-            case .active:     container.coordinator.appBecameActive()
-            case .background: container.coordinator.appMovedToBackground()
-            default: break
             }
         }
+        else{
+            WelcomeScreenView()
+                
+        }
+       
     }
     
     func openBluetoothSettings() {

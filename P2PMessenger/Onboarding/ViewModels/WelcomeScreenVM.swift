@@ -6,6 +6,8 @@
 //
 
 import Observation
+import Foundation
+import SwiftUI
 
 @Observable
 final class WelcomeScreenVM {
@@ -40,4 +42,11 @@ final class WelcomeScreenVM {
         case .notifications:    permissionManager.requestNotifications()
         }
     }
+    
+    @AppStorage("isOnboardingPassed") @ObservationIgnored private var isOnboardingPassed = false
+
+    func setOnboardingPassed() {
+        isOnboardingPassed = true
+    }
+    
 }
