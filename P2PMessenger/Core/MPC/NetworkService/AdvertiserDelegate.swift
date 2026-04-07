@@ -1,7 +1,7 @@
 import Foundation
 import MultipeerConnectivity
 
-extension MPCNetworkService: MCNearbyServiceAdvertiserDelegate {
+extension MPCNetworkServiceImpl: MCNearbyServiceAdvertiserDelegate {
     func advertiser(
         _ advertiser: MCNearbyServiceAdvertiser,
         didReceiveInvitationFromPeer peerID: MCPeerID,

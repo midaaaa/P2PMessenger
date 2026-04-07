@@ -9,11 +9,11 @@ import SwiftUI
 
 struct NearbyUsersView: View {
     let viewModel: NearbyUserViewModel
-    let onUserButtonTap: () -> Void
+    let onUserTap: (ChatPeer) -> Void
 
-    init(viewModel: NearbyUserViewModel, onUserButtonTap: @escaping () -> Void) {
+    init(viewModel: NearbyUserViewModel, onUserTap: @escaping (ChatPeer) -> Void) {
         self.viewModel = viewModel
-        self.onUserButtonTap = onUserButtonTap
+        self.onUserTap = onUserTap
     }
     var body: some View {
         ScrollView {
@@ -91,7 +91,9 @@ struct NearbyUsersView: View {
     private var usersList: some View {
         VStack(spacing: 8) {
             ForEach(viewModel.users) { user in
-                NearbyUserRowView(user: user, onTap: onUserButtonTap)
+                NearbyUserRowView(user: user, onTap: {
+                    onUserTap(ChatPeer(id: user.id, displayName: user.name))
+                })
             }
         }
     }
@@ -129,9 +131,9 @@ private struct ScanningDotsView: View {
     NavigationStack {
         NearbyUsersView(
             viewModel: NearbyUserViewModel(
-                coordinator: PeerSessionCoordinator(networkService: MPCNetworkService())
+                coordinator: PeerSessionCoordinator(networkService: MPCNetworkServiceImpl())
             ),
-            onUserButtonTap: {}
+            onUserTap: { _ in }
         )
     }
 }

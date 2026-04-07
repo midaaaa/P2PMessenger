@@ -2,7 +2,17 @@ import Foundation
 import MultipeerConnectivity
 import UIKit
 
-final class MPCNetworkService: NSObject {
+protocol MPCNetworkService {
+    var session: MCSession { get }
+    var browser: MCNearbyServiceBrowser? { get }
+    var lifecycleState: MPCNetworkLifecycleState { get }
+    var advertiserState: MPCNetworkAdvertiserState { get }
+    var groupEpoch: Int { get }
+    
+    func sendPrivate(text: String, to peer: ChatPeer)
+}
+
+final class MPCNetworkServiceImpl: NSObject, MPCNetworkService {
     weak var delegate: MPCNetworkServiceDelegate?
 
     private let defaults: UserDefaults

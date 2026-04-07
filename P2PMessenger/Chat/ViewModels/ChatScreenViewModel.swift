@@ -8,7 +8,7 @@
 import SwiftUI
 
 @Observable
-final class ChatScreenViewModel {
+final class ChatScreenViewModel: ChatScreenViewModelProtocol {
     let networkService: MPCNetworkService
     let headerStyle: ChatHeaderStyle
     let timelineTitle: String?
@@ -69,7 +69,7 @@ extension ChatScreenViewModel {
         composerPlaceholder: String = String(localized: "Сообщение...")
     ) -> ChatScreenViewModel {
         ChatScreenViewModel(
-            networkService: MPCNetworkService(), headerStyle: .direct(participant: participant, subtitle: subtitle),
+            networkService: MPCNetworkServiceImpl(), headerStyle: .direct(participant: participant, subtitle: subtitle),
             messages: messages,
             emptyState: emptyState,
         )
@@ -83,14 +83,14 @@ extension ChatScreenViewModel {
         composerPlaceholder: String = String(localized: "Сообщение всем...")
     ) -> ChatScreenViewModel {
         ChatScreenViewModel(
-            networkService: MPCNetworkService(), headerStyle: .group(title: title, subtitle: participantsSubtitle),
+            networkService: MPCNetworkServiceImpl(), headerStyle: .group(title: title, subtitle: participantsSubtitle),
             timelineTitle: timelineTitle,
             messages: messages,
         )
     }
 
     static let empty = ChatScreenViewModel(
-        networkService: MPCNetworkService(), headerStyle: .group(title: String(localized: "Чат"), subtitle: ""),
+        networkService: MPCNetworkServiceImpl(), headerStyle: .group(title: String(localized: "Чат"), subtitle: ""),
         messages: [],
     )
 }
@@ -106,7 +106,7 @@ extension ChatScreenViewModel {
         )
 
         return ChatScreenViewModel(
-            networkService: MPCNetworkService(), headerStyle: headerStyle,
+            networkService: MPCNetworkServiceImpl(), headerStyle: headerStyle,
             timelineTitle: timelineTitle,
             messages: messages + [newMessage],
             emptyState: nil,

@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-struct ChatScreenView: View {
-    private let viewModel: ChatScreenViewModel
+struct ChatScreenView<ViewModel: ChatScreenViewModelProtocol & Observable>: View {
+    private let viewModel: ViewModel
     @Binding var draftMessage: String
     let onBack: () -> Void
     let onSend: (String) -> Void
 
     init(
-        viewModel: ChatScreenViewModel,
+        viewModel: ViewModel,
         draftMessage: Binding<String>,
         onBack: @escaping () -> Void = {},
         onSend: @escaping (String) -> Void = { _ in }
@@ -100,7 +100,7 @@ struct ChatScreenView: View {
 #Preview("Новый чат") {
     ChatScreenView(
         viewModel: ChatScreenViewModel(
-            networkService: MPCNetworkService(),
+            networkService: MPCNetworkServiceImpl(),
             headerStyle: .direct(
                 participant: ChatParticipant(
                     name: "Глеб",

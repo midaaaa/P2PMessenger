@@ -20,14 +20,14 @@ final class ChatViewModel: ObservableObject {
     @Published var bannerText: String?
     @Published var isNetworkReady = false
 
-    let networkService: MPCNetworkService
+    let networkService: MPCNetworkServiceImpl
 
     private let defaults: UserDefaults
     private let meshStorageKey = "chat.mesh.messages"
     private let privateStorageKey = "chat.private.messages"
     private var seenMessageIDs = Set<UUID>()
 
-    init(networkService: MPCNetworkService = MPCNetworkService(), defaults: UserDefaults = .standard) {
+    init(networkService: MPCNetworkServiceImpl = MPCNetworkServiceImpl(), defaults: UserDefaults = .standard) {
         self.networkService = networkService
         self.defaults = defaults
         self.networkService.delegate = self

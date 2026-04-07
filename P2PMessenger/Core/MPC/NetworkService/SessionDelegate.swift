@@ -1,7 +1,7 @@
 import Foundation
 import MultipeerConnectivity
 
-extension MPCNetworkService: MCSessionDelegate {
+extension MPCNetworkServiceImpl: MCSessionDelegate {
     func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState) {
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
