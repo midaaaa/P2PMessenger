@@ -7,12 +7,19 @@
 import SwiftUI
 
 struct CommonChatRootView: View {
-    let viewModel: ChatScreenViewModel
+    @Bindable private var viewModel: CommonChatViewModel
+
+    init(viewModel: CommonChatViewModel) {
+        self.viewModel = viewModel
+    }
 
     var body: some View {
         ChatScreenView(
-            viewModel: viewModel,
-            draftMessage: .constant("")
+            viewModel: viewModel.chatScreenViewModel,
+            draftMessage: $viewModel.draftMessage,
+            onSend: { text in
+                viewModel.sendMeshMessage(text)
+            }
         )
     }
 }

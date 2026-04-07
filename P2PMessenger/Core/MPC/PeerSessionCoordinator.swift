@@ -25,6 +25,7 @@ final class PeerSessionCoordinator {
 
     private let networkService: MPCNetworkService
     private var messageHandlers: [(CoreChatMessage) -> Void] = []
+    private var peerStateHandlers: [() -> Void] = []
 
     // MARK: - Init
 
@@ -72,8 +73,16 @@ final class PeerSessionCoordinator {
         messageHandlers.append(handler)
     }
 
+    func subscribePeerStateChanges(_ handler: @escaping () -> Void) {
+        peerStateHandlers.append(handler)
+    }
+
     func clearError() {
         latestError = nil
+    }
+
+    private func notifyPeerStateChanged() {
+        for handler in peerStateHandlers { handler() }
     }
 }
 
@@ -86,14 +95,17 @@ extension PeerSessionCoordinator: MPCNetworkServiceDelegate {
 
     func networkService(_ service: MPCNetworkService, peersChanged peers: [ChatPeer]) {
         discoveredPeers = peers
+        notifyPeerStateChanged()
     }
 
     func networkService(_ service: MPCNetworkService, connectedPeersChanged peers: [ChatPeer]) {
         connectedPeers = peers
+        notifyPeerStateChanged()
     }
 
     func networkService(_ service: MPCNetworkService, connectingPeersChanged peers: [ChatPeer]) {
         connectingPeers = peers
+        notifyPeerStateChanged()
     }
 
     func networkService(_ service: MPCNetworkService, didUpdateLocalPeer peer: ChatPeer) {
