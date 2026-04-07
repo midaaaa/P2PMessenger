@@ -33,7 +33,7 @@ final class RootGraph {
     @ObservationIgnored
     let welcomeScreenVM: WelcomeScreenVM
     @ObservationIgnored
-    let commonChatViewModel: ChatScreenViewModel
+    let commonChatViewModel: CommonChatViewModel
     @ObservationIgnored
     let settingsViewModel: SettingsViewModel
     
@@ -65,12 +65,14 @@ final class RootGraph {
         // Network
         let svc = MPCNetworkService()
         let coord = PeerSessionCoordinator(networkService: svc)
+        let commonCoordinator = CommonChatCoordinator(networkService: svc, peerCoordinator: coord)
         self.networkService = svc
         self.coordinator = coord
         
         // Nearby Users
         self.nearbyUserViewModel = NearbyUserViewModel(coordinator: coord)
-        
+        self.commonChatViewModel = CommonChatViewModel(coordinator: commonCoordinator, networkSevice: svc)
+
         // Chats
         self.chatsRootViewModel = ChatsRootViewModel(
             chatListViewModel: ChatsListViewModel(
@@ -83,10 +85,8 @@ final class RootGraph {
             viewModel: chatsRootViewModel,
             router: router.chatsRouter
         )
-        
-        
+
         // Common Chat
-        self.commonChatViewModel = ChatPreviewFixtures.publicChat
         self.commonChatRootView = CommonChatRootView(viewModel: commonChatViewModel)
         
         // Settings
