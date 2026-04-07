@@ -10,11 +10,10 @@ import SwiftUI
 @MainActor
 @Observable
 final class CommonChatCoordinator {
-    private(set) var participantsSubtitle = "1 участников"
+    private var countParticipant = 1
     private let networkService: MPCNetworkService
     private let peerCoordinator: PeerSessionCoordinator
     private var commonChatMessages: [CoreChatMessage] = []
-    private let timelineTitle = "Сегодня · Общий чат"
 
     init(networkService: MPCNetworkService, peerCoordinator: PeerSessionCoordinator) {
         self.networkService = networkService
@@ -38,16 +37,17 @@ final class CommonChatCoordinator {
         }
     }
 
-    func sendMeshMessage(_ text: String) {
-        networkService.sendToMesh(text: text)
-    }
-
     var headerStyle: ChatHeaderStyle {
-        .group(title: "Общий чат", subtitle: participantsSubtitle)
+        .group(title: "Общий чат", subtitle: "\(countParticipant) участников")
     }
 
     var chatTimelineTitle: String {
-        timelineTitle
+        switch headerStyle {
+        case let .group(title, _) : return "Сегодня \(title)"
+        case .direct:
+            assertionFailure()
+            return ""
+        }
     }
 
     var chatMessages: [ChatMessage] {
@@ -76,14 +76,10 @@ final class CommonChatCoordinator {
         }
     }
 
-    var chatNetworkService: MPCNetworkService {
-        networkService
-    }
-
     private func refreshState() {
         let connectedPeers = peerCoordinator.connectedPeers
 
-        participantsSubtitle = "\(connectedPeers.count + 1) участников"
+        countParticipant = connectedPeers.count + 1
     }
 }
 

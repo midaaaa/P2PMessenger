@@ -71,8 +71,8 @@ final class RootGraph {
         
         // Nearby Users
         self.nearbyUserViewModel = NearbyUserViewModel(coordinator: coord)
-        self.commonChatViewModel = CommonChatViewModel(coordinator: commonCoordinator)
-        
+        self.commonChatViewModel = CommonChatViewModel(coordinator: commonCoordinator, networkSevice: svc)
+
         // Chats
         self.chatsRootViewModel = ChatsRootViewModel(
             chatListViewModel: ChatsListViewModel(

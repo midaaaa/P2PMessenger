@@ -6,14 +6,16 @@ final class CommonChatViewModel {
     var draftMessage = ""
 
     private let coordinator: CommonChatCoordinator
+    private let networkService: MPCNetworkService
 
-    init(coordinator: CommonChatCoordinator) {
+    init(coordinator: CommonChatCoordinator, networkSevice: MPCNetworkService) {
         self.coordinator = coordinator
+        self.networkService = networkSevice
     }
 
     var chatScreenViewModel: ChatScreenViewModel {
         ChatScreenViewModel(
-            networkService: coordinator.chatNetworkService,
+            networkService: networkService,
             headerStyle: coordinator.headerStyle,
             timelineTitle: coordinator.chatTimelineTitle,
             messages: coordinator.chatMessages
@@ -21,7 +23,7 @@ final class CommonChatViewModel {
     }
 
     func sendMeshMessage(_ text: String) {
-        coordinator.sendMeshMessage(text)
+        networkService.sendToMesh(text: text)
         draftMessage = ""
     }
 }
