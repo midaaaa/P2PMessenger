@@ -8,7 +8,7 @@
 import UIKit
 import UserNotifications
 
-final class AppNotificationDelegate: NSObject, UIApplicationDelegate, @preconcurrency UNUserNotificationCenterDelegate {
+final class AppNotificationDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     
     var container: RootGraph?
     

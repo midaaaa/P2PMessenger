@@ -9,7 +9,6 @@ import SwiftUI
 struct ChatsRootView: View {
     private let viewModel: ChatsRootViewModel
     @Bindable private var router: ChatsRouter
-    @Environment(DependencyContainer.self) private var container
 
     init(viewModel: ChatsRootViewModel, router: ChatsRouter) {
         self.viewModel = viewModel

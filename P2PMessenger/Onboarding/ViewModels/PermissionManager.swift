@@ -9,7 +9,6 @@ import CoreBluetooth
 import MultipeerConnectivity
 import Network
 import Observation
-import UserNotifications
 
 @MainActor
 @Observable
@@ -65,16 +64,9 @@ final class PermissionManager: NSObject {
     }
 
     private func checkNotificationsStatus() {
-        UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
-            let status = settings.authorizationStatus
-            DispatchQueue.main.async {
-                switch status {
-                case .authorized, .provisional, .ephemeral:
-                    self?.notificationsState = .granted
-                default:
-                    self?.notificationsState = .needAction
-                }
-            }
+        Task {
+            let granted = await notificationService.isPermissionGranted()
+            self.notificationsState = granted ? .granted : .needAction
         }
     }
 
@@ -126,10 +118,9 @@ final class PermissionManager: NSObject {
     }
 
     func requestNotifications() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { [weak self] _, _ in
-            DispatchQueue.main.async {
-                self?.checkNotificationsStatus()
-            }
+        Task {
+            let _ = await notificationService.requestPermission()
+            checkNotificationsStatus()
         }
     }
 }
