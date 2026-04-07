@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct WelcomeScreenView: View {
-    @State var vm = WelcomeScreenVM()
+    @Bindable var vm: WelcomeScreenVM
 
     var body: some View {
         ScrollView {
@@ -193,6 +193,6 @@ fileprivate struct PermissionRow: View {
 
 #if DEBUG
 #Preview {
-    WelcomeScreenView()
+    WelcomeScreenView(vm: WelcomeScreenVM(permissionManager: PermissionManager(notification: NotificationService())))
 }
 #endif
