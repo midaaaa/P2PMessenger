@@ -137,7 +137,7 @@ final class MPCNetworkServiceImpl: NSObject, MPCNetworkService, LocalPeerIdentit
     }
 
     func updateDisplayName(_ newName: String) {
-        identityProvider.updateDisplayName(newName)
+        _ = identityProvider.updateDisplayName(newName)
     }
 
     func sendToMesh(text: String) -> Bool {
