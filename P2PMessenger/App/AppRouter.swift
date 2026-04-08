@@ -17,5 +17,10 @@ final class AppRouter: AppRouterProtocol {
 
     let chatsRouter = ChatsRouter()
 
+    /// True when app scene is active (foreground).
+    var isAppActive: Bool = true
+
+    /// Currently visible chat destination (used to suppress in-app notifications).
+    var activeDestination: ChatDestination? = nil
 }
 

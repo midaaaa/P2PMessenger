@@ -64,3 +64,101 @@ struct NotificationService: NotificationServiceProtocol {
         }
     }
 }
+
+// MARK: - Notification routing models (kept here to ensure target membership)
+
+enum ChatDestination: Hashable, Codable {
+    case common
+    case `private`(peerID: String)
+}
+
+struct NotificationPayload: Hashable {
+    static let destinationKey = "destination"
+    static let peerIDKey = "peerID"
+
+    let destination: ChatDestination
+
+    init(destination: ChatDestination) {
+        self.destination = destination
+    }
+
+    init?(userInfo: [AnyHashable: Any]) {
+        guard let raw = userInfo[Self.destinationKey] as? String else { return nil }
+        switch raw {
+        case "common":
+            self.destination = .common
+        case "private":
+            guard let peerID = userInfo[Self.peerIDKey] as? String else { return nil }
+            self.destination = .private(peerID: peerID)
+        default:
+            return nil
+        }
+    }
+
+    var userInfo: [AnyHashable: Any] {
+        switch destination {
+        case .common:
+            return [Self.destinationKey: "common"]
+        case .private(let peerID):
+            return [
+                Self.destinationKey: "private",
+                Self.peerIDKey: peerID
+            ]
+        }
+    }
+}
+
+@MainActor
+final class ChatNotificationsController {
+    private let appRouter: AppRouter
+    private let notificationService: NotificationServiceProtocol
+
+    init(
+        peerCoordinator: PeerSessionCoordinator,
+        appRouter: AppRouter,
+        notificationService: NotificationServiceProtocol
+    ) {
+        self.appRouter = appRouter
+        self.notificationService = notificationService
+
+        peerCoordinator.subscribe(onMessage: { [weak self] message in
+            guard let self else { return }
+            self.handle(message)
+        })
+    }
+
+    private func handle(_ message: CoreChatMessage) {
+        guard message.isIncoming else { return }
+
+        let destination: ChatDestination
+        if message.recipientID == nil {
+            destination = .common
+        } else if let peerID = message.conversationPeerID {
+            destination = .private(peerID: peerID)
+        } else {
+            return
+        }
+
+        if appRouter.isAppActive, appRouter.activeDestination == destination {
+            return
+        }
+
+        let title: String
+        let subtitle: String
+        switch destination {
+        case .common:
+            title = "Общий чат"
+            subtitle = message.senderDisplayName
+        case .private:
+            title = message.senderDisplayName
+            subtitle = ""
+        }
+
+        notificationService.send(
+            title: title,
+            message: message.text,
+            subtitle: subtitle,
+            userInfo: NotificationPayload(destination: destination).userInfo
+        )
+    }
+}

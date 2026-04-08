@@ -23,8 +23,18 @@ final class AppNotificationDelegate: NSObject, UIApplicationDelegate, UNUserNoti
     func userNotificationCenter(_ center: UNUserNotificationCenter, 
                                 willPresent notification: UNNotification, 
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        
-        completionHandler([.banner, .list, .sound])
+        guard let container else {
+            completionHandler([.banner, .list, .sound])
+            return
+        }
+
+        if let payload = NotificationPayload(userInfo: notification.request.content.userInfo),
+           container.router.isAppActive,
+           container.router.activeDestination == payload.destination {
+            completionHandler([])
+        } else {
+            completionHandler([.banner, .list, .sound])
+        }
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, 
@@ -32,12 +42,16 @@ final class AppNotificationDelegate: NSObject, UIApplicationDelegate, UNUserNoti
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
         
         let userInfo = response.notification.request.content.userInfo
-        
-        
-        if let chatID = userInfo["chatID"] as? String {
+
+        if let payload = NotificationPayload(userInfo: userInfo) {
             DispatchQueue.main.async {
-                self.container?.router.selectedTab = .chats
-                self.container?.router.activeChatId = chatID
+                switch payload.destination {
+                case .common:
+                    self.container?.router.selectedTab = .commonChat
+                case .private(let peerID):
+                    self.container?.router.selectedTab = .chats
+                    self.container?.router.activeChatId = peerID
+                }
             }
         }
         

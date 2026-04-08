@@ -65,6 +65,13 @@ final class PeerSessionCoordinator {
         connectingPeers.contains { $0.id == peer.id }
     }
 
+    func peer(withID id: String) -> ChatPeer? {
+        if localPeer.id == id { return localPeer }
+        if let peer = connectedPeers.first(where: { $0.id == id }) { return peer }
+        if let peer = discoveredPeers.first(where: { $0.id == id }) { return peer }
+        return nil
+    }
+
     // MARK: - Sending
 
     func sendPrivate(text: String, to peer: ChatPeer) {

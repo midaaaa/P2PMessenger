@@ -34,4 +34,9 @@ final class ChatsRootViewModel {
         privateChatCache[peer.id] = vm
         return vm
     }
+
+    @MainActor
+    func peer(withID id: String) -> ChatPeer? {
+        coordinator.peer(withID: id)
+    }
 }
