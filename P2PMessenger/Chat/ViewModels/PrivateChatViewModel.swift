@@ -7,7 +7,7 @@ import Foundation
 
 @MainActor
 @Observable
-final class PrivateChatViewModel: @MainActor ChatScreenViewModelProtocol {
+final class PrivateChatViewModel: ChatScreenViewModelProtocol {
 
     let peer: ChatPeer
     private let coordinator: PeerSessionCoordinatorProtocol
