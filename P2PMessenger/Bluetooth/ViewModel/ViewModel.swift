@@ -14,7 +14,7 @@ final class BluetoothStatusViewModel {
     private let monitor: BluetoothMonitor
     
     var isBluetoothOff: Bool {
-        !monitor.isBluetoothEnabled
+        monitor.managerState == .poweredOff
     }
     
     init(monitor: BluetoothMonitor) {
