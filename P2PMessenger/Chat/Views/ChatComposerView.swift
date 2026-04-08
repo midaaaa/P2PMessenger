@@ -32,14 +32,15 @@ struct ChatComposerView: View {
                 .onSubmit(sendMessage)
 
             Button(action: sendMessage) {
+                let isActive = !trimmedText.isEmpty
                 Image(systemName: "paperplane")
                     .font(.system(size: ChatUIConstants.Composer.sendIconSize, weight: .medium))
-                    .foregroundStyle(Color("P2PTextTertiary"))
+                    .foregroundStyle(isActive ? Color("P2PLightGray") : Color("P2PTextTertiary"))
                     .frame(
                         width: ChatUIConstants.Composer.sendButtonSize,
                         height: ChatUIConstants.Composer.sendButtonSize
                     )
-                    .background(Color("P2PLightGray"))
+                    .background(isActive ? Color("P2PDarkBlue") : Color("P2PLightGray"))
                     .clipShape(Circle())
             }
             .buttonStyle(.plain)

@@ -39,6 +39,7 @@ struct ChatScreenView: View {
                 .overlay(Color("P2PBorder"))
 
             contentSection
+                .scrollDismissesKeyboard(.interactively)
 
             ChatComposerView(
                 text: $draftMessage,
