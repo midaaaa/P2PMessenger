@@ -5,8 +5,8 @@
 //  Created by Иван Иванов on 02.04.2026.
 //
 
-public enum ChatsRoute: Hashable {
+enum ChatsRoute: Hashable {
     case dialog
     case searchDialog
-    case addDialog
+    case addDialog(peer: ChatPeer)
 }

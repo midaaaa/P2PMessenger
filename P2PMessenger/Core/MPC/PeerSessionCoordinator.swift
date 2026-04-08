@@ -5,7 +5,7 @@
 
 import Foundation
 
-/// Единственный владелец делегата MPCNetworkService.
+/// Единственный владелец делегата MPCNetworkServiceImpl.
 /// Мультикастит события сети всем подписчикам через subscribe(onMessage:).
 /// Все VM читают пир-состояние напрямую через @Observable.
 @MainActor
@@ -23,13 +23,13 @@ final class PeerSessionCoordinator {
 
     // MARK: - Private
 
-    private let networkService: MPCNetworkService
+    private let networkService: MPCNetworkServiceImpl
     private var messageHandlers: [(CoreChatMessage) -> Void] = []
     private var peerStateHandlers: [() -> Void] = []
 
     // MARK: - Init
 
-    init(networkService: MPCNetworkService) {
+    init(networkService: MPCNetworkServiceImpl) {
         self.networkService = networkService
         self.localPeer = networkService.localPeer
         networkService.delegate = self
@@ -63,6 +63,12 @@ final class PeerSessionCoordinator {
 
     func isPeerConnecting(_ peer: ChatPeer) -> Bool {
         connectingPeers.contains { $0.id == peer.id }
+    }
+
+    // MARK: - Sending
+
+    func sendPrivate(text: String, to peer: ChatPeer) {
+        networkService.sendPrivate(text: text, to: peer)
     }
 
     // MARK: - Message subscription

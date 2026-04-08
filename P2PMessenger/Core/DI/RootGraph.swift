@@ -19,7 +19,7 @@ final class RootGraph {
     let bluetoothMonitor: BluetoothMonitor
     
     // Network layer
-    @ObservationIgnored let networkService: MPCNetworkService
+    @ObservationIgnored let networkService: MPCNetworkServiceImpl
     @ObservationIgnored let coordinator: PeerSessionCoordinator
 
     
@@ -63,7 +63,7 @@ final class RootGraph {
         self.bluetoothStatusViewModel = BluetoothStatusViewModel(monitor: bluetoothMonitor)
         
         // Network
-        let svc = MPCNetworkService()
+        let svc = MPCNetworkServiceImpl()
         let coord = PeerSessionCoordinator(networkService: svc)
         let commonCoordinator = CommonChatCoordinator(networkService: svc, peerCoordinator: coord)
         self.networkService = svc
@@ -79,7 +79,8 @@ final class RootGraph {
                 chats: ChatListPreviewFixtures.stubChats
             ),
             chatScreenViewModel: ChatPreviewFixtures.newChat,
-            nearbyUserViewModel: nearbyUserViewModel
+            nearbyUserViewModel: nearbyUserViewModel,
+            coordinator: coord
         )
         self.chatsRootView = ChatsRootView (
             viewModel: chatsRootViewModel,

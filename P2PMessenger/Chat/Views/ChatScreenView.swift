@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct ChatScreenView: View {
-    private let viewModel: ChatScreenViewModel
+struct ChatScreenView<ViewModel: ChatScreenViewModelProtocol & Observable>: View {
+    private let viewModel: ViewModel
     @Binding var draftMessage: String
     let onBack: () -> Void
     let onSend: (String) -> Bool
@@ -16,7 +16,7 @@ struct ChatScreenView: View {
     let enablesAutoScrollToBottom: Bool
 
     init(
-        viewModel: ChatScreenViewModel,
+        viewModel: ViewModel,
         draftMessage: Binding<String>,
         onBack: @escaping () -> Void = {},
         onSend: @escaping (String) -> Bool = { _ in false },
@@ -125,7 +125,7 @@ struct ChatScreenView: View {
 #Preview("Новый чат") {
     ChatScreenView(
         viewModel: ChatScreenViewModel(
-            networkService: MPCNetworkService(),
+            networkService: MPCNetworkServiceImpl(),
             headerStyle: .direct(
                 participant: ChatParticipant(
                     name: "Глеб",
