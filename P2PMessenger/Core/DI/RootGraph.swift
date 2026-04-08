@@ -21,6 +21,7 @@ final class RootGraph {
     // Storage
     @ObservationIgnored let profileStorage: UserProfileStorageProtocol
     @ObservationIgnored let identityProvider: LocalPeerIdentityProvider
+    @ObservationIgnored let onboardingState: OnboardingState
 
     // Network layer
     @ObservationIgnored let networkService: MPCNetworkServiceImpl
@@ -76,6 +77,9 @@ final class RootGraph {
         self.profileStorage = profileStorage
         
         let permissionsStorage = PermissionsStorage(storage: baseStorage)
+        let onboardingStorage = OnboardingStorage(storage: baseStorage)
+        self.onboardingState = OnboardingState(storage: onboardingStorage)
+        let chatHistoryStorage = ChatHistoryStorage(storage: baseStorage)
         
         let identityProvider = LocalPeerIdentityProvider(profileStorage: profileStorage)
         self.identityProvider = identityProvider
@@ -83,7 +87,7 @@ final class RootGraph {
         // Network
         let svc = MPCNetworkServiceImpl(identityProvider: identityProvider)
         let coord = PeerSessionCoordinator(networkService: svc)
-        let commonCoordinator = CommonChatCoordinator(networkService: svc, peerCoordinator: coord, storage: baseStorage)
+        let commonCoordinator = CommonChatCoordinator(networkService: svc, peerCoordinator: coord, chatHistoryStorage: chatHistoryStorage)
         self.networkService = svc
         self.coordinator = coord
         
@@ -118,7 +122,8 @@ final class RootGraph {
         // Onboarding
         self.welcomeScreenVM = WelcomeScreenVM(
             permissionManager: PermissionManager(notification: notificationService, permissionsStorage: permissionsStorage),
-            identityProvider: identityProvider
+            identityProvider: identityProvider,
+            onboardingState: self.onboardingState
         )
         self.welcomeScreenView = WelcomeScreenView(vm: welcomeScreenVM)
         
@@ -130,7 +135,8 @@ final class RootGraph {
             settingsRootView: settingsRootView,
             welcomeScreenVM: welcomeScreenVM,
             welcomeScreenView: welcomeScreenView,
-            coordinator: coord
+            coordinator: coord,
+            onboardingState: self.onboardingState
         )
         
         self.chatNotifications = ChatNotificationsController(

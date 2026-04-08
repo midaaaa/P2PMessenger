@@ -28,10 +28,14 @@ final class WelcomeScreenVM {
         }
     }
 
+    private let onboardingState: OnboardingState
+
     init(permissionManager: PermissionManager, 
-         identityProvider: LocalPeerIdentityReading) {
+         identityProvider: LocalPeerIdentityReading,
+         onboardingState: OnboardingState) {
         self.permissionManager = permissionManager
         self.identityProvider = identityProvider
+        self.onboardingState = onboardingState
         self.userName = identityProvider.displayName
     }
 
@@ -56,10 +60,8 @@ final class WelcomeScreenVM {
         }
     }
     
-    @AppStorage("isOnboardingPassed") @ObservationIgnored private var isOnboardingPassed = false
-
     func setOnboardingPassed() {
-        isOnboardingPassed = true
+        onboardingState.markOnboardingPassed()
     }
     
 }

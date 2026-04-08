@@ -197,7 +197,8 @@ fileprivate struct PermissionRow: View {
     let provider = LocalPeerIdentityProvider(profileStorage: storage)
     return WelcomeScreenView(vm: WelcomeScreenVM(
         permissionManager: PermissionManager(notification: NotificationService(), permissionsStorage: PermissionsStorage(storage: AppKeyValueStorage(defaults: .standard))),
-        identityProvider: provider
+        identityProvider: provider,
+        onboardingState: OnboardingState(storage: OnboardingStorage(storage: AppKeyValueStorage(defaults: .standard)))
     ))
 }
 #endif

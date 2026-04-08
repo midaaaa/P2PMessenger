@@ -17,12 +17,11 @@ struct AppRootView: View {
     let welcomeScreenVM: WelcomeScreenVM
     let welcomeScreenView: WelcomeScreenView
     let coordinator: PeerSessionCoordinator
+    let onboardingState: OnboardingState
     @Environment(\.scenePhase) private var scenePhase
     
-    @AppStorage("isOnboardingPassed") private var isOnboardingPassed = false
-    
     var body: some View {
-        if isOnboardingPassed {
+        if onboardingState.isOnboardingPassed {
             TabView(selection: $router.selectedTab) {
                 chatsRootView
                     .tabItem {

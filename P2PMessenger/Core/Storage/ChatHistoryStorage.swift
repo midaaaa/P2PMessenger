@@ -9,7 +9,7 @@ protocol ChatHistoryStorageProtocol {
 
 final class ChatHistoryStorage: ChatHistoryStorageProtocol {
     private enum Keys {
-        static let mesh = "chat.mesh.messages"
+        static let mesh = "chat.common.messages"
         static let privateMsgs = "chat.private.messages"
     }
 
