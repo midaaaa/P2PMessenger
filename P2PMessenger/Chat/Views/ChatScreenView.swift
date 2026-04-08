@@ -162,6 +162,7 @@ struct ChatScreenView<ViewModel: ChatScreenViewModelProtocol & Observable>: View
     )
 }
 
+@MainActor
 extension ChatPreviewFixtures {
     fileprivate static let publicChat: ChatScreenViewModel = {
         let vasya = ChatParticipant(name: "Вася", isOnline: true)
