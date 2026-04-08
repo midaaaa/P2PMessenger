@@ -29,12 +29,6 @@ struct ChatsRootView: View {
             )
             .navigationDestination(for: ChatsRoute.self) { route in
                 switch route {
-                case .dialog:
-                    ChatScreenView(viewModel: viewModel.chatScreenViewModel,
-                                   draftMessage: .constant(""), onBack: router.popToRoot)
-                    .navigationBarBackButtonHidden(true)
-                    
-                    
                 case .searchDialog:
                     VStack(spacing: 16) {
                         NearbyUsersView(

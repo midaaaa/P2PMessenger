@@ -9,20 +9,17 @@ import SwiftUI
 @Observable
 final class ChatsRootViewModel {
     let chatListViewModel: ChatsListViewModel
-    let chatScreenViewModel: ChatScreenViewModel
     let nearbyUserViewModel: NearbyUserViewModel
 
     @ObservationIgnored
-    private let coordinator: PeerSessionCoordinator
+    private let coordinator: PeerSessionCoordinatorProtocol
     @ObservationIgnored
     private var privateChatCache: [String: PrivateChatViewModel] = [:]
 
     init(chatListViewModel: ChatsListViewModel,
-         chatScreenViewModel: ChatScreenViewModel,
          nearbyUserViewModel: NearbyUserViewModel,
-         coordinator: PeerSessionCoordinator) {
+         coordinator: PeerSessionCoordinatorProtocol) {
         self.chatListViewModel = chatListViewModel
-        self.chatScreenViewModel = chatScreenViewModel
         self.nearbyUserViewModel = nearbyUserViewModel
         self.coordinator = coordinator
     }
