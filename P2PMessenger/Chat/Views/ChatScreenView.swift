@@ -14,6 +14,7 @@ struct ChatScreenView<ViewModel: ChatScreenViewModelProtocol & Observable>: View
     let onSend: (String) -> Bool
     let alignsMessagesToBottom: Bool
     let enablesAutoScrollToBottom: Bool
+    @FocusState var isKeyboardFocused: Bool
 
     init(
         viewModel: ViewModel,
@@ -34,23 +35,27 @@ struct ChatScreenView<ViewModel: ChatScreenViewModelProtocol & Observable>: View
     var body: some View {
         VStack(spacing: 0) {
             ChatHeaderView(style: viewModel.headerStyle, onBack: onBack)
+                .onTapGesture {isKeyboardFocused = false}
 
             Divider()
                 .overlay(Color("P2PBorder"))
 
             contentSection
                 .scrollDismissesKeyboard(.interactively)
+                .onTapGesture {isKeyboardFocused = false}
 
             ChatComposerView(
                 text: $draftMessage,
                 onSend: onSend,
-                placeholder: chatTypeText
+                placeholder: chatTypeText,
+                isKeyboardFocused: _isKeyboardFocused
             )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background {
             Color("P2PBackground")
                 .ignoresSafeArea()
+                .onTapGesture {isKeyboardFocused = false}
         }
     }
     
@@ -94,7 +99,7 @@ struct ChatScreenView<ViewModel: ChatScreenViewModelProtocol & Observable>: View
                     .padding(.horizontal, ChatUIConstants.Screen.messageListHorizontalPadding)
                     .padding(.vertical, ChatUIConstants.Screen.messageListVerticalPadding)
                 }
-                .defaultScrollAnchor(alignsMessagesToBottom ? .bottom : .top)
+                .defaultScrollAnchor(.bottom)
                 .task {
                     guard enablesAutoScrollToBottom else { return }
                     await Task.yield()

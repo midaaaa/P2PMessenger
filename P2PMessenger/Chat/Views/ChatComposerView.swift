@@ -11,6 +11,8 @@ struct ChatComposerView: View {
     @Binding var text: String
     let onSend: (String) -> Bool
     var placeholder: String
+    var isTextEmpty: Bool { text.isEmpty }
+    @FocusState var isKeyboardFocused: Bool
 
     var body: some View {
         HStack(spacing: ChatUIConstants.Composer.horizontalSpacing) {
@@ -30,17 +32,17 @@ struct ChatComposerView: View {
                 .textFieldStyle(.plain)
                 .submitLabel(.send)
                 .onSubmit(sendMessage)
+                .focused($isKeyboardFocused)
 
             Button(action: sendMessage) {
-                let isActive = !trimmedText.isEmpty
                 Image(systemName: "paperplane")
                     .font(.system(size: ChatUIConstants.Composer.sendIconSize, weight: .medium))
-                    .foregroundStyle(isActive ? Color("P2PLightGray") : Color("P2PTextTertiary"))
+                    .foregroundStyle(!isTextEmpty ? Color("P2PLightGray") : Color("P2PTextTertiary"))
                     .frame(
                         width: ChatUIConstants.Composer.sendButtonSize,
                         height: ChatUIConstants.Composer.sendButtonSize
                     )
-                    .background(isActive ? Color("P2PDarkBlue") : Color("P2PLightGray"))
+                    .background(!isTextEmpty ? Color("P2PDarkBlue") : Color("P2PLightGray"))
                     .clipShape(Circle())
             }
             .buttonStyle(.plain)
