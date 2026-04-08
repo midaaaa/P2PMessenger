@@ -20,17 +20,18 @@ protocol MPCNetworkService {
     func sendPrivate(text: String, to peer: ChatPeer)
 }
 
-final class MPCNetworkServiceImpl: NSObject, MPCNetworkService {
+final class MPCNetworkServiceImpl: NSObject, MPCNetworkService, LocalPeerIdentityDelegate {
     weak var delegate: MPCNetworkServiceDelegate?
 
-    private let defaults: UserDefaults
+    private let identityProvider: LocalPeerIdentityProvider
     private let topologyCoordinator = MeshTopologyCoordinator()
     private let scheduler = ConnectionScheduler()
     private let peerRegistry = PeerRegistry()
 
-    let localUserID: String
+    var localUserID: String { identityProvider.localUserID }
+    private var myPeerID: MCPeerID { identityProvider.peerID }
+    var groupEpoch: Int { identityProvider.groupEpoch }
 
-    private var myPeerID: MCPeerID
     var session: MCSession
     private var advertiser: MCNearbyServiceAdvertiser?
     var browser: MCNearbyServiceBrowser?
@@ -41,34 +42,20 @@ final class MPCNetworkServiceImpl: NSObject, MPCNetworkService {
     private let encoder = JSONEncoder()
     let decoder = JSONDecoder()
 
-    var groupEpoch: Int {
-        didSet {
-            defaults.set(groupEpoch, forKey: MPCNetworkConstants.userDefaultsGroupEpochKey)
-        }
+    convenience override init() {
+        let storage = UserDefaultsProfileStorage()
+        let provider = LocalPeerIdentityProvider(profileStorage: storage)
+        self.init(identityProvider: provider)
     }
 
-    override convenience init() {
-        self.init(defaults: .standard)
-    }
-
-    init(defaults: UserDefaults) {
-        self.defaults = defaults
-
-        let persistedUserID = defaults.string(forKey: MPCNetworkConstants.userDefaultsPeerIDKey) ?? UUID().uuidString
-        defaults.set(persistedUserID, forKey: MPCNetworkConstants.userDefaultsPeerIDKey)
-        self.localUserID = persistedUserID
-
-        let initialDisplayName = Self.validatedDisplayName(
-            defaults.string(forKey: MPCNetworkConstants.userDefaultsDisplayNameKey) ?? UIDevice.current.name
-        ) ?? "Sirius"
-
-        let persistedEpoch = defaults.integer(forKey: MPCNetworkConstants.userDefaultsGroupEpochKey)
-        self.groupEpoch = max(1, persistedEpoch == 0 ? 1 : persistedEpoch)
-
-        self.myPeerID = MCPeerID(displayName: initialDisplayName)
-        self.session = MCSession(peer: myPeerID, securityIdentity: nil, encryptionPreference: .required)
+    init(identityProvider: LocalPeerIdentityProvider) {
+        self.identityProvider = identityProvider
+        
+        self.session = MCSession(peer: identityProvider.peerID, securityIdentity: nil, encryptionPreference: .required)
 
         super.init()
+
+        identityProvider.delegate = self
 
         encoder.dateEncodingStrategy = .iso8601
         decoder.dateDecodingStrategy = .iso8601
@@ -76,27 +63,19 @@ final class MPCNetworkServiceImpl: NSObject, MPCNetworkService {
         configureSession()
     }
 
+    // MARK: - LocalPeerIdentityDelegate
+
+    func identityProviderDidChangeIdentity() {
+        restartAfterIdentityChange()
+    }
+
     deinit {
         stopDiscovery()
         session.disconnect()
     }
 
-    static func validatedDisplayName(_ rawValue: String) -> String? {
-        let trimmed = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return nil }
-
-        let collapsedWhitespace = trimmed
-            .components(separatedBy: .whitespacesAndNewlines)
-            .filter { !$0.isEmpty }
-            .joined(separator: " ")
-
-        let shortened = String(collapsedWhitespace.prefix(MPCNetworkConstants.maxDisplayNameLength))
-        guard !shortened.isEmpty else { return nil }
-        return shortened
-    }
-
     var localPeer: ChatPeer {
-        ChatPeer(id: localUserID, displayName: myPeerID.displayName)
+        identityProvider.localPeer
     }
 
     var currentLeaderID: String {
@@ -163,17 +142,7 @@ final class MPCNetworkServiceImpl: NSObject, MPCNetworkService {
     }
 
     func updateDisplayName(_ newName: String) {
-        guard let validatedName = Self.validatedDisplayName(newName) else {
-            publishError(.invalidDisplayName)
-            return
-        }
-        guard validatedName != myPeerID.displayName else { return }
-
-        defaults.set(validatedName, forKey: MPCNetworkConstants.userDefaultsDisplayNameKey)
-
-        groupEpoch += 1
-        myPeerID = MCPeerID(displayName: validatedName)
-        restartAfterIdentityChange()
+        identityProvider.updateDisplayName(newName)
     }
 
     func sendToMesh(text: String) -> Bool {

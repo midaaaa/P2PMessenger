@@ -20,11 +20,19 @@ final class WelcomeScreenVM {
     ]
 
     private let permissionManager: PermissionManager
+    private let identityProvider: LocalPeerIdentityReading
 
-    var userName: String = ""
+    var userName: String = "" {
+        didSet {
+            _ = identityProvider.updateDisplayName(userName)
+        }
+    }
 
-    init(permissionManager: PermissionManager) {
+    init(permissionManager: PermissionManager, 
+         identityProvider: LocalPeerIdentityReading) {
         self.permissionManager = permissionManager
+        self.identityProvider = identityProvider
+        self.userName = identityProvider.displayName
     }
 
     var permissions: [PermissionItem] {

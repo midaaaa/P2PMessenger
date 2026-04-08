@@ -193,6 +193,11 @@ fileprivate struct PermissionRow: View {
 
 #if DEBUG
 #Preview {
-    WelcomeScreenView(vm: WelcomeScreenVM(permissionManager: PermissionManager(notification: NotificationService())))
+    let storage = UserDefaultsProfileStorage()
+    let provider = LocalPeerIdentityProvider(profileStorage: storage)
+    return WelcomeScreenView(vm: WelcomeScreenVM(
+        permissionManager: PermissionManager(notification: NotificationService()),
+        identityProvider: provider
+    ))
 }
 #endif

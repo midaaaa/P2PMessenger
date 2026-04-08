@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct UserCard: View {
-    var username: String
+    @Binding var username: String
 
     var body: some View {
         HStack {
@@ -28,7 +28,7 @@ struct UserCard: View {
                     .foregroundStyle(.secondary)
                     .font(.caption)
                     .padding(.bottom, Constants.userTextPadding)
-                Text(username)
+                TextField("userName", text: $username)
                     .font(.title3)
             }
             Spacer()
@@ -49,9 +49,9 @@ private enum Constants {
 
 #Preview {
     Group {
-        UserCard(username: "TEST")
-        UserCard(username: "123")
-        UserCard(username: "иван")
+        UserCard(username: .constant("TEST"))
+        UserCard(username: .constant("123"))
+        UserCard(username: .constant("иван"))
     }
     .padding(8)
 }

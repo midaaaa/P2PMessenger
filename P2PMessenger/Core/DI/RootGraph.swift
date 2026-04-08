@@ -18,6 +18,10 @@ final class RootGraph {
     @ObservationIgnored
     let bluetoothMonitor: BluetoothMonitor
     
+    // Storage
+    @ObservationIgnored let profileStorage: UserProfileStorageProtocol
+    @ObservationIgnored let identityProvider: LocalPeerIdentityProvider
+
     // Network layer
     @ObservationIgnored let networkService: MPCNetworkServiceImpl
     @ObservationIgnored let coordinator: PeerSessionCoordinator
@@ -66,8 +70,15 @@ final class RootGraph {
         self.bluetoothMonitor = BluetoothMonitor()
         self.bluetoothStatusViewModel = BluetoothStatusViewModel(monitor: bluetoothMonitor)
         
+        // Storage
+        let profileStorage = UserDefaultsProfileStorage()
+        self.profileStorage = profileStorage
+        
+        let identityProvider = LocalPeerIdentityProvider(profileStorage: profileStorage)
+        self.identityProvider = identityProvider
+
         // Network
-        let svc = MPCNetworkServiceImpl()
+        let svc = MPCNetworkServiceImpl(identityProvider: identityProvider)
         let coord = PeerSessionCoordinator(networkService: svc)
         let commonCoordinator = CommonChatCoordinator(networkService: svc, peerCoordinator: coord)
         self.networkService = svc
@@ -96,11 +107,16 @@ final class RootGraph {
         self.commonChatRootView = CommonChatRootView(viewModel: commonChatViewModel, appRouter: router)
         
         // Settings
-        self.settingsViewModel = SettingsViewModel()
+        self.settingsViewModel = SettingsViewModel(
+            identityProvider: identityProvider
+        )
         self.settingsRootView = SettingsRootView(viewModel: settingsViewModel)
         
         // Onboarding
-        self.welcomeScreenVM = WelcomeScreenVM(permissionManager: PermissionManager(notification: notificationService))
+        self.welcomeScreenVM = WelcomeScreenVM(
+            permissionManager: PermissionManager(notification: notificationService),
+            identityProvider: identityProvider
+        )
         self.welcomeScreenView = WelcomeScreenView(vm: welcomeScreenVM)
         
         self.appRootView = AppRootView(

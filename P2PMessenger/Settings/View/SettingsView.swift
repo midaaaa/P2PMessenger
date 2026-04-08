@@ -16,7 +16,7 @@ struct SettingsView: View {
                 Button {
 
                 } label: {
-                    UserCard(username: viewModel.username)
+                    UserCard(username: $viewModel.username)
                         .tint(.primary)
                 }
             } header: {
@@ -75,5 +75,7 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView(viewModel: SettingsViewModel())
+    let storage = UserDefaultsProfileStorage()
+    let provider = LocalPeerIdentityProvider(profileStorage: storage)
+    return SettingsView(viewModel: SettingsViewModel(identityProvider: provider))
 }
