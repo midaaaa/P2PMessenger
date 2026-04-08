@@ -60,6 +60,10 @@ final class WelcomeScreenVM {
         }
     }
     
+    func syncDisplayName() {
+        userName = identityProvider.displayName
+    }
+
     func setOnboardingPassed() {
         onboardingState.markOnboardingPassed()
     }

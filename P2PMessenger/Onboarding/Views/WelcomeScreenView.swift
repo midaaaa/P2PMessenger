@@ -22,6 +22,9 @@ struct WelcomeScreenView: View {
             }
             .padding()
         }
+        .onAppear {
+            vm.syncDisplayName()
+        }
     }
 
     private var headerSection: some View {

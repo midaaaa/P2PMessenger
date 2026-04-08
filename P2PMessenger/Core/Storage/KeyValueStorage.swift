@@ -6,6 +6,8 @@ protocol KeyValueStorageProtocol {
     func bool(forKey key: String) -> Bool
     func integer(forKey key: String) -> Int
     func data(forKey key: String) -> Data?
+    func removeObject(forKey key: String)
+    func removeAll()
 }
 
 final class AppKeyValueStorage: KeyValueStorageProtocol {
@@ -33,5 +35,14 @@ final class AppKeyValueStorage: KeyValueStorageProtocol {
 
     func data(forKey key: String) -> Data? {
         defaults.data(forKey: key)
+    }
+
+    func removeObject(forKey key: String) {
+        defaults.removeObject(forKey: key)
+    }
+
+    func removeAll() {
+        guard let bundleID = Bundle.main.bundleIdentifier else { return }
+        defaults.removePersistentDomain(forName: bundleID)
     }
 }

@@ -86,7 +86,7 @@ final class RootGraph {
 
         // Network
         let svc = MPCNetworkServiceImpl(identityProvider: identityProvider)
-        let coord = PeerSessionCoordinator(networkService: svc)
+        let coord = PeerSessionCoordinator(networkService: svc, storage: baseStorage)
         let commonCoordinator = CommonChatCoordinator(networkService: svc, peerCoordinator: coord, chatHistoryStorage: chatHistoryStorage)
         self.networkService = svc
         self.coordinator = coord
@@ -98,7 +98,8 @@ final class RootGraph {
         // Chats
         self.chatsRootViewModel = ChatsRootViewModel(
             chatListViewModel: ChatsListViewModel(
-                coordinator: coord
+                coordinator: coord,
+                storage: baseStorage
             ),
             chatScreenViewModel: ChatPreviewFixtures.newChat,
             nearbyUserViewModel: nearbyUserViewModel,
@@ -115,7 +116,9 @@ final class RootGraph {
         
         // Settings
         self.settingsViewModel = SettingsViewModel(
-            identityProvider: identityProvider
+            identityProvider: identityProvider,
+            storage: baseStorage,
+            onboardingState: self.onboardingState
         )
         self.settingsRootView = SettingsRootView(viewModel: settingsViewModel)
         

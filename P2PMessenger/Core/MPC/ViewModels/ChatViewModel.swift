@@ -136,17 +136,11 @@ final class ChatViewModel: ObservableObject {
 
     private func persistState() {
         historyStorage.saveMeshMessages(meshMessages)
-        historyStorage.savePrivateMessages(privateMessages)
     }
 
     private func restorePersistedState() {
         meshMessages = historyStorage.loadMeshMessages()
-        privateMessages = historyStorage.loadPrivateMessages()
-
         seenMessageIDs = Set(meshMessages.map(\.id))
-        for conversation in privateMessages.values {
-            seenMessageIDs.formUnion(conversation.map(\.id))
-        }
     }
 }
 

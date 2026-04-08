@@ -30,7 +30,7 @@ final class PeerSessionCoordinator {
     // MARK: - Private
 
     private let networkService: MPCNetworkServiceImpl
-    private let defaults: UserDefaults
+    private let storage: KeyValueStorageProtocol
     private var messageHandlers: [(CoreChatMessage) -> Void] = []
     private var peerStateHandlers: [() -> Void] = []
     private var privateMessagesByPeerID: [String: [CoreChatMessage]] = [:]
@@ -39,9 +39,9 @@ final class PeerSessionCoordinator {
 
     // MARK: - Init
 
-    init(networkService: MPCNetworkServiceImpl, defaults: UserDefaults = .standard) {
+    init(networkService: MPCNetworkServiceImpl, storage: KeyValueStorageProtocol) {
         self.networkService = networkService
-        self.defaults = defaults
+        self.storage = storage
         self.localPeer = networkService.localPeer
         restorePersistedMessages()
         networkService.delegate = self
@@ -131,11 +131,11 @@ final class PeerSessionCoordinator {
 
     private func persistMessages() {
         guard let data = try? JSONEncoder().encode(privateMessagesByPeerID) else { return }
-        defaults.set(data, forKey: privateMessagesStorageKey)
+        storage.set(data, forKey: privateMessagesStorageKey)
     }
 
     private func restorePersistedMessages() {
-        guard let data = defaults.data(forKey: privateMessagesStorageKey),
+        guard let data = storage.data(forKey: privateMessagesStorageKey),
               let restored = try? JSONDecoder().decode([String: [CoreChatMessage]].self, from: data) else {
             return
         }
