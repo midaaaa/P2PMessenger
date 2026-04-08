@@ -67,7 +67,10 @@ private struct PrivateChatView: View {
             viewModel: viewModel,
             draftMessage: $viewModel.inputText,
             onBack: onBack,
-            onSend: { _ in viewModel.sendMessage() }
+            onSend: {
+                _ in viewModel.sendMessage()
+                return true
+            }
         )
         .navigationBarBackButtonHidden(true)
     }

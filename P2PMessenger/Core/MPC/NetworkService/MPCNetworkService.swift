@@ -8,6 +8,14 @@ protocol MPCNetworkService {
     var lifecycleState: MPCNetworkLifecycleState { get }
     var advertiserState: MPCNetworkAdvertiserState { get }
     var groupEpoch: Int { get }
+    var localPeer: ChatPeer { get }
+    
+    func startIfNeeded()
+    func resumeIfNeeded()
+    func suspendForBackground()
+    
+    func updateDisplayName(_ newName: String)
+    func sendToMesh(text: String) -> Bool
     
     func sendPrivate(text: String, to peer: ChatPeer)
 }
