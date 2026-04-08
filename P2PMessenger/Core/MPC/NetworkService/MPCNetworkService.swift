@@ -42,11 +42,6 @@ final class MPCNetworkServiceImpl: NSObject, MPCNetworkService, LocalPeerIdentit
     private let encoder = JSONEncoder()
     let decoder = JSONDecoder()
 
-    convenience override init() {
-        let storage = UserDefaultsProfileStorage()
-        let provider = LocalPeerIdentityProvider(profileStorage: storage)
-        self.init(identityProvider: provider)
-    }
 
     init(identityProvider: LocalPeerIdentityProvider) {
         self.identityProvider = identityProvider

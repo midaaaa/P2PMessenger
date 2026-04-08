@@ -123,9 +123,11 @@ struct ChatScreenView<ViewModel: ChatScreenViewModelProtocol & Observable>: View
 }
 
 #Preview("Новый чат") {
+    let storage = UserDefaultsProfileStorage()
+    let provider = LocalPeerIdentityProvider(profileStorage: storage)
     ChatScreenView(
         viewModel: ChatScreenViewModel(
-            networkService: MPCNetworkServiceImpl(),
+            networkService: MPCNetworkServiceImpl(identityProvider: provider),
             headerStyle: .direct(
                 participant: ChatParticipant(
                     name: "Глеб",
@@ -140,7 +142,7 @@ struct ChatScreenView<ViewModel: ChatScreenViewModelProtocol & Observable>: View
                 ),
                 title: "Глеб",
                 subtitle: "Напишите первое сообщение.\nСобеседник получит запрос на чат."
-            ),
+            )
         ),
         draftMessage: .constant("")
     )

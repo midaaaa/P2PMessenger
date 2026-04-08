@@ -23,19 +23,16 @@ final class ChatViewModel: ObservableObject {
     let networkService: MPCNetworkService
     private let identityProvider: LocalPeerIdentityReading
 
-    private let defaults: UserDefaults
-    private let meshStorageKey = "chat.mesh.messages"
-    private let privateStorageKey = "chat.private.messages"
+    private let historyStorage: ChatHistoryStorageProtocol
     private var seenMessageIDs = Set<UUID>()
 
     init(networkService: MPCNetworkService,
          identityProvider: LocalPeerIdentityReading,
-         defaults: UserDefaults = .standard) {
+         historyStorage: ChatHistoryStorageProtocol) {
         self.networkService = networkService
         self.identityProvider = identityProvider
-        self.defaults = defaults
+        self.historyStorage = historyStorage
         
-        // Note: In a real app we'd need to cast or have the delegate on the protocol
         if let impl = networkService as? MPCNetworkServiceImpl {
             impl.delegate = self
         }
@@ -81,7 +78,7 @@ final class ChatViewModel: ObservableObject {
         guard let targetPeer else { return }
 
         let text = privateInputText
-        networkService.sendPrivate(text: text, to: targetPeer)
+        let _ = networkService.sendPrivate(text: text, to: targetPeer)
 
         if !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             privateInputText = ""
@@ -138,29 +135,13 @@ final class ChatViewModel: ObservableObject {
     }
 
     private func persistState() {
-        if let data = try? JSONEncoder().encode(meshMessages) {
-            defaults.set(data, forKey: meshStorageKey)
-        }
-
-        if let data = try? JSONEncoder().encode(privateMessages) {
-            defaults.set(data, forKey: privateStorageKey)
-        }
+        historyStorage.saveMeshMessages(meshMessages)
+        historyStorage.savePrivateMessages(privateMessages)
     }
 
     private func restorePersistedState() {
-        let decoder = JSONDecoder()
-
-        if let meshData = defaults.data(forKey: meshStorageKey),
-           let messages = try? decoder.decode([CoreChatMessage].self, from: meshData) {
-            meshMessages = messages.sorted { $0.timestamp < $1.timestamp }
-        }
-
-        if let privateData = defaults.data(forKey: privateStorageKey),
-           let messages = try? decoder.decode([String: [CoreChatMessage]].self, from: privateData) {
-            privateMessages = messages.mapValues { conversation in
-                conversation.sorted { $0.timestamp < $1.timestamp }
-            }
-        }
+        meshMessages = historyStorage.loadMeshMessages()
+        privateMessages = historyStorage.loadPrivateMessages()
 
         seenMessageIDs = Set(meshMessages.map(\.id))
         for conversation in privateMessages.values {

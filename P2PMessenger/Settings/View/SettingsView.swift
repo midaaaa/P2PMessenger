@@ -75,7 +75,7 @@ struct SettingsView: View {
 }
 
 #Preview {
-    let storage = UserDefaultsProfileStorage()
+    let storage = AppProfileStorage(storage: AppKeyValueStorage(defaults: .standard))
     let provider = LocalPeerIdentityProvider(profileStorage: storage)
     return SettingsView(viewModel: SettingsViewModel(identityProvider: provider))
 }

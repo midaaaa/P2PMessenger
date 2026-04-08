@@ -71,8 +71,11 @@ final class RootGraph {
         self.bluetoothStatusViewModel = BluetoothStatusViewModel(monitor: bluetoothMonitor)
         
         // Storage
-        let profileStorage = UserDefaultsProfileStorage()
+        let baseStorage: KeyValueStorageProtocol = AppKeyValueStorage(defaults: .standard)
+        let profileStorage = AppProfileStorage(storage: baseStorage)
         self.profileStorage = profileStorage
+        
+        let permissionsStorage = PermissionsStorage(storage: baseStorage)
         
         let identityProvider = LocalPeerIdentityProvider(profileStorage: profileStorage)
         self.identityProvider = identityProvider
@@ -114,7 +117,7 @@ final class RootGraph {
         
         // Onboarding
         self.welcomeScreenVM = WelcomeScreenVM(
-            permissionManager: PermissionManager(notification: notificationService),
+            permissionManager: PermissionManager(notification: notificationService, permissionsStorage: permissionsStorage),
             identityProvider: identityProvider
         )
         self.welcomeScreenView = WelcomeScreenView(vm: welcomeScreenVM)
