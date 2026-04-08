@@ -11,7 +11,7 @@ import Observation
 final class SettingsViewModel {
     private let identityProvider: LocalPeerIdentityReading
     private let storage: KeyValueStorageProtocol
-    private let onboardingState: OnboardingState
+    private let onboardingState: OnboardingStateProtocol
 
     var username: String {
         didSet {
@@ -27,7 +27,7 @@ final class SettingsViewModel {
 
     init(identityProvider: LocalPeerIdentityReading,
          storage: KeyValueStorageProtocol,
-         onboardingState: OnboardingState,
+         onboardingState: OnboardingStateProtocol,
          spaceTaken: Int = 1234,
          progress: Double = 0.67,
          visibilityToggle: Bool = false,
@@ -48,7 +48,7 @@ final class SettingsViewModel {
         username = identityProvider.displayName
     }
 
-    func clearAllData() {
+    @MainActor func clearAllData() {
         storage.removeAll()
         onboardingState.isOnboardingPassed = false
     }

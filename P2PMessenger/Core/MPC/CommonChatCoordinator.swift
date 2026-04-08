@@ -13,14 +13,14 @@ final class CommonChatCoordinator {
     private let maxStoredMessages = 300
     private var countParticipant = 1
     private let networkService: MPCNetworkService
-    private let peerCoordinator: PeerSessionCoordinator
+    private let peerCoordinator: PeerSessionCoordinatorProtocol
     private let chatHistoryStorage: ChatHistoryStorageProtocol
     private var seenMessageIDs = Set<UUID>()
     private var commonChatMessages: [CoreChatMessage] = []
 
     init(
         networkService: MPCNetworkService,
-        peerCoordinator: PeerSessionCoordinator,
+        peerCoordinator: PeerSessionCoordinatorProtocol,
         chatHistoryStorage: ChatHistoryStorageProtocol
     ) {
         self.networkService = networkService

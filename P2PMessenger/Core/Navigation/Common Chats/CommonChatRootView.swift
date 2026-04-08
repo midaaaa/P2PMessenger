@@ -8,9 +8,9 @@ import SwiftUI
 
 struct CommonChatRootView: View {
     @Bindable private var viewModel: CommonChatViewModel
-    @Bindable private var appRouter: AppRouter
+    private let appRouter: any AppRouterProtocol
 
-    init(viewModel: CommonChatViewModel, appRouter: AppRouter) {
+    init(viewModel: CommonChatViewModel, appRouter: any AppRouterProtocol) {
         self.viewModel = viewModel
         self.appRouter = appRouter
     }

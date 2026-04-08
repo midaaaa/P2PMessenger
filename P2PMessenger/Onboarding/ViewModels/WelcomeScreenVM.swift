@@ -28,11 +28,11 @@ final class WelcomeScreenVM {
         }
     }
 
-    private let onboardingState: OnboardingState
+    private let onboardingState: OnboardingStateProtocol
 
     init(permissionManager: PermissionManager, 
          identityProvider: LocalPeerIdentityReading,
-         onboardingState: OnboardingState) {
+         onboardingState: OnboardingStateProtocol) {
         self.permissionManager = permissionManager
         self.identityProvider = identityProvider
         self.onboardingState = onboardingState

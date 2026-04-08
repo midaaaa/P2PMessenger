@@ -10,17 +10,17 @@ import SwiftUI
 final class RootGraph {
     // Services
     private let notificationService: NotificationServiceProtocol
-    let router: AppRouter
-    private let bluetoothMonitor: BluetoothMonitor
+    let router: AppRouterProtocol
+    private let bluetoothMonitor: BluetoothMonitorProtocol
     
     // Storage
     private let profileStorage: UserProfileStorageProtocol
-    private let identityProvider: LocalPeerIdentityProvider
-    private let onboardingState: OnboardingState
+    private let identityProvider: LocalPeerIdentityReading
+    private let onboardingState: OnboardingStateProtocol
 
     // Network layer
-    private let networkService: MPCNetworkServiceImpl
-    private let coordinator: PeerSessionCoordinator
+    private let networkService: MPCNetworkService
+    private let coordinator: PeerSessionCoordinatorProtocol
 
     
     // ViewModels
@@ -91,7 +91,7 @@ final class RootGraph {
         self.chatsRootView = ChatsRootView (
             viewModel: chatsRootViewModel,
             router: router.chatsRouter,
-            appRouter: router
+            appRouter: self.router
         )
 
         // Common Chat
@@ -127,7 +127,7 @@ final class RootGraph {
         
         self.chatNotifications = ChatNotificationsController(
             peerCoordinator: coord,
-            appRouter: router,
+            appRouter: self.router,
             notificationService: notificationService
         )
     }

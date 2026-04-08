@@ -10,7 +10,7 @@ import Observation
 
 @MainActor
 @Observable
-final class BluetoothMonitor: NSObject {
+final class BluetoothMonitor: NSObject, BluetoothMonitorProtocol {
     private(set) var managerState: CBManagerState = .unknown
 
     var isBluetoothEnabled: Bool {

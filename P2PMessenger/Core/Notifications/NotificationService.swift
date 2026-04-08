@@ -110,12 +110,12 @@ struct NotificationPayload: Hashable {
 
 @MainActor
 final class ChatNotificationsController {
-    private let appRouter: AppRouter
+    private let appRouter: AppRouterProtocol
     private let notificationService: NotificationServiceProtocol
 
     init(
-        peerCoordinator: PeerSessionCoordinator,
-        appRouter: AppRouter,
+        peerCoordinator: PeerSessionCoordinatorProtocol,
+        appRouter: AppRouterProtocol,
         notificationService: NotificationServiceProtocol
     ) {
         self.appRouter = appRouter
