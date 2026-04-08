@@ -129,7 +129,7 @@ private struct ScanningDotsView: View {
 #if DEBUG
 #Preview {
     NavigationStack {
-        let storage = UserDefaultsProfileStorage()
+        let storage = AppProfileStorage(storage: AppKeyValueStorage(defaults: .standard))
         let provider = LocalPeerIdentityProvider(profileStorage: storage)
         return NearbyUsersView(
             viewModel: NearbyUserViewModel(

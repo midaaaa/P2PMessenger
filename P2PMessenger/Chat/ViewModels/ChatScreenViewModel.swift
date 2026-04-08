@@ -62,7 +62,7 @@ final class ChatScreenViewModel: ChatScreenViewModelProtocol {
 
 extension ChatScreenViewModel {
     private static var dummyNetworkService: MPCNetworkService {
-        let storage = UserDefaultsProfileStorage()
+        let storage = AppProfileStorage(storage: AppKeyValueStorage(defaults: .standard))
         let provider = LocalPeerIdentityProvider(profileStorage: storage)
         return MPCNetworkServiceImpl(identityProvider: provider)
     }

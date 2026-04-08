@@ -83,7 +83,7 @@ final class RootGraph {
         // Network
         let svc = MPCNetworkServiceImpl(identityProvider: identityProvider)
         let coord = PeerSessionCoordinator(networkService: svc)
-        let commonCoordinator = CommonChatCoordinator(networkService: svc, peerCoordinator: coord)
+        let commonCoordinator = CommonChatCoordinator(networkService: svc, peerCoordinator: coord, storage: baseStorage)
         self.networkService = svc
         self.coordinator = coord
         

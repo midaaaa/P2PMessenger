@@ -121,9 +121,8 @@ struct ChatScreenView<ViewModel: ChatScreenViewModelProtocol & Observable>: View
             .clipShape(Capsule())
     }
 }
-
 #Preview("Новый чат") {
-    let storage = UserDefaultsProfileStorage()
+    let storage = AppProfileStorage(storage: AppKeyValueStorage(defaults: .standard))
     let provider = LocalPeerIdentityProvider(profileStorage: storage)
     ChatScreenView(
         viewModel: ChatScreenViewModel(
