@@ -37,6 +37,10 @@ final class RootGraph {
     @ObservationIgnored
     let settingsViewModel: SettingsViewModel
     
+    // Notifications
+    @ObservationIgnored
+    private let chatNotifications: ChatNotificationsController
+    
     // Views
     @ObservationIgnored
     var settingsRootView: SettingsRootView
@@ -76,7 +80,7 @@ final class RootGraph {
         // Chats
         self.chatsRootViewModel = ChatsRootViewModel(
             chatListViewModel: ChatsListViewModel(
-                chats: ChatListPreviewFixtures.stubChats
+                coordinator: coord
             ),
             chatScreenViewModel: ChatPreviewFixtures.newChat,
             nearbyUserViewModel: nearbyUserViewModel,
@@ -84,11 +88,12 @@ final class RootGraph {
         )
         self.chatsRootView = ChatsRootView (
             viewModel: chatsRootViewModel,
-            router: router.chatsRouter
+            router: router.chatsRouter,
+            appRouter: router
         )
 
         // Common Chat
-        self.commonChatRootView = CommonChatRootView(viewModel: commonChatViewModel)
+        self.commonChatRootView = CommonChatRootView(viewModel: commonChatViewModel, appRouter: router)
         
         // Settings
         self.settingsViewModel = SettingsViewModel()
@@ -107,6 +112,11 @@ final class RootGraph {
             coordinator: coord,
             welcomeScreenView: welcomeScreenView
         )
+        
+        self.chatNotifications = ChatNotificationsController(
+            peerCoordinator: coord,
+            appRouter: router,
+            notificationService: notificationService
+        )
     }
-    
 }

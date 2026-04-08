@@ -11,6 +11,12 @@ import Foundation
 @MainActor
 @Observable
 final class PeerSessionCoordinator {
+    struct PrivateConversationSnapshot {
+        let peerID: String
+        let peerDisplayName: String
+        let lastMessageText: String
+        let lastMessageDate: Date
+    }
 
     // MARK: - Peer state (публичное @Observable состояние)
 
@@ -24,14 +30,20 @@ final class PeerSessionCoordinator {
     // MARK: - Private
 
     private let networkService: MPCNetworkServiceImpl
+    private let defaults: UserDefaults
     private var messageHandlers: [(CoreChatMessage) -> Void] = []
     private var peerStateHandlers: [() -> Void] = []
+    private var privateMessagesByPeerID: [String: [CoreChatMessage]] = [:]
+    private var seenMessageIDs = Set<UUID>()
+    private let privateMessagesStorageKey = "coordinator.private.messages"
 
     // MARK: - Init
 
-    init(networkService: MPCNetworkServiceImpl) {
+    init(networkService: MPCNetworkServiceImpl, defaults: UserDefaults = .standard) {
         self.networkService = networkService
+        self.defaults = defaults
         self.localPeer = networkService.localPeer
+        restorePersistedMessages()
         networkService.delegate = self
     }
 
@@ -65,6 +77,13 @@ final class PeerSessionCoordinator {
         connectingPeers.contains { $0.id == peer.id }
     }
 
+    func peer(withID id: String) -> ChatPeer? {
+        if localPeer.id == id { return localPeer }
+        if let peer = connectedPeers.first(where: { $0.id == id }) { return peer }
+        if let peer = discoveredPeers.first(where: { $0.id == id }) { return peer }
+        return nil
+    }
+
     // MARK: - Sending
 
     func sendPrivate(text: String, to peer: ChatPeer) {
@@ -79,6 +98,25 @@ final class PeerSessionCoordinator {
         messageHandlers.append(handler)
     }
 
+    func privateMessages(for peerID: String) -> [CoreChatMessage] {
+        privateMessagesByPeerID[peerID, default: []]
+    }
+
+    func privateConversationSnapshots() -> [PrivateConversationSnapshot] {
+        privateMessagesByPeerID.compactMap { peerID, messages in
+            guard let lastMessage = messages.last else { return nil }
+            let peerName = lastMessage.isIncoming
+                ? lastMessage.senderDisplayName
+                : (lastMessage.recipientDisplayName ?? peerID)
+            return PrivateConversationSnapshot(
+                peerID: peerID,
+                peerDisplayName: peerName,
+                lastMessageText: lastMessage.text,
+                lastMessageDate: lastMessage.timestamp
+            )
+        }
+    }
+
     func subscribePeerStateChanges(_ handler: @escaping () -> Void) {
         peerStateHandlers.append(handler)
     }
@@ -90,12 +128,36 @@ final class PeerSessionCoordinator {
     private func notifyPeerStateChanged() {
         for handler in peerStateHandlers { handler() }
     }
+
+    private func persistMessages() {
+        guard let data = try? JSONEncoder().encode(privateMessagesByPeerID) else { return }
+        defaults.set(data, forKey: privateMessagesStorageKey)
+    }
+
+    private func restorePersistedMessages() {
+        guard let data = defaults.data(forKey: privateMessagesStorageKey),
+              let restored = try? JSONDecoder().decode([String: [CoreChatMessage]].self, from: data) else {
+            return
+        }
+        privateMessagesByPeerID = restored.mapValues { conversation in
+            conversation.sorted { $0.timestamp < $1.timestamp }
+        }
+        seenMessageIDs = Set(privateMessagesByPeerID.values.flatMap { $0.map(\.id) })
+    }
 }
 
 // MARK: - MPCNetworkServiceDelegate
 
 extension PeerSessionCoordinator: MPCNetworkServiceDelegate {
     func networkService(_ service: MPCNetworkService, didReceive message: CoreChatMessage) {
+        guard seenMessageIDs.insert(message.id).inserted else { return }
+        if let peerID = message.conversationPeerID {
+            var conversation = privateMessagesByPeerID[peerID, default: []]
+            conversation.append(message)
+            conversation.sort { $0.timestamp < $1.timestamp }
+            privateMessagesByPeerID[peerID] = conversation
+            persistMessages()
+        }
         for handler in messageHandlers { handler(message) }
     }
 

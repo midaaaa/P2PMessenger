@@ -9,10 +9,12 @@ import SwiftUI
 struct ChatsRootView: View {
     private let viewModel: ChatsRootViewModel
     @Bindable private var router: ChatsRouter
+    @Bindable private var appRouter: AppRouter
 
-    init(viewModel: ChatsRootViewModel, router: ChatsRouter) {
+    init(viewModel: ChatsRootViewModel, router: ChatsRouter, appRouter: AppRouter) {
         self.viewModel = viewModel
         self.router = router
+        self.appRouter = appRouter
     }
     
     var body: some View {
@@ -20,7 +22,10 @@ struct ChatsRootView: View {
             ChatsListView(
                 viewModel: viewModel.chatListViewModel,
                 plusButtonAction: {router.push(.searchDialog)},
-                chatRowButtonAction: {router.push(.dialog)}
+                chatRowButtonAction: { chat in
+                    let peer = viewModel.peer(withID: chat.id) ?? ChatPeer(id: chat.id, displayName: chat.name)
+                    router.push(.addDialog(peer: peer))
+                }
             )
             .navigationDestination(for: ChatsRoute.self) { route in
                 switch route {
@@ -44,6 +49,7 @@ struct ChatsRootView: View {
                 case .addDialog(let peer):
                     PrivateChatView(
                         viewModel: viewModel.privateChatViewModel(for: peer),
+                        appRouter: appRouter,
                         onBack: router.popToRoot
                     )
                     
@@ -53,6 +59,13 @@ struct ChatsRootView: View {
             }
         }
         .toolbar(router.path.isEmpty ? .visible : .hidden, for: .tabBar)
+        .onChange(of: appRouter.activeChatId) { // newValue in
+            guard let peerID = appRouter.activeChatId else { return }
+            let peer = viewModel.peer(withID: peerID) ?? ChatPeer(id: peerID, displayName: peerID)
+            router.popToRoot()
+            router.push(.addDialog(peer: peer))
+            appRouter.activeChatId = nil
+        }
     }
 }
 
@@ -60,6 +73,7 @@ struct ChatsRootView: View {
 
 private struct PrivateChatView: View {
     @Bindable var viewModel: PrivateChatViewModel
+    @Bindable var appRouter: AppRouter
     let onBack: () -> Void
 
     var body: some View {
@@ -73,5 +87,13 @@ private struct PrivateChatView: View {
             }
         )
         .navigationBarBackButtonHidden(true)
+        .onAppear {
+            appRouter.activeDestination = .private(peerID: viewModel.peer.id)
+        }
+        .onDisappear {
+            if appRouter.activeDestination == .private(peerID: viewModel.peer.id) {
+                appRouter.activeDestination = nil
+            }
+        }
     }
 }

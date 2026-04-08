@@ -50,10 +50,15 @@ struct AppRootView: View {
             .onAppear {
                 coordinator.startIfNeeded()
             }
-            .onChange(of: scenePhase) { _, phase in
-                switch phase {
-                case .active:     coordinator.appBecameActive()
-                case .background: coordinator.appMovedToBackground()
+            .onChange(of: scenePhase) { // phase in
+                switch scenePhase {
+                case .active:
+                    router.isAppActive = true
+                    coordinator.appBecameActive()
+                case .background:
+                    router.isAppActive = false
+                    router.activeDestination = nil
+                    coordinator.appMovedToBackground()
                 default: break
                 }
             }

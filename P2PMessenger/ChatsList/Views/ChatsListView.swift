@@ -16,12 +16,12 @@ struct ChatsListView: View {
     private let viewModel: ChatsListViewModel
    
     private let plusButtonAction: () -> Void
-    private let chatRowButtonAction: () -> Void
+    private let chatRowButtonAction: (ChatRowViewModel) -> Void
     
     init(viewModel: ChatsListViewModel,
          
          plusButtonAction: @escaping () -> Void,
-         chatRowButtonAction: @escaping () -> Void) {
+         chatRowButtonAction: @escaping (ChatRowViewModel) -> Void) {
         self.viewModel = viewModel
         self.plusButtonAction = plusButtonAction
         self.chatRowButtonAction = chatRowButtonAction
@@ -79,7 +79,7 @@ struct ChatsListView: View {
         ScrollView {
             VStack(spacing: 8) {
                 ForEach(viewModel.messageChats) { chat in
-                    ChatRowView(chat: chat, onTap: chatRowButtonAction)
+                    ChatRowView(chat: chat, onTap: { chatRowButtonAction(chat) })
                 }
             }
             .padding(.horizontal, 16)
@@ -95,10 +95,10 @@ struct ChatsListView: View {
 #Preview {
     ChatsListView(
         viewModel: ChatsListViewModel(
-            chats: ChatListPreviewFixtures.stubChats),
+            coordinator: PeerSessionCoordinator(networkService: MPCNetworkServiceImpl())),
        
         plusButtonAction: {},
-        chatRowButtonAction: {}
+        chatRowButtonAction: { _ in }
     )
 }
 #endif

@@ -8,9 +8,11 @@ import SwiftUI
 
 struct CommonChatRootView: View {
     @Bindable private var viewModel: CommonChatViewModel
+    @Bindable private var appRouter: AppRouter
 
-    init(viewModel: CommonChatViewModel) {
+    init(viewModel: CommonChatViewModel, appRouter: AppRouter) {
         self.viewModel = viewModel
+        self.appRouter = appRouter
     }
 
     var body: some View {
@@ -23,5 +25,13 @@ struct CommonChatRootView: View {
             alignsMessagesToBottom: true,
             enablesAutoScrollToBottom: true
         )
+        .onAppear {
+            appRouter.activeDestination = .common
+        }
+        .onDisappear {
+            if appRouter.activeDestination == .common {
+                appRouter.activeDestination = nil
+            }
+        }
     }
 }
