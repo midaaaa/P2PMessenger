@@ -11,9 +11,12 @@ import Observation
 @MainActor
 @Observable
 final class BluetoothMonitor: NSObject {
-    
-    var isBluetoothEnabled: Bool = false
-    
+    private(set) var managerState: CBManagerState = .unknown
+
+    var isBluetoothEnabled: Bool {
+        managerState == .poweredOn
+    }
+
     @ObservationIgnored
     private var centralManager: CBCentralManager!
     
@@ -26,6 +29,6 @@ final class BluetoothMonitor: NSObject {
 
 extension BluetoothMonitor: @preconcurrency CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        self.isBluetoothEnabled = (central.state == .poweredOn)
+        managerState = central.state
     }
 }
