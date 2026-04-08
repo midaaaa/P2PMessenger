@@ -49,22 +49,12 @@ final class PrivateChatViewModel: ChatScreenViewModelProtocol {
     init(coordinator: PeerSessionCoordinator, peer: ChatPeer) {
         self.coordinator = coordinator
         self.peer = peer
+        self.messages = coordinator.privateMessages(for: peer.id).map(Self.makeChatMessage(from:))
 
         coordinator.subscribe(onMessage: { [weak self] message in
             guard let self else { return }
             guard message.conversationPeerID == peer.id else { return }
-
-            let sender: ChatMessageSender = message.isIncoming
-                ? .incoming(ChatParticipant(name: message.senderDisplayName, isOnline: true))
-                : .outgoing
-
-            let chatMessage = ChatMessage(
-                id: message.id,
-                sender: sender,
-                text: message.text,
-                time: Self.formatTime(message.timestamp)
-            )
-            self.messages.append(chatMessage)
+            self.messages.append(Self.makeChatMessage(from: message))
         })
     }
 
@@ -87,5 +77,18 @@ final class PrivateChatViewModel: ChatScreenViewModelProtocol {
 
     private static func formatTime(_ date: Date) -> String {
         timeFormatter.string(from: date)
+    }
+
+    private static func makeChatMessage(from message: CoreChatMessage) -> ChatMessage {
+        let sender: ChatMessageSender = message.isIncoming
+            ? .incoming(ChatParticipant(name: message.senderDisplayName, isOnline: true))
+            : .outgoing
+
+        return ChatMessage(
+            id: message.id,
+            sender: sender,
+            text: message.text,
+            time: formatTime(message.timestamp)
+        )
     }
 }

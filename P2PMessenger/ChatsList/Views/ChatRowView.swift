@@ -81,7 +81,7 @@ struct ChatRowView: View {
 #Preview {
     ChatRowView(
         chat: ChatRowViewModel(
-            id: UUID(),
+            id: "preview-peer",
             name: "Вася",
             timeOfLastMessage: Date().addingTimeInterval(-3600),
             lastMessage: "Окей, до встречи!",
