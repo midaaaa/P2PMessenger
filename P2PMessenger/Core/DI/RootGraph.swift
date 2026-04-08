@@ -6,57 +6,40 @@
 //
 
 import SwiftUI
-import Observation
 
-@Observable
 final class RootGraph {
     // Services
-    @ObservationIgnored
-    let notificationService: NotificationServiceProtocol
-    @ObservationIgnored
+    private let notificationService: NotificationServiceProtocol
     let router: AppRouter
-    @ObservationIgnored
-    let bluetoothMonitor: BluetoothMonitor
+    private let bluetoothMonitor: BluetoothMonitor
     
     // Storage
-    @ObservationIgnored let profileStorage: UserProfileStorageProtocol
-    @ObservationIgnored let identityProvider: LocalPeerIdentityProvider
-    @ObservationIgnored let onboardingState: OnboardingState
+    private let profileStorage: UserProfileStorageProtocol
+    private let identityProvider: LocalPeerIdentityProvider
+    private let onboardingState: OnboardingState
 
     // Network layer
-    @ObservationIgnored let networkService: MPCNetworkServiceImpl
-    @ObservationIgnored let coordinator: PeerSessionCoordinator
+    private let networkService: MPCNetworkServiceImpl
+    private let coordinator: PeerSessionCoordinator
 
     
     // ViewModels
-    @ObservationIgnored
-    let bluetoothStatusViewModel: BluetoothStatusViewModel
-    @ObservationIgnored
-    let chatsRootViewModel: ChatsRootViewModel
-    @ObservationIgnored
-    let nearbyUserViewModel: NearbyUserViewModel
-    @ObservationIgnored
-    let welcomeScreenVM: WelcomeScreenVM
-    @ObservationIgnored
-    let commonChatViewModel: CommonChatViewModel
-    @ObservationIgnored
-    let settingsViewModel: SettingsViewModel
+    private let bluetoothStatusViewModel: BluetoothStatusViewModel
+    private let chatsRootViewModel: ChatsRootViewModel
+    private let nearbyUserViewModel: NearbyUserViewModel
+    private let welcomeScreenVM: WelcomeScreenVM
+    private let commonChatViewModel: CommonChatViewModel
+    private let settingsViewModel: SettingsViewModel
     
     // Notifications
-    @ObservationIgnored
     private let chatNotifications: ChatNotificationsController
     
     // Views
-    @ObservationIgnored
-    var settingsRootView: SettingsRootView
-    @ObservationIgnored
-    var commonChatRootView: CommonChatRootView
-    @ObservationIgnored
-    var chatsRootView: ChatsRootView
-    @ObservationIgnored
-    var welcomeScreenView: WelcomeScreenView
-    @ObservationIgnored
-    var appRootView: AppRootView
+    private let settingsRootView: SettingsRootView
+    private let commonChatRootView: CommonChatRootView
+    private let chatsRootView: ChatsRootView
+    private let welcomeScreenView: WelcomeScreenView
+    let appRootView: AppRootView
     
     
     @MainActor
