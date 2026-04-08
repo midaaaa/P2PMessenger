@@ -19,7 +19,9 @@ struct CommonChatRootView: View {
             draftMessage: $viewModel.draftMessage,
             onSend: { text in
                 viewModel.sendMeshMessage(text)
-            }
+            },
+            alignsMessagesToBottom: true,
+            enablesAutoScrollToBottom: true
         )
     }
 }

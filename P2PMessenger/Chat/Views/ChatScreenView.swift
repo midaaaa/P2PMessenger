@@ -11,18 +11,24 @@ struct ChatScreenView: View {
     private let viewModel: ChatScreenViewModel
     @Binding var draftMessage: String
     let onBack: () -> Void
-    let onSend: (String) -> Void
+    let onSend: (String) -> Bool
+    let alignsMessagesToBottom: Bool
+    let enablesAutoScrollToBottom: Bool
 
     init(
         viewModel: ChatScreenViewModel,
         draftMessage: Binding<String>,
         onBack: @escaping () -> Void = {},
-        onSend: @escaping (String) -> Void = { _ in }
+        onSend: @escaping (String) -> Bool = { _ in false },
+        alignsMessagesToBottom: Bool = false,
+        enablesAutoScrollToBottom: Bool = false
     ) {
         self.viewModel = viewModel
         self._draftMessage = draftMessage
         self.onBack = onBack
         self.onSend = onSend
+        self.alignsMessagesToBottom = alignsMessagesToBottom
+        self.enablesAutoScrollToBottom = enablesAutoScrollToBottom
     }
 
     var body: some View {
@@ -33,6 +39,7 @@ struct ChatScreenView: View {
                 .overlay(Color("P2PBorder"))
 
             contentSection
+                .scrollDismissesKeyboard(.interactively)
 
             ChatComposerView(
                 text: $draftMessage,
@@ -68,21 +75,39 @@ struct ChatScreenView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
-            ScrollView {
-                VStack(spacing: ChatUIConstants.Screen.messageListVerticalSpacing) {
-                    if let timelineTitle = viewModel.timelineTitle {
-                        timelineBadge(title: timelineTitle)
-                            .padding(.top, ChatUIConstants.Screen.timelineTopPadding)
-                    }
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(spacing: ChatUIConstants.Screen.messageListVerticalSpacing) {
+                        if let timelineTitle = viewModel.timelineTitle {
+                            timelineBadge(title: timelineTitle)
+                                .padding(.top, ChatUIConstants.Screen.timelineTopPadding)
+                        }
 
-                    ForEach(viewModel.messages) { message in
-                        ChatMessageRowView(message: message)
+                        ForEach(viewModel.messages) { message in
+                            ChatMessageRowView(message: message)
+                        }
+
+                        Color.clear
+                            .frame(height: 1)
+                            .id("chat-bottom-anchor")
+                    }
+                    .padding(.horizontal, ChatUIConstants.Screen.messageListHorizontalPadding)
+                    .padding(.vertical, ChatUIConstants.Screen.messageListVerticalPadding)
+                }
+                .defaultScrollAnchor(alignsMessagesToBottom ? .bottom : .top)
+                .task {
+                    guard enablesAutoScrollToBottom else { return }
+                    await Task.yield()
+                    proxy.scrollTo("chat-bottom-anchor", anchor: .bottom)
+                }
+                .task(id: viewModel.messages.count) {
+                    guard enablesAutoScrollToBottom else { return }
+                    await Task.yield()
+                    withAnimation {
+                        proxy.scrollTo("chat-bottom-anchor", anchor: .bottom)
                     }
                 }
-                .padding(.horizontal, ChatUIConstants.Screen.messageListHorizontalPadding)
-                .padding(.vertical, ChatUIConstants.Screen.messageListVerticalPadding)
             }
-            .scrollIndicators(.hidden)
         }
     }
 

@@ -10,15 +10,25 @@ import SwiftUI
 @MainActor
 @Observable
 final class CommonChatCoordinator {
+    private let maxStoredMessages = 300
     private var countParticipant = 1
     private let networkService: MPCNetworkService
     private let peerCoordinator: PeerSessionCoordinator
+    private let defaults: UserDefaults
+    private let commonStorageKey = "chat.common.messages"
+    private var seenMessageIDs = Set<UUID>()
     private var commonChatMessages: [CoreChatMessage] = []
 
-    init(networkService: MPCNetworkService, peerCoordinator: PeerSessionCoordinator) {
+    init(
+        networkService: MPCNetworkService,
+        peerCoordinator: PeerSessionCoordinator,
+        defaults: UserDefaults = .standard
+    ) {
         self.networkService = networkService
         self.peerCoordinator = peerCoordinator
+        self.defaults = defaults
 
+        restorePersistedState()
         bind()
         refreshState()
     }
@@ -27,8 +37,11 @@ final class CommonChatCoordinator {
         peerCoordinator.subscribe { [weak self] message in
             guard let self else { return }
             guard message.recipientID == nil else { return }
+            guard seenMessageIDs.insert(message.id).inserted else { return }
             commonChatMessages.append(message)
             commonChatMessages.sort { $0.timestamp < $1.timestamp }
+            trimStoredMessagesIfNeeded()
+            persistState()
             refreshState()
         }
 
@@ -38,7 +51,23 @@ final class CommonChatCoordinator {
     }
 
     var headerStyle: ChatHeaderStyle {
-        .group(title: "Общий чат", subtitle: "\(countParticipant) участников")
+        .group(title: "Общий чат", subtitle: "\(countParticipant) \(participantWord(for: countParticipant))")
+    }
+
+    private func participantWord(for count: Int) -> String {
+        let lastTwo = count % 100
+        if (11...14).contains(lastTwo) {
+            return "участников"
+        }
+
+        switch count % 10 {
+        case 1:
+            return "участник"
+        case 2...4:
+            return "участника"
+        default:
+            return "участников"
+        }
     }
 
     var chatTimelineTitle: String {
@@ -80,6 +109,30 @@ final class CommonChatCoordinator {
         let connectedPeers = peerCoordinator.connectedPeers
 
         countParticipant = connectedPeers.count + 1
+    }
+
+    private func persistState() {
+        if let data = try? JSONEncoder().encode(commonChatMessages) {
+            defaults.set(data, forKey: commonStorageKey)
+        }
+    }
+
+    private func restorePersistedState() {
+        let decoder = JSONDecoder()
+        guard let data = defaults.data(forKey: commonStorageKey),
+              let messages = try? decoder.decode([CoreChatMessage].self, from: data) else {
+            return
+        }
+
+        commonChatMessages = messages.sorted { $0.timestamp < $1.timestamp }
+        trimStoredMessagesIfNeeded()
+        seenMessageIDs = Set(commonChatMessages.map(\.id))
+    }
+
+    private func trimStoredMessagesIfNeeded() {
+        guard commonChatMessages.count > maxStoredMessages else { return }
+        commonChatMessages = Array(commonChatMessages.suffix(maxStoredMessages))
+        seenMessageIDs = Set(commonChatMessages.map(\.id))
     }
 }
 

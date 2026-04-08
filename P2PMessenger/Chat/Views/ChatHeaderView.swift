@@ -12,7 +12,10 @@ struct ChatHeaderView: View {
     let style: ChatHeaderStyle
     let onBack: () -> Void
 
-    init(style: ChatHeaderStyle, onBack: @escaping () -> Void = {}) {
+    init(
+        style: ChatHeaderStyle,
+        onBack: @escaping () -> Void = {},
+    ) {
         self.style = style
         self.onBack = onBack
     }

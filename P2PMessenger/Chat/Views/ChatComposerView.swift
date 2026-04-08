@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ChatComposerView: View {
     @Binding var text: String
-    let onSend: (String) -> Void
+    let onSend: (String) -> Bool
     var placeholder: String
 
     var body: some View {
@@ -32,14 +32,15 @@ struct ChatComposerView: View {
                 .onSubmit(sendMessage)
 
             Button(action: sendMessage) {
+                let isActive = !trimmedText.isEmpty
                 Image(systemName: "paperplane")
                     .font(.system(size: ChatUIConstants.Composer.sendIconSize, weight: .medium))
-                    .foregroundStyle(Color("P2PTextTertiary"))
+                    .foregroundStyle(isActive ? Color("P2PLightGray") : Color("P2PTextTertiary"))
                     .frame(
                         width: ChatUIConstants.Composer.sendButtonSize,
                         height: ChatUIConstants.Composer.sendButtonSize
                     )
-                    .background(Color("P2PLightGray"))
+                    .background(isActive ? Color("P2PDarkBlue") : Color("P2PLightGray"))
                     .clipShape(Circle())
             }
             .buttonStyle(.plain)
@@ -65,7 +66,8 @@ struct ChatComposerView: View {
 
     private func sendMessage() {
         guard !trimmedText.isEmpty else { return }
-        onSend(trimmedText)
-        text = ""
+        if onSend(trimmedText) {
+            text = ""
+        }
     }
 }
