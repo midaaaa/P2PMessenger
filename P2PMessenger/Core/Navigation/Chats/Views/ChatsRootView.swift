@@ -22,7 +22,10 @@ struct ChatsRootView: View {
             ChatsListView(
                 viewModel: viewModel.chatListViewModel,
                 plusButtonAction: {router.push(.searchDialog)},
-                chatRowButtonAction: {router.push(.dialog)}
+                chatRowButtonAction: { chat in
+                    let peer = viewModel.peer(withID: chat.id) ?? ChatPeer(id: chat.id, displayName: chat.name)
+                    router.push(.addDialog(peer: peer))
+                }
             )
             .navigationDestination(for: ChatsRoute.self) { route in
                 switch route {

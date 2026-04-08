@@ -29,6 +29,8 @@ final class ChatsRootViewModel {
 
     @MainActor
     func privateChatViewModel(for peer: ChatPeer) -> PrivateChatViewModel {
+        chatListViewModel.upsertChat(with: peer)
+        chatListViewModel.markChatAsRead(peerID: peer.id)
         if let cached = privateChatCache[peer.id] { return cached }
         let vm = PrivateChatViewModel(coordinator: coordinator, peer: peer)
         privateChatCache[peer.id] = vm

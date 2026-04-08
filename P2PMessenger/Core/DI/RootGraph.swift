@@ -80,7 +80,7 @@ final class RootGraph {
         // Chats
         self.chatsRootViewModel = ChatsRootViewModel(
             chatListViewModel: ChatsListViewModel(
-                chats: ChatListPreviewFixtures.stubChats
+                coordinator: coord
             ),
             chatScreenViewModel: ChatPreviewFixtures.newChat,
             nearbyUserViewModel: nearbyUserViewModel,

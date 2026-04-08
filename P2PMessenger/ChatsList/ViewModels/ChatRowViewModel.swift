@@ -13,7 +13,7 @@ enum ChatStatus {
 }
 
 struct ChatRowViewModel: Identifiable {
-    let id: UUID
+    let id: String
     var name: String
     var timeOfLastMessage: Date
     var lastMessage: String
