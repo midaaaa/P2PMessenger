@@ -22,8 +22,11 @@ final class CommonChatViewModel {
         )
     }
 
-    func sendMeshMessage(_ text: String) {
-        networkService.sendToMesh(text: text)
-        draftMessage = ""
+    func sendMeshMessage(_ text: String) -> Bool {
+        let didSend = networkService.sendToMesh(text: text)
+        if didSend {
+            draftMessage = ""
+        }
+        return didSend
     }
 }

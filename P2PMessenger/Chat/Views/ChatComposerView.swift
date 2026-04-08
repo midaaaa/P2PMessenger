@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ChatComposerView: View {
     @Binding var text: String
-    let onSend: (String) -> Void
+    let onSend: (String) -> Bool
     var placeholder: String
 
     var body: some View {
@@ -65,7 +65,8 @@ struct ChatComposerView: View {
 
     private func sendMessage() {
         guard !trimmedText.isEmpty else { return }
-        onSend(trimmedText)
-        text = ""
+        if onSend(trimmedText) {
+            text = ""
+        }
     }
 }

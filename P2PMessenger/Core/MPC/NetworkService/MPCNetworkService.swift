@@ -158,17 +158,17 @@ final class MPCNetworkService: NSObject {
         restartAfterIdentityChange()
     }
 
-    func sendToMesh(text: String) {
+    func sendToMesh(text: String) -> Bool {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else {
             publishError(.emptyMessage)
-            return
+            return false
         }
 
         let peers = session.connectedPeers
         guard !peers.isEmpty else {
             publishError(.noConnectedPeers)
-            return
+            return false
         }
 
         let wire = WireMessageDTO(
@@ -181,8 +181,9 @@ final class MPCNetworkService: NSObject {
             timestamp: Date()
         )
 
-        guard sendChat(wire, to: peers) else { return }
+        guard sendChat(wire, to: peers) else { return false }
         publishLocalCopy(from: wire)
+        return true
     }
 
     func sendPrivate(text: String, to peer: ChatPeer) {
