@@ -30,7 +30,7 @@ struct AppRootView: View {
                     chatsRootView
                 }
                     .tabItem {
-                        Label("Чаты", systemImage: "message")
+                        Label("chats", systemImage: "message")
                     }
                     .tag(AppTab.chats)
 
@@ -38,7 +38,7 @@ struct AppRootView: View {
                     commonChatRootView
                 }
                     .tabItem {
-                        Label("Общий чат", systemImage: "person.2")
+                        Label("generalChat", systemImage: "person.2")
                     }
                     .tag(AppTab.commonChat)
 
@@ -46,7 +46,7 @@ struct AppRootView: View {
                     settingsRootView
                 }
                     .tabItem {
-                        Label("Настройки", systemImage: "gearshape")
+                        Label("Settings", systemImage: "gearshape")
                     }
                     .tag(AppTab.settings)
             }

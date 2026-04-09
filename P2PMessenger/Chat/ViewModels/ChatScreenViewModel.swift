@@ -72,7 +72,7 @@ extension ChatScreenViewModel {
         subtitle: String,
         messages: [ChatMessage] = [],
         emptyState: ChatEmptyState? = nil,
-        composerPlaceholder: String = String(localized: "Сообщение...")
+        composerPlaceholder: String = String(localized: "message")
     ) -> ChatScreenViewModel {
         ChatScreenViewModel(
             networkService: dummyNetworkService,
@@ -87,7 +87,7 @@ extension ChatScreenViewModel {
         participantsSubtitle: String,
         messages: [ChatMessage],
         timelineTitle: String? = nil,
-        composerPlaceholder: String = String(localized: "Сообщение всем...")
+        composerPlaceholder: String = String(localized: "messageEveryone")
     ) -> ChatScreenViewModel {
         ChatScreenViewModel(
             networkService: dummyNetworkService,
@@ -99,7 +99,7 @@ extension ChatScreenViewModel {
 
     static let empty = ChatScreenViewModel(
         networkService: dummyNetworkService,
-        headerStyle: .group(title: String(localized: "Чат"), subtitle: ""),
+        headerStyle: .group(title: String(localized: "chat"), subtitle: ""),
         messages: []
     )
 }

@@ -36,7 +36,7 @@ struct ChatsRootView: View {
                             onUserTap: { peer in router.push(.addDialog(peer: peer)) }
                         )
                     }
-                    .navigationTitle("Люди рядом")
+                    .navigationTitle("peopleNearby")
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar(.hidden, for: .tabBar)
 
