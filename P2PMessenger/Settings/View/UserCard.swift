@@ -14,7 +14,7 @@ struct UserCard: View {
         HStack {
             Circle()
                 .fill(.secondary)
-                .stroke(Color.black, lineWidth: Constants.userAvatarStrokeWidth)
+                .stroke(Color("P2PTextPrimary"), lineWidth: Constants.userAvatarStrokeWidth)
                 .frame(width: Constants.userAvatarSize, height: Constants.userAvatarSize)
                 .opacity(Constants.userAvatarOpacity)
                 .overlay {

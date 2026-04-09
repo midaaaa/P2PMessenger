@@ -57,7 +57,7 @@ struct ChatsListView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
-        .background(.white)
+        .background(Color("P2PSurface"))
     }
 
     private var unreadMessagesBadge: some View {
