@@ -10,7 +10,9 @@ import MultipeerConnectivity
 @testable import P2PMessenger
 
 func makeDefaults(_ name: String = UUID().uuidString) -> UserDefaults {
-    let suiteName = "tests.\(name)"
+    let sanitizedName = name.replacingOccurrences(of: "-", with: "")
+    let suiteName = "tests_\(sanitizedName)"
+
     guard let defaults = UserDefaults(suiteName: suiteName) else {
         fatalError("Failed to create UserDefaults with suiteName: \(suiteName)")
     }
