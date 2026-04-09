@@ -12,7 +12,7 @@ import Foundation
 enum ChatPreviewFixtures {
     static let newChat: ChatScreenViewModel = {
         let participant = ChatParticipant(name: "Глеб", isOnline: true)
-        
+
         return ChatScreenViewModel.directChat(
             participant: participant,
             subtitle: "Новый чат",

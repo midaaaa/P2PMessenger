@@ -58,7 +58,7 @@ struct ChatScreenView<ViewModel: ChatScreenViewModelProtocol & Observable>: View
                 .onTapGesture {isKeyboardFocused = false}
         }
     }
-    
+
     private var chatTypeText: String {
         switch viewModel.headerStyle {
         case .direct:
@@ -151,7 +151,6 @@ struct ChatScreenView<ViewModel: ChatScreenViewModelProtocol & Observable>: View
         draftMessage: .constant("")
     )
 }
-
 
 #Preview("Новый чат hardcode") {
     ChatScreenView(

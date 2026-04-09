@@ -28,7 +28,7 @@ final class PermissionManager: NSObject {
     @ObservationIgnored
     private let notificationService: NotificationServiceProtocol
     private var permissionsStorage: PermissionsStorageProtocol
-    
+
     private let fakeDisplayName: String = "probe"
 
     init(notification: NotificationServiceProtocol, permissionsStorage: PermissionsStorageProtocol) {
@@ -116,7 +116,7 @@ final class PermissionManager: NSObject {
 
     func requestNotifications() {
         Task {
-            let _ = await notificationService.requestPermission()
+            _ = await notificationService.requestPermission()
             checkNotificationsStatus()
         }
     }

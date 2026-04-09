@@ -19,7 +19,7 @@ final class AppProfileStorage: UserProfileStorageProtocol {
     }
 
     var userID: String {
-        storage.string(forKey: Keys.userID)!
+        storage.string(forKey: Keys.userID) ?? ""
     }
 
     var displayName: String? {

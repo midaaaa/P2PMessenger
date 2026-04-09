@@ -32,7 +32,7 @@ final class ChatViewModel: ObservableObject {
         self.networkService = networkService
         self.identityProvider = identityProvider
         self.historyStorage = historyStorage
-        
+
         if let impl = networkService as? MPCNetworkServiceImpl {
             impl.delegate = self
         }
@@ -78,7 +78,7 @@ final class ChatViewModel: ObservableObject {
         guard let targetPeer else { return }
 
         let text = privateInputText
-        let _ = networkService.sendPrivate(text: text, to: targetPeer)
+        _ = networkService.sendPrivate(text: text, to: targetPeer)
 
         if !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             privateInputText = ""

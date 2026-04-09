@@ -14,11 +14,11 @@ final class ChatScreenViewModel: ChatScreenViewModelProtocol {
     let timelineTitle: String?
     let messages: [ChatMessage]
     let emptyState: ChatEmptyState?
-    
+
     var privateInputText = ""
     var isPeersScreenPresented = false
     var selectedPeer: ChatPeer?
-    var privateMessages: [String : [ChatMessage]] = [:]
+    var privateMessages: [String: [ChatMessage]] = [:]
 
     init(
         networkService: MPCNetworkService,
@@ -33,28 +33,28 @@ final class ChatScreenViewModel: ChatScreenViewModelProtocol {
         self.messages = messages
         self.emptyState = emptyState
     }
-    
+
     func sendPrivateMessage(to peer: ChatPeer? = nil) {
         let targetPeer = peer ?? selectedPeer
         guard let targetPeer else { return }
 
         let text = privateInputText
-        let _ = networkService.sendPrivate(text: text, to: targetPeer)
+        _ = networkService.sendPrivate(text: text, to: targetPeer)
 
         if !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             privateInputText = ""
         }
     }
-    
+
     func openChat(with peer: ChatPeer) {
         isPeersScreenPresented = false
         selectedPeer = peer
-        
+
     }
 
     func getMessages(for peer: ChatPeer) -> [ChatMessage] {
         privateMessages[peer.id, default: []]
-        
+
     }
 }
 
@@ -75,7 +75,7 @@ extension ChatScreenViewModel {
         composerPlaceholder: String = String(localized: "message")
     ) -> ChatScreenViewModel {
         ChatScreenViewModel(
-            networkService: dummyNetworkService, 
+            networkService: dummyNetworkService,
             headerStyle: .direct(participant: participant, subtitle: subtitle),
             messages: messages,
             emptyState: emptyState
@@ -90,7 +90,7 @@ extension ChatScreenViewModel {
         composerPlaceholder: String = String(localized: "messageEveryone")
     ) -> ChatScreenViewModel {
         ChatScreenViewModel(
-            networkService: dummyNetworkService, 
+            networkService: dummyNetworkService,
             headerStyle: .group(title: title, subtitle: participantsSubtitle),
             timelineTitle: timelineTitle,
             messages: messages
@@ -115,7 +115,7 @@ extension ChatScreenViewModel {
         )
 
         return ChatScreenViewModel(
-            networkService: self.networkService, 
+            networkService: self.networkService,
             headerStyle: headerStyle,
             timelineTitle: timelineTitle,
             messages: messages + [newMessage],

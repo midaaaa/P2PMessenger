@@ -2,7 +2,7 @@ import Foundation
 import MultipeerConnectivity
 
 extension MPCNetworkServiceImpl: MCNearbyServiceBrowserDelegate {
-    func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?) {
+    func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String: String]?) {
         guard let info,
               let remoteID = info[MPCNetworkConstants.discoveryUserIDKey],
               remoteID != localUserID else {

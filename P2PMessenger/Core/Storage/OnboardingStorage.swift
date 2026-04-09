@@ -26,7 +26,7 @@ final class OnboardingStorage: OnboardingStorageProtocol {
 @Observable
 final class OnboardingState: OnboardingStateProtocol {
     private let storage: OnboardingStorageProtocol
-    
+
     var isOnboardingPassed: Bool {
         didSet {
             storage.setIsOnboardingPassed(isOnboardingPassed)
@@ -37,7 +37,7 @@ final class OnboardingState: OnboardingStateProtocol {
         self.storage = storage
         self.isOnboardingPassed = storage.getIsOnboardingPassed()
     }
-    
+
     func markOnboardingPassed() {
         isOnboardingPassed = true
     }

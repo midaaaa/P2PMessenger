@@ -30,7 +30,7 @@ struct NearbyUserRowView: View {
         }
         .buttonStyle(.plain)
     }
-    
+
     private var statusColor: Color {
         switch user.connectionStatus {
         case .connected:    return Color("P2PGreen")
@@ -42,7 +42,7 @@ struct NearbyUserRowView: View {
     private var avatarView: some View {
         UserAvatarView(initial: String(user.name.prefix(1)), statusColor: statusColor)
     }
-    
+
     private var statusText: String {
         user.connectionStatus.displayName
     }
@@ -54,7 +54,7 @@ struct NearbyUserRowView: View {
                     .font(.system(size: 15, weight: .medium))
                     .foregroundStyle(Color("P2PDarkBlue"))
                     .lineLimit(1)
-                
+
                 Text(statusText)
                     .font(.system(size: 11))
                     .foregroundStyle(Color("P2PDarkGray"))

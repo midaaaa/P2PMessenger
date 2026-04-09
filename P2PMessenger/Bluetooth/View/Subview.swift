@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct NoBluetoothView: View {
-    
+
     @State private var animateCard = false
-    
+
     var body: some View {
-        
+
         ZStack {
             Color.black.opacity(0.45)
                 .ignoresSafeArea()
@@ -49,16 +49,16 @@ struct NoBluetoothView: View {
             animateCard = true
         }
     }
-    
+
     func openBluetoothSettings() {
         guard let settingsURL = URL(string: "App-Prefs:root=Bluetooth") else {
             return // UIApplication.openSettingsURLString
         }
-        
+
         if UIApplication.shared.canOpenURL(settingsURL) {
             UIApplication.shared.open(settingsURL)
         }
-        
+
     }
 }
 

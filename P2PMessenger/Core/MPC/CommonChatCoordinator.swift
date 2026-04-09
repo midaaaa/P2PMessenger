@@ -72,7 +72,6 @@ final class CommonChatCoordinator {
     var chatTimelineTitle: String {
         switch headerStyle {
         case let .group(title, _) : return String(localized: "today \(title)")
-            //String(format: String(localized: "today"), title)
         case .direct:
             assertionFailure()
             return ""

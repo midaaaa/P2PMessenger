@@ -11,4 +11,3 @@ struct ChatPeer: Identifiable, Hashable, Codable {
     let id: String
     let displayName: String
 }
-

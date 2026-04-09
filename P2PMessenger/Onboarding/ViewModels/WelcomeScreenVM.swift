@@ -30,7 +30,7 @@ final class WelcomeScreenVM {
 
     private let onboardingState: OnboardingStateProtocol
 
-    init(permissionManager: PermissionManager, 
+    init(permissionManager: PermissionManager,
          identityProvider: LocalPeerIdentityReading,
          onboardingState: OnboardingStateProtocol) {
         self.permissionManager = permissionManager
@@ -59,7 +59,7 @@ final class WelcomeScreenVM {
         case .notifications:    permissionManager.requestNotifications()
         }
     }
-    
+
     func syncDisplayName() {
         userName = identityProvider.displayName
     }
@@ -67,5 +67,5 @@ final class WelcomeScreenVM {
     func setOnboardingPassed() {
         onboardingState.markOnboardingPassed()
     }
-    
+
 }
