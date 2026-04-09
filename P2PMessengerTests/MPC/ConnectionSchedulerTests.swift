@@ -11,7 +11,7 @@ import Testing
 @testable import P2PMessenger
 
 struct ConnectionSchedulerTests {
-    @Test //проверяет работу retry, что он реально срабатывает и успевает выполнится
+    @Test // проверяет работу retry, что он реально срабатывает и успевает выполнится
     func scheduleRetry_storesDateAndFiresCallback() async throws {
         let scheduler = ConnectionScheduler()
         let fireDate = Date().addingTimeInterval(0.15)
@@ -32,7 +32,7 @@ struct ConnectionSchedulerTests {
         #expect(counter.value == 1)
     }
 
-    @Test //проверяет, чтобы retry не дергался, если сервис не работает
+    @Test // проверяет, чтобы retry не дергался, если сервис не работает
     func scheduleRetry_doesNothingWhenServiceIsNotRunnable() async throws {
         let scheduler = ConnectionScheduler()
         let counter = Counter()
@@ -50,7 +50,7 @@ struct ConnectionSchedulerTests {
         #expect(counter.value == 0)
     }
 
-    @Test //проверяет работоспособность отмены retry, чтобы retry внезапно запоздало не срабатывал
+    @Test // проверяет работоспособность отмены retry, чтобы retry внезапно запоздало не срабатывал
     func cancelRetry_preventsCallback() async throws {
         let scheduler = ConnectionScheduler()
         let counter = Counter()
@@ -64,7 +64,7 @@ struct ConnectionSchedulerTests {
         #expect(counter.value == 0)
     }
 
-    @Test //проверяет таймерные сценарии для scheduler (когда время инвайта истекает или когда требуется reevaluation)
+    @Test // проверяет таймерные сценарии для scheduler (когда время инвайта истекает или когда требуется reevaluation)
     func inviteExpiryAndReevaluation_fireAndCanBeCancelled() async throws {
         let scheduler = ConnectionScheduler()
         let expiryCounter = Counter()

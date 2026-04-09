@@ -11,7 +11,7 @@ import Testing
 @testable import P2PMessenger
 
 struct ChatViewModelTests {
-    @Test //проверяет восстановление истории на уровне вьюмодельки
+    @Test // проверяет восстановление истории на уровне вьюмодельки
     @MainActor
     func init_restoresPersistedMessagesSortedAndTracksSeenIDs() throws {
         let defaults = makeDefaults()
@@ -35,7 +35,7 @@ struct ChatViewModelTests {
         #expect(viewModel.messages(for: makePeer(id: "peer", name: "Peer")).map(\.text) == ["first", "second"])
     }
 
-    @Test //проверяет удобность отправки личного соо (чтобы текст стирался, только если реально отправился кому-то)
+    @Test // проверяет удобность отправки личного соо (чтобы текст стирался, только если реально отправился кому-то)
     @MainActor
     func sendPrivateMessage_requiresTargetPeer_andClearsOnlyNonWhitespaceInput() {
         let defaults = makeDefaults()
@@ -57,7 +57,7 @@ struct ChatViewModelTests {
         #expect(viewModel.privateInputText.isEmpty)
     }
 
-    @Test //проверяет переход между экранами и сброс жизненного цикла (открытие чата должно закрывать модалку пирс и уход в бек должен сбрасывать сетевое состояние вьюмодели)
+    @Test // проверяет переход между экранами и сброс жизненного цикла (открытие чата должно закрывать модалку пирс и уход в бек должен сбрасывать сетевое состояние вьюмодели)
     @MainActor
     func openChatAndBackgroundLifecycle_updateScreenState() {
         let defaults = makeDefaults()
@@ -79,7 +79,7 @@ struct ChatViewModelTests {
         #expect(viewModel.connectingPeers.isEmpty)
     }
 
-    @Test //проверяет обработку входящих сообщений во вьюмодель (чтобы переписки не мешались в чате)
+    @Test // проверяет обработку входящих сообщений во вьюмодель (чтобы переписки не мешались в чате)
     @MainActor
     func didReceive_appendsRelevantMessages_andFiltersForeignPrivateConversation() {
         let defaults = makeDefaults()
@@ -98,7 +98,7 @@ struct ChatViewModelTests {
         #expect(viewModel.privateMessages["peer"]?.map(\.text) == ["dm"])
     }
 
-    @Test //проверяет реакцию вьюмодели на коллбеки, 
+    @Test // проверяет реакцию вьюмодели на коллбеки, 
     @MainActor
     func peerAndErrorCallbacks_keepSelectionFresh_andExposeBanner() {
         let defaults = makeDefaults()

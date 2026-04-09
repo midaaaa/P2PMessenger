@@ -41,7 +41,7 @@ struct MPCModelTests {
         #expect(common.conversationPeerID == nil)
     }
 
-    @Test //проверяет все кейсы, что текстовые ошибки соотвествуют реальным
+    @Test // проверяет все кейсы, что текстовые ошибки соотвествуют реальным
     func networkServiceErrorDescriptions_matchUserFacingCopy() {
         #expect(NetworkServiceError.emptyMessage.errorDescription == "Сообщение пустое")
         #expect(NetworkServiceError.noConnectedPeers.errorDescription == "Нет подключённых устройств рядом")
@@ -51,7 +51,7 @@ struct MPCModelTests {
         #expect(NetworkServiceError.invalidInvitation.errorDescription == "Получено некорректное приглашение к подключению")
     }
 
-    @Test //проверяет имя пользователя на адекатность
+    @Test // проверяет имя пользователя на адекатность
     func validatedDisplayName_trimsCollapsesWhitespaceAndLimitsLength() {
         #expect(MPCNetworkServiceImpl.validatedDisplayName("   ") == nil)
         #expect(MPCNetworkServiceImpl.validatedDisplayName("   Alice   Bob  ") == "Alice Bob")
@@ -61,7 +61,7 @@ struct MPCModelTests {
         #expect(validated?.count == MPCNetworkConstants.maxDisplayNameLength)
     }
 
-    @Test //проверяет защиту сериализации сетевого протокола, чтобы обе стороны могли свои пакеты расшифровать
+    @Test // проверяет защиту сериализации сетевого протокола, чтобы обе стороны могли свои пакеты расшифровать
     func wirePacketFactories_fillExpectedPayloadSlot() {
         let wire = WireMessageDTO(
             id: UUID(),
