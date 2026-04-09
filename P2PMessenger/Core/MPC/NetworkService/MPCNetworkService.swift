@@ -506,15 +506,16 @@ final class MPCNetworkServiceImpl: NSObject, MPCNetworkService, LocalPeerIdentit
         scheduler.scheduleReevaluation(
             after: delay,
             isRunning: { [weak self] in self?.lifecycleState.isRunning ?? false },
-            isSuspended: { [weak self] in self?.lifecycleState.isSuspended ?? true }
-        ) { [weak self] in
-            guard let self else { return }
+            isSuspended: { [weak self] in self?.lifecycleState.isSuspended ?? true },
+            onFire: { [weak self] in
+                guard let self else { return }
 
-            let ids = self.peerRegistry.allPeerIDs.sorted()
-            for peerStableID in ids {
-                self.evaluateConnection(for: peerStableID)
+                let ids = self.peerRegistry.allPeerIDs.sorted()
+                for peerStableID in ids {
+                    self.evaluateConnection(for: peerStableID)
+                }
             }
-        }
+        )
     }
 
     func refreshConnectedPeers() {
