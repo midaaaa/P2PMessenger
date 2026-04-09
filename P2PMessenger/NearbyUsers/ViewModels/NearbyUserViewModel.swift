@@ -27,9 +27,7 @@ final class NearbyUserViewModel {
 
         return coordinator.discoveredPeers.map { peer in
             let status: ConnectionStatus
-            if connectedIDs.contains(peer.id)       { status = .connected }
-            else if connectingIDs.contains(peer.id) { status = .connecting }
-            else                                     { status = .notConnected }
+            if connectedIDs.contains(peer.id) { status = .connected } else if connectingIDs.contains(peer.id) { status = .connecting } else { status = .notConnected }
             return NearbyUserRowViewModel(id: peer.id, name: peer.displayName, connectionStatus: status)
         }
     }

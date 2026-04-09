@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 struct BenefitItem: Identifiable {
     let id = UUID()
     let title: String

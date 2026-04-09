@@ -16,7 +16,7 @@ struct ChatsRootView: View {
         self.router = router
         self.appRouter = appRouter
     }
-    
+
     var body: some View {
         NavigationStack(path: $router.path) {
             ChatsListView(
@@ -46,9 +46,7 @@ struct ChatsRootView: View {
                         appRouter: appRouter,
                         onBack: router.popToRoot
                     )
-                    
-                    
-                    
+
                 }
             }
         }
@@ -75,8 +73,8 @@ private struct PrivateChatView: View {
             viewModel: viewModel,
             draftMessage: $viewModel.inputText,
             onBack: onBack,
-            onSend: {
-                _ in viewModel.sendMessage()
+            onSend: { _ in
+                viewModel.sendMessage()
                 return true
             }
         )

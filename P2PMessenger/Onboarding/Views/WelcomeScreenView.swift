@@ -93,23 +93,26 @@ struct WelcomeScreenView: View {
     }
 
     private var buttonSection: some View {
-        Button(action: {
-            vm.setOnboardingPassed()
-        }) {
-            Text("Начнём!")
-                .frame(height: 60)
-                .frame(maxWidth: .infinity)
-                .foregroundStyle(vm.canGoForward ? .white : .p2PBlack)
-                .padding(.horizontal)
-                .background(vm.canGoForward ? .p2PBlack : .gray.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .padding(.top)
-        }
+        Button(
+            action: {
+                vm.setOnboardingPassed()
+            },
+            label: {
+                Text("Начнём!")
+                    .frame(height: 60)
+                    .frame(maxWidth: .infinity)
+                    .foregroundStyle(vm.canGoForward ? .white : .p2PBlack)
+                    .padding(.horizontal)
+                    .background(vm.canGoForward ? .p2PBlack : .gray.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .padding(.top)
+            }
+        )
         .disabled(!vm.canGoForward)
     }
 }
 
-fileprivate struct WelcomeCardRow<Trailing: View>: View {
+private struct WelcomeCardRow<Trailing: View>: View {
     let title: String
     let icon: String
     let iconSize: CGFloat
@@ -148,7 +151,7 @@ fileprivate struct WelcomeCardRow<Trailing: View>: View {
     }
 }
 
-fileprivate struct BenefitRow: View {
+private struct BenefitRow: View {
     let title: String
     let icon: String
 
@@ -163,7 +166,7 @@ fileprivate struct BenefitRow: View {
     }
 }
 
-fileprivate struct PermissionRow: View {
+private struct PermissionRow: View {
     let permission: PermissionItem
     let onRequest: () -> Void
 

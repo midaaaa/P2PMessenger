@@ -23,19 +23,15 @@ jobs:
         id: cache-brew
         uses: actions/cache@v4
         with:
-          path: |
-            ~/Library/Caches/Homebrew
-            /usr/local/bin/swiftlint
-            /usr/local/bin/xcbeautify
-          key: ${{ runner.os }}-brew-lint-${{ hashFiles('.github/Makefile') }}
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-brew-lint-v3-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
-        if: steps.cache-brew.outputs.cache-hit != 'true'
         run: |
-          brew install swiftlint xcbeautify
+          brew install swiftlint xcbeautify || brew link --overwrite swiftlint xcbeautify
 
       - name: Run Linter
-        run: swiftlint lint --strict | xcbeautify --renderer github-actions
+        run: set -o pipefail && swiftlint lint --strict | xcbeautify --renderer github-actions
 
   build-app:
     name: Build App
@@ -50,16 +46,12 @@ jobs:
         id: cache-brew
         uses: actions/cache@v4
         with:
-          path: |
-            ~/Library/Caches/Homebrew
-            /usr/local/bin/xcodegen
-            /usr/local/bin/xcbeautify
-          key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-brew-build-v3-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
-        if: steps.cache-brew.outputs.cache-hit != 'true'
         run: |
-          brew install xcodegen xcbeautify jq
+          brew install xcodegen xcbeautify jq || brew link --overwrite xcodegen xcbeautify jq
 
       - name: Select Simulator
         run: |
@@ -110,16 +102,12 @@ jobs:
         id: cache-brew
         uses: actions/cache@v4
         with:
-          path: |
-            ~/Library/Caches/Homebrew
-            /usr/local/bin/xcodegen
-            /usr/local/bin/xcbeautify
-          key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-brew-build-v3-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
-        if: steps.cache-brew.outputs.cache-hit != 'true'
         run: |
-          brew install xcodegen xcbeautify jq
+          brew install xcodegen xcbeautify jq || brew link --overwrite xcodegen xcbeautify jq
 
       - name: Select Simulator
         run: |
@@ -173,16 +161,12 @@ jobs:
         id: cache-brew
         uses: actions/cache@v4
         with:
-          path: |
-            ~/Library/Caches/Homebrew
-            /usr/local/bin/xcodegen
-            /usr/local/bin/xcbeautify
-          key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-brew-build-v3-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
-        if: steps.cache-brew.outputs.cache-hit != 'true'
         run: |
-          brew install xcodegen xcbeautify jq
+          brew install xcodegen xcbeautify jq || brew link --overwrite xcodegen xcbeautify jq
 
       - name: Select Simulator
         run: |
@@ -220,7 +204,7 @@ jobs:
             -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }}" \
             ONLY_ACTIVE_ARCH=YES \
             -parallel-testing-enabled YES \
-            -parallel-testing-worker-count 2 | xcbeautify --renderer github-actions
+            -parallel-testing-worker-count 1 | xcbeautify --renderer github-actions
 
   publish:
     name: Publish Build
@@ -236,16 +220,12 @@ jobs:
         id: cache-brew
         uses: actions/cache@v4
         with:
-          path: |
-            ~/Library/Caches/Homebrew
-            /usr/local/bin/xcodegen
-            /usr/local/bin/xcbeautify
-          key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-brew-build-v3-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
-        if: steps.cache-brew.outputs.cache-hit != 'true'
         run: |
-          brew install xcodegen xcbeautify jq
+          brew install xcodegen xcbeautify jq || brew link --overwrite xcodegen xcbeautify jq
 
       - name: Select Simulator
         run: |

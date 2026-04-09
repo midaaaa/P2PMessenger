@@ -9,14 +9,14 @@ protocol MPCNetworkService {
     var advertiserState: MPCNetworkAdvertiserState { get }
     var groupEpoch: Int { get }
     var localPeer: ChatPeer { get }
-    
+
     func startIfNeeded()
     func resumeIfNeeded()
     func suspendForBackground()
-    
+
     func updateDisplayName(_ newName: String)
     func sendToMesh(text: String) -> Bool
-    
+
     func sendPrivate(text: String, to peer: ChatPeer)
 }
 
@@ -42,10 +42,9 @@ final class MPCNetworkServiceImpl: NSObject, MPCNetworkService, LocalPeerIdentit
     private let encoder = JSONEncoder()
     let decoder = JSONDecoder()
 
-
     init(identityProvider: LocalPeerIdentityProvider) {
         self.identityProvider = identityProvider
-        
+
         self.session = MCSession(peer: identityProvider.peerID, securityIdentity: nil, encryptionPreference: .required)
 
         super.init()
@@ -507,15 +506,16 @@ final class MPCNetworkServiceImpl: NSObject, MPCNetworkService, LocalPeerIdentit
         scheduler.scheduleReevaluation(
             after: delay,
             isRunning: { [weak self] in self?.lifecycleState.isRunning ?? false },
-            isSuspended: { [weak self] in self?.lifecycleState.isSuspended ?? true }
-        ) { [weak self] in
-            guard let self else { return }
+            isSuspended: { [weak self] in self?.lifecycleState.isSuspended ?? true },
+            onFire: { [weak self] in
+                guard let self else { return }
 
-            let ids = self.peerRegistry.allPeerIDs.sorted()
-            for peerStableID in ids {
-                self.evaluateConnection(for: peerStableID)
+                let ids = self.peerRegistry.allPeerIDs.sorted()
+                for peerStableID in ids {
+                    self.evaluateConnection(for: peerStableID)
+                }
             }
-        }
+        )
     }
 
     func refreshConnectedPeers() {
