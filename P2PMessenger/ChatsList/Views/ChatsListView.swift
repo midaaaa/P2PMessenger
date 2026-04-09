@@ -49,7 +49,7 @@ struct ChatsListView: View {
             Button(action: plusButtonAction) {
                 Image(systemName: "plus")
                     .font(.system(size: 18))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.p2PSurface)
                     .frame(width: 36, height: 36)
                     .background(Color("P2PDarkBlue"))
                     .clipShape(Circle())
@@ -63,7 +63,7 @@ struct ChatsListView: View {
     private var unreadMessagesBadge: some View {
         Text("\(viewModel.unreadMessagesCount)")
             .font(.body)
-            .foregroundStyle(.white)
+            .foregroundStyle(.p2PSurface)
             .frame(width: 25, height: 25)
             .background(Color("P2PDarkBlue"))
             .clipShape(Circle())
