@@ -22,7 +22,7 @@ targets:
     resources:
       - path: Resources/Localizable.xcstrings
         buildPhase: resources
-        defaultLocalization: ru
+        defaultLocalization: en
       - path: P2PMessenger/LottieAnimations
         buildPhase: resources
     settings:
@@ -44,8 +44,8 @@ targets:
       INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: UIInterfaceOrientationPortrait
       USE_COMPILER_TO_EXTRACT_SWIFT_STRINGS: YES
       SWIFT_EMIT_LOC_STRINGS: YES
-      DEVELOPMENT_LANGUAGE: ru
-      LOCALIZATION_REGION: ru_RU
+      DEVELOPMENT_LANGUAGE: en
+      LOCALIZATION_REGION: en_EN
 
   P2PMessengerTests:
     type: bundle.unit-test
@@ -58,8 +58,8 @@ targets:
       CURRENT_PROJECT_VERSION: 1
       MARKETING_VERSION: 1.0
       SWIFT_VERSION: 5.0
-      DEVELOPMENT_LANGUAGE: ru
-      LOCALIZATION_REGION: ru_RU
+      DEVELOPMENT_LANGUAGE: en
+      LOCALIZATION_REGION: en_EN
 
   P2PMessengerUITests:
     type: bundle.ui-testing
@@ -89,7 +89,7 @@ schemes:
       targets:
         P2PMessengerTests: [test]
     test:
-      language: ru
+      language: en
       region: RU
       targets:
         - name: P2PMessengerTests

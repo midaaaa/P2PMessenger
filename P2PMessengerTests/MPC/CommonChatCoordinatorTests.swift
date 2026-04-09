@@ -144,12 +144,12 @@ struct CommonChatCoordinatorTests {
             }
         }
 
-        #expect(subtitle() == "1 участник")
+        #expect(subtitle() == "1 user")
 
         peerCoordinator.networkService(service, connectedPeersChanged: [
             makePeer(id: "a", name: "A")
         ])
-        #expect(subtitle() == "2 участника")
+        #expect(subtitle() == "2 users")
 
         peerCoordinator.networkService(service, connectedPeersChanged: [
             makePeer(id: "a", name: "A"),
@@ -157,7 +157,7 @@ struct CommonChatCoordinatorTests {
             makePeer(id: "c", name: "C"),
             makePeer(id: "d", name: "D")
         ])
-        #expect(subtitle() == "5 участников")
-        #expect(coordinator.chatTimelineTitle == "Сегодня ⋅ Общий чат")
+        #expect(subtitle() == "5 users")
+        #expect(coordinator.chatTimelineTitle == "Today ⋅ General Chat")
     }
 }
