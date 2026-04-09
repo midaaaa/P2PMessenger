@@ -12,7 +12,6 @@ import MultipeerConnectivity
 
 func makeDefaults(_ name: String = UUID().uuidString) -> UserDefaults {
     let suiteName = "tests.\(name)"
-    
     guard let defaults = UserDefaults(suiteName: suiteName) else {
         fatalError("Failed to create UserDefaults with suiteName: \(suiteName)")
     }

@@ -5,7 +5,6 @@
 //  Created by Екатерина on 08.04.2026.
 //
 
-
 import Foundation
 import Testing
 @testable import P2PMessenger
@@ -73,9 +72,14 @@ struct ConnectionSchedulerTests {
         scheduler.scheduleInviteExpiry(for: "peer", after: 0.1) {
             expiryCounter.increment()
         }
-        scheduler.scheduleReevaluation(after: 0.1, isRunning: { true }, isSuspended: { false }) {
-            reevaluateCounter.increment()
-        }
+        scheduler.scheduleReevaluation(
+            after: 0.1,
+            isRunning: { true },
+            isSuspended: { false },
+            onFire: {
+                reevaluateCounter.increment()
+            }
+        )
 
         try await Task.sleep(for: .milliseconds(250))
         #expect(expiryCounter.value == 1)
@@ -84,9 +88,14 @@ struct ConnectionSchedulerTests {
         scheduler.scheduleInviteExpiry(for: "peer2", after: 0.1) {
             expiryCounter.increment()
         }
-        scheduler.scheduleReevaluation(after: 0.1, isRunning: { true }, isSuspended: { false }) {
-            reevaluateCounter.increment()
-        }
+        scheduler.scheduleReevaluation(
+            after: 0.1,
+            isRunning: { true },
+            isSuspended: { false },
+            onFire: {
+                reevaluateCounter.increment()
+            }
+        )
         scheduler.cancelInviteExpiry(for: "peer2")
         scheduler.cancelReevaluation()
 
