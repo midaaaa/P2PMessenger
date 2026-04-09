@@ -91,7 +91,7 @@ struct MPCModelTests {
         #expect(chatPacket.chat?.recipientID == wire.recipientID)
         #expect(chatPacket.chat?.recipientDisplayName == wire.recipientDisplayName)
         #expect(chatPacket.chat?.timestamp == wire.timestamp)
-        
+
         let helloPacket = WirePacketDTO.hello(hello)
         #expect(helloPacket.kind == "hello")
         #expect(helloPacket.chat == nil)
