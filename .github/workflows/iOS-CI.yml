@@ -29,7 +29,7 @@ jobs:
             /opt/homebrew/bin/xcbeautify
             /usr/local/bin/swiftlint
             /usr/local/bin/xcbeautify
-          key: ${{ runner.os }}-brew-lint-${{ hashFiles('.github/Makefile') }}
+          key: ${{ runner.os }}-brew-lint-v2-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
         if: steps.cache-brew.outputs.cache-hit != 'true'
@@ -60,7 +60,7 @@ jobs:
             /usr/local/bin/xcodegen
             /usr/local/bin/xcbeautify
             /usr/local/bin/jq
-          key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
+          key: ${{ runner.os }}-brew-build-v2-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
         if: steps.cache-brew.outputs.cache-hit != 'true'
@@ -124,7 +124,7 @@ jobs:
             /usr/local/bin/xcodegen
             /usr/local/bin/xcbeautify
             /usr/local/bin/jq
-          key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
+          key: ${{ runner.os }}-brew-build-v2-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
         if: steps.cache-brew.outputs.cache-hit != 'true'
@@ -191,7 +191,7 @@ jobs:
             /usr/local/bin/xcodegen
             /usr/local/bin/xcbeautify
             /usr/local/bin/jq
-          key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
+          key: ${{ runner.os }}-brew-build-v2-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
         if: steps.cache-brew.outputs.cache-hit != 'true'
@@ -258,7 +258,7 @@ jobs:
             /usr/local/bin/xcodegen
             /usr/local/bin/xcbeautify
             /usr/local/bin/jq
-          key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
+          key: ${{ runner.os }}-brew-build-v2-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
         if: steps.cache-brew.outputs.cache-hit != 'true'
