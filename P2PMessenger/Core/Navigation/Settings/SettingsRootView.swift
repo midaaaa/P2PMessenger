@@ -15,5 +15,8 @@ struct SettingsRootView: View {
             .onAppear {
                 viewModel.syncDisplayName()
             }
+            .task {
+                await viewModel.loadStorageSize()
+            }
     }
 }

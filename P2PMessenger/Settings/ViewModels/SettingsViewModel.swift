@@ -5,13 +5,16 @@
 //  Created on 06.04.2026.
 //
 
+import Foundation
 import Observation
 
+@MainActor
 @Observable
 final class SettingsViewModel {
     private let identityProvider: LocalPeerIdentityReading
     private let storage: KeyValueStorageProtocol
     private let onboardingState: OnboardingStateProtocol
+    private let storageSizeProvider: StorageSizeProviding
 
     var username: String {
         didSet {
@@ -19,8 +22,7 @@ final class SettingsViewModel {
         }
     }
 
-    var spaceTaken: Int
-    var progress: Double
+    var formattedSpaceTaken: String = ""
     var visibilityToggle: Bool
     var requestToggle: Bool
     var networkToggle: Bool
@@ -28,17 +30,15 @@ final class SettingsViewModel {
     init(identityProvider: LocalPeerIdentityReading,
          storage: KeyValueStorageProtocol,
          onboardingState: OnboardingStateProtocol,
-         spaceTaken: Int = 1234,
-         progress: Double = 0.67,
+         storageSizeProvider: StorageSizeProviding = AppStorageSizeProvider(),
          visibilityToggle: Bool = false,
          requestToggle: Bool = false,
          networkToggle: Bool = false) {
         self.identityProvider = identityProvider
         self.storage = storage
         self.onboardingState = onboardingState
+        self.storageSizeProvider = storageSizeProvider
         self.username = identityProvider.displayName
-        self.spaceTaken = spaceTaken
-        self.progress = progress
         self.visibilityToggle = visibilityToggle
         self.requestToggle = requestToggle
         self.networkToggle = networkToggle
@@ -48,7 +48,12 @@ final class SettingsViewModel {
         username = identityProvider.displayName
     }
 
-    @MainActor func clearAllData() {
+    func loadStorageSize() async {
+        let bytes = await storageSizeProvider.calculateSize()
+        formattedSpaceTaken = ByteCountFormatter.string(fromByteCount: bytes, countStyle: .file)
+    }
+
+    func clearAllData() {
         storage.removeAll()
         onboardingState.isOnboardingPassed = false
     }

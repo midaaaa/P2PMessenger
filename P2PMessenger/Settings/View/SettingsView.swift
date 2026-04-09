@@ -20,34 +20,7 @@ struct SettingsView: View {
             }
 
             Section {
-                Toggle(isOn: $viewModel.visibilityToggle) {
-                    TextCard(label: String(localized: "enableToFindMe"),
-                             text: String(localized: "observableByOthers"))
-                }
-                .tint(Color("P2PDarkBlue"))
-                Toggle(isOn: $viewModel.requestToggle) {
-                    TextCard(label: String(localized: "enableRequestsToChat"),
-                             text: String(localized: "acceptNewRequests"))
-                }
-                .tint(Color("P2PDarkBlue"))
-            } header: {
-                Text("privacyUpper")
-                    .font(.footnote)
-            }
-
-            Section {
-                Toggle(isOn: $viewModel.networkToggle) {
-                    TextCard(label: String(localized: "online"),
-                             text: String(localized: "observableInP2Pnetwork"))
-                }
-                .tint(Color("P2PDarkBlue"))
-            } header: {
-                Text("networkUpper")
-                    .font(.footnote)
-            }
-
-            Section {
-                StorageCard(size: viewModel.spaceTaken, progress: $viewModel.progress)
+                StorageCard(formattedSize: viewModel.formattedSpaceTaken)
             } header: {
                 Text("dataUpper")
                     .font(.footnote)

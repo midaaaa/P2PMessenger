@@ -82,7 +82,8 @@ final class RootGraph {
         self.settingsViewModel = SettingsViewModel(
             identityProvider: identityProvider,
             storage: baseStorage,
-            onboardingState: self.onboardingState
+            onboardingState: self.onboardingState,
+            storageSizeProvider: AppStorageSizeProvider()
         )
 
         self.welcomeScreenVM = WelcomeScreenVM(
