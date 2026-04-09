@@ -24,7 +24,7 @@ struct UserAvatarView: View {
             Circle()
                 .fill(statusColor)
                 .frame(width: 12, height: 12)
-                .overlay(Circle().stroke(.white, lineWidth: 2))
+                .overlay(Circle().stroke(Color("P2PSurface"), lineWidth: 2))
         }
     }
 }

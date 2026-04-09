@@ -133,7 +133,7 @@ private struct ChatBubbleView: View {
     }
 
     private var textColor: Color {
-        style == .outgoing ? .white : Color("P2PTextPrimary")
+        style == .outgoing ? .p2PSurface : Color("P2PTextPrimary")
     }
 
     private var timeColor: Color {
