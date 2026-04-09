@@ -168,13 +168,13 @@ fileprivate struct PermissionRow: View {
     let onRequest: () -> Void
 
     var body: some View {
-        HStack {
-            Image(systemName: permission.icon)
-            Text(permission.title)
-            Spacer()
+        WelcomeCardRow(title: permission.title, icon: permission.icon) {
             if permission.state == .granted {
                 HStack(spacing: 6) {
                     Image(systemName: "checkmark")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 12, height: 12)
                     Text("Разрешено")
                 }
                 .foregroundStyle(.p2PDarkGray)
@@ -189,9 +189,6 @@ fileprivate struct PermissionRow: View {
                 }
             }
         }
-        .padding()
-        .background(.gray.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 
