@@ -19,5 +19,3 @@ extension NotificationServiceProtocol {
         self.sendMessage(title: title, message: message, subtitle: subtitle, userInfo: userInfo)
     }
 }
-
-

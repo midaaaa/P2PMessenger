@@ -147,4 +147,3 @@ final class ChatsListViewModel {
         unreadByPeerID = payload.countsByPeerID
     }
 }
-

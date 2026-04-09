@@ -19,12 +19,12 @@ final class BluetoothMonitor: NSObject, BluetoothMonitorProtocol {
 
     @ObservationIgnored
     private var centralManager: CBCentralManager!
-    
+
     override init() {
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: .main)
     }
-    
+
 }
 
 extension BluetoothMonitor: @preconcurrency CBCentralManagerDelegate {

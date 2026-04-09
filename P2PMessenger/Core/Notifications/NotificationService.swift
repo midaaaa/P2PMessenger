@@ -9,7 +9,7 @@ import Foundation
 import UserNotifications
 
 struct NotificationService: NotificationServiceProtocol {
-    
+
     func requestPermission() async -> Bool {
         do {
             let success = try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
@@ -19,7 +19,7 @@ struct NotificationService: NotificationServiceProtocol {
             return false
         }
     }
-    
+
     func isPermissionGranted() async -> Bool {
         let settings = await UNUserNotificationCenter.current().notificationSettings()
         switch settings.authorizationStatus {
@@ -37,26 +37,26 @@ struct NotificationService: NotificationServiceProtocol {
         content.body = message
         content.userInfo = userInfo
         content.sound = .default
-        
+
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-        
+
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
                 print("Scheduling Error: \(error.localizedDescription)")
             }
         }
     }
-    
+
     func sendPeopleCount(count: Int) {
         let content = UNMutableNotificationContent()
         content.title = "Найдены новые собеседники!"
         content.body = "Найдено \(count) человек"
         content.sound = .default
-        
+
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-        
+
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
                 print("Scheduling Error: \(error.localizedDescription)")

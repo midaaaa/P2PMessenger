@@ -109,7 +109,7 @@ struct WelcomeScreenView: View {
     }
 }
 
-fileprivate struct WelcomeCardRow<Trailing: View>: View {
+private struct WelcomeCardRow<Trailing: View>: View {
     let title: String
     let icon: String
     let iconSize: CGFloat
@@ -148,7 +148,7 @@ fileprivate struct WelcomeCardRow<Trailing: View>: View {
     }
 }
 
-fileprivate struct BenefitRow: View {
+private struct BenefitRow: View {
     let title: String
     let icon: String
 
@@ -163,7 +163,7 @@ fileprivate struct BenefitRow: View {
     }
 }
 
-fileprivate struct PermissionRow: View {
+private struct PermissionRow: View {
     let permission: PermissionItem
     let onRequest: () -> Void
 

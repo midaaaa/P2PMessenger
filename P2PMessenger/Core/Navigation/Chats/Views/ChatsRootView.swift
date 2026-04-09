@@ -16,7 +16,7 @@ struct ChatsRootView: View {
         self.router = router
         self.appRouter = appRouter
     }
-    
+
     var body: some View {
         NavigationStack(path: $router.path) {
             ChatsListView(
@@ -46,9 +46,7 @@ struct ChatsRootView: View {
                         appRouter: appRouter,
                         onBack: router.popToRoot
                     )
-                    
-                    
-                    
+
                 }
             }
         }

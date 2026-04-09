@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AppRootView: View {
-    
+
     let router: any AppRouterProtocol
     let bluetoothStatusViewModel: BluetoothStatusViewModel
     let chatsRootView: ChatsRootView
@@ -19,7 +19,7 @@ struct AppRootView: View {
     let coordinator: PeerSessionCoordinatorProtocol
     let onboardingState: OnboardingStateProtocol
     @Environment(\.scenePhase) private var scenePhase
-    
+
     var body: some View {
         if onboardingState.isOnboardingPassed {
             TabView(selection: Binding(
@@ -33,7 +33,7 @@ struct AppRootView: View {
                         Label("Чаты", systemImage: "message")
                     }
                     .tag(AppTab.chats)
-                
+
                 NavigationStack {
                     commonChatRootView
                 }
@@ -41,7 +41,7 @@ struct AppRootView: View {
                         Label("Общий чат", systemImage: "person.2")
                     }
                     .tag(AppTab.commonChat)
-                
+
                 NavigationStack {
                     settingsRootView
                 }

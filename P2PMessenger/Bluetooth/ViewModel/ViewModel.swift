@@ -10,13 +10,13 @@ import Observation
 @MainActor
 @Observable
 final class BluetoothStatusViewModel {
-    
+
     private let monitor: BluetoothMonitorProtocol
-    
+
     var isBluetoothOff: Bool {
         monitor.managerState == .poweredOff
     }
-    
+
     init(monitor: BluetoothMonitorProtocol) {
         self.monitor = monitor
     }

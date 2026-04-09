@@ -71,7 +71,7 @@ final class CommonChatCoordinator {
 
     var chatTimelineTitle: String {
         switch headerStyle {
-        case let .group(title, _) : return "Сегодня \(title)"
+        case let .group(title, _): return "Сегодня \(title)"
         case .direct:
             assertionFailure()
             return ""

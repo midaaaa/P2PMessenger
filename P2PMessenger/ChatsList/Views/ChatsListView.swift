@@ -7,19 +7,17 @@
 
 import SwiftUI
 
-
 // MARK: - ChatsListView
 
 struct ChatsListView: View {
-    
-    
+
     private let viewModel: ChatsListViewModel
-   
+
     private let plusButtonAction: () -> Void
     private let chatRowButtonAction: (ChatRowViewModel) -> Void
-    
+
     init(viewModel: ChatsListViewModel,
-         
+
          plusButtonAction: @escaping () -> Void,
          chatRowButtonAction: @escaping (ChatRowViewModel) -> Void) {
         self.viewModel = viewModel
@@ -30,7 +28,7 @@ struct ChatsListView: View {
     var body: some View {
         VStack(spacing: 0) {
             headerView
-            
+
             chatListView
         }
         .background(Color("P2PLightGray"))
@@ -43,12 +41,12 @@ struct ChatsListView: View {
             Text(String(localized: "chats_list_title"))
                 .font(.system(size: 20, weight: .semibold))
                 .foregroundStyle(Color("P2PBlack"))
-            
+
             unreadMessagesBadge
 
             Spacer()
 
-            Button (action: plusButtonAction){
+            Button(action: plusButtonAction) {
                 Image(systemName: "plus")
                     .font(.system(size: 18))
                     .foregroundStyle(.white)
@@ -61,7 +59,7 @@ struct ChatsListView: View {
         .padding(.vertical, 12)
         .background(.white)
     }
-    
+
     private var unreadMessagesBadge: some View {
         Text("\(viewModel.unreadMessagesCount)")
             .font(.body)
@@ -69,12 +67,9 @@ struct ChatsListView: View {
             .frame(width: 25, height: 25)
             .background(Color("P2PDarkBlue"))
             .clipShape(Circle())
-        
+
     }
 
-    
-
-    
     private var chatListView: some View {
         ScrollView {
             VStack(spacing: 8) {
@@ -99,7 +94,7 @@ struct ChatsListView: View {
                 coordinator: PeerSessionCoordinator(networkService: MPCNetworkServiceImpl(identityProvider: LocalPeerIdentityProvider(profileStorage: AppProfileStorage(storage: previewStorage))), storage: previewStorage),
                 storage: previewStorage
             ),
-       
+
         plusButtonAction: {},
         chatRowButtonAction: { _ in }
     )

@@ -9,14 +9,14 @@ protocol MPCNetworkService {
     var advertiserState: MPCNetworkAdvertiserState { get }
     var groupEpoch: Int { get }
     var localPeer: ChatPeer { get }
-    
+
     func startIfNeeded()
     func resumeIfNeeded()
     func suspendForBackground()
-    
+
     func updateDisplayName(_ newName: String)
     func sendToMesh(text: String) -> Bool
-    
+
     func sendPrivate(text: String, to peer: ChatPeer)
 }
 
@@ -42,10 +42,9 @@ final class MPCNetworkServiceImpl: NSObject, MPCNetworkService, LocalPeerIdentit
     private let encoder = JSONEncoder()
     let decoder = JSONDecoder()
 
-
     init(identityProvider: LocalPeerIdentityProvider) {
         self.identityProvider = identityProvider
-        
+
         self.session = MCSession(peer: identityProvider.peerID, securityIdentity: nil, encryptionPreference: .required)
 
         super.init()

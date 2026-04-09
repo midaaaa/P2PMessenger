@@ -9,19 +9,18 @@ import UIKit
 import UserNotifications
 
 final class AppNotificationDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
-    
+
     var container: RootGraph?
-    
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        
+
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+
         UNUserNotificationCenter.current().delegate = self
-        
+
         return true
     }
-    
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter, 
-                                willPresent notification: UNNotification, 
+
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         guard let container else {
             completionHandler([.banner, .list, .sound])
@@ -36,11 +35,11 @@ final class AppNotificationDelegate: NSObject, UIApplicationDelegate, UNUserNoti
             completionHandler([.banner, .list, .sound])
         }
     }
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter, 
-                                didReceive response: UNNotificationResponse, 
+
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse,
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
-        
+
         let userInfo = response.notification.request.content.userInfo
 
         if let payload = NotificationPayload(userInfo: userInfo) {
@@ -54,7 +53,7 @@ final class AppNotificationDelegate: NSObject, UIApplicationDelegate, UNUserNoti
                 }
             }
         }
-        
+
         completionHandler()
     }
 }

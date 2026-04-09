@@ -30,7 +30,7 @@ struct ChatRowView: View {
         }
         .buttonStyle(.plain)
     }
-    
+
     private var statusColor: Color {
         chat.isOnline ? Color("P2PGreen") : Color("P2PDarkGray")
     }
