@@ -25,6 +25,8 @@ jobs:
         with:
           path: |
             ~/Library/Caches/Homebrew
+            /opt/homebrew/bin/swiftlint
+            /opt/homebrew/bin/xcbeautify
             /usr/local/bin/swiftlint
             /usr/local/bin/xcbeautify
           key: ${{ runner.os }}-brew-lint-${{ hashFiles('.github/Makefile') }}
@@ -52,8 +54,12 @@ jobs:
         with:
           path: |
             ~/Library/Caches/Homebrew
+            /opt/homebrew/bin/xcodegen
+            /opt/homebrew/bin/xcbeautify
+            /opt/homebrew/bin/jq
             /usr/local/bin/xcodegen
             /usr/local/bin/xcbeautify
+            /usr/local/bin/jq
           key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
@@ -112,8 +118,12 @@ jobs:
         with:
           path: |
             ~/Library/Caches/Homebrew
+            /opt/homebrew/bin/xcodegen
+            /opt/homebrew/bin/xcbeautify
+            /opt/homebrew/bin/jq
             /usr/local/bin/xcodegen
             /usr/local/bin/xcbeautify
+            /usr/local/bin/jq
           key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
@@ -164,7 +174,7 @@ jobs:
     runs-on: macos-latest
     needs: [test-unit]
     timeout-minutes: 20
-    if: github.ref == 'refs/heads/main' 
+    #if: github.ref == 'refs/heads/main' 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -175,8 +185,12 @@ jobs:
         with:
           path: |
             ~/Library/Caches/Homebrew
+            /opt/homebrew/bin/xcodegen
+            /opt/homebrew/bin/xcbeautify
+            /opt/homebrew/bin/jq
             /usr/local/bin/xcodegen
             /usr/local/bin/xcbeautify
+            /usr/local/bin/jq
           key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
@@ -220,14 +234,14 @@ jobs:
             -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }}" \
             ONLY_ACTIVE_ARCH=YES \
             -parallel-testing-enabled YES \
-            -parallel-testing-worker-count 2 | xcbeautify --renderer github-actions
+            -parallel-testing-worker-count 1 | xcbeautify --renderer github-actions
 
   publish:
     name: Publish Build
     runs-on: macos-latest
     needs: [test-unit, test-ui] 
     timeout-minutes: 20
-    if: github.ref == 'refs/heads/main'
+    # if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -238,8 +252,12 @@ jobs:
         with:
           path: |
             ~/Library/Caches/Homebrew
+            /opt/homebrew/bin/xcodegen
+            /opt/homebrew/bin/xcbeautify
+            /opt/homebrew/bin/jq
             /usr/local/bin/xcodegen
             /usr/local/bin/xcbeautify
+            /usr/local/bin/jq
           key: ${{ runner.os }}-brew-build-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
