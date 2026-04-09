@@ -84,7 +84,6 @@ struct ChatViewModelTests {
 
         viewModel.startIfNeeded()
         #expect(viewModel.isNetworkReady)
-
         viewModel.appMovedToBackground()
         #expect(!viewModel.isNetworkReady)
         #expect(viewModel.discoveredPeers.isEmpty)
@@ -178,7 +177,6 @@ struct ChatViewModelTests {
 
         viewModel.networkService(service, didEncounter: .peerUnavailable)
         #expect(viewModel.bannerText == NetworkServiceError.peerUnavailable.errorDescription)
-
         viewModel.clearBanner()
         #expect(viewModel.bannerText == nil)
     }
