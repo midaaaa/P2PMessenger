@@ -42,7 +42,7 @@ struct ChatEmptyStateView: View {
                 .font(.system(size: ChatUIConstants.EmptyState.subtitleFontSize))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(Color("P2PTextTertiary"))
-            
+
             LottieView(animation: .named("Bloo Waving"))
                 .playing(loopMode: .loop)
                 .resizable()
