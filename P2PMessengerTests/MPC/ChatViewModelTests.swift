@@ -5,7 +5,6 @@
 //  Created by Екатерина on 08.04.2026.
 //
 
-
 import Foundation
 import Testing
 @testable import P2PMessenger
