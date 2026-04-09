@@ -22,6 +22,7 @@ targets:
     resources:
       - path: Resources/Localizable.xcstrings
         buildPhase: resources
+        defaultLocalization: ru
       - path: P2PMessenger/LottieAnimations
         buildPhase: resources
     settings:
