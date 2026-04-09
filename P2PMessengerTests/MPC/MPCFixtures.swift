@@ -21,6 +21,26 @@ func makeDefaults(_ name: String = UUID().uuidString) -> UserDefaults {
     return defaults
 }
 
+func makeStorage(defaults: UserDefaults = makeDefaults()) -> AppKeyValueStorage {
+    AppKeyValueStorage(defaults: defaults)
+}
+
+func makeProfileStorage(defaults: UserDefaults = makeDefaults()) -> AppProfileStorage {
+    AppProfileStorage(storage: makeStorage(defaults: defaults))
+}
+
+func makeIdentityProvider(defaults: UserDefaults = makeDefaults()) -> LocalPeerIdentityProvider {
+    LocalPeerIdentityProvider(profileStorage: makeProfileStorage(defaults: defaults))
+}
+
+func makeHistoryStorage(defaults: UserDefaults = makeDefaults()) -> ChatHistoryStorage {
+    ChatHistoryStorage(storage: makeStorage(defaults: defaults))
+}
+
+func makeService(defaults: UserDefaults = makeDefaults()) -> MPCNetworkServiceImpl {
+    MPCNetworkServiceImpl(identityProvider: makeIdentityProvider(defaults: defaults))
+}
+
 func makePeer(id: String, name: String) -> ChatPeer {
     ChatPeer(id: id, displayName: name)
 }
@@ -75,7 +95,8 @@ func makeMessage(
 func makeServiceAndCoordinator(
     defaults: UserDefaults = makeDefaults()
 ) -> (MPCNetworkServiceImpl, PeerSessionCoordinator) {
-    let service = MPCNetworkServiceImpl(defaults: defaults)
-    let coordinator = PeerSessionCoordinator(networkService: service)
+    let storage = makeStorage(defaults: defaults)
+    let service = MPCNetworkServiceImpl(identityProvider: LocalPeerIdentityProvider(profileStorage: AppProfileStorage(storage: storage)))
+    let coordinator = PeerSessionCoordinator(networkService: service, storage: storage)
     return (service, coordinator)
 }

@@ -10,36 +10,43 @@ import Testing
 @testable import P2PMessenger
 
 struct ChatViewModelTests {
-    @Test // проверяет восстановление истории на уровне вьюмодельки
+    @Test
     @MainActor
-    func init_restoresPersistedMessagesSortedAndTracksSeenIDs() throws {
+    func init_restoresPersistedMeshMessagesSorted_andStartsWithEmptyPrivateMessages() {
         let defaults = makeDefaults()
-        let service = MPCNetworkServiceImpl(defaults: defaults)
+        let historyStorage = makeHistoryStorage(defaults: defaults)
+        let identityProvider = makeIdentityProvider(defaults: defaults)
+        let service = MPCNetworkServiceImpl(identityProvider: identityProvider)
+
         let meshMessages = [
             makeMessage(id: UUID(), text: "later", senderID: "b", senderDisplayName: "B", timestamp: .now, isIncoming: true),
             makeMessage(id: UUID(), text: "earlier", senderID: "a", senderDisplayName: "A", timestamp: .distantPast, isIncoming: true)
         ]
-        let privateMessages = [
-            "peer": [
-                makeMessage(id: UUID(), text: "second", senderID: "peer", senderDisplayName: "Peer", recipientID: service.localPeer.id, recipientDisplayName: service.localPeer.displayName, timestamp: .now, isIncoming: true),
-                makeMessage(id: UUID(), text: "first", senderID: service.localPeer.id, senderDisplayName: service.localPeer.displayName, recipientID: "peer", recipientDisplayName: "Peer", timestamp: .distantPast, isIncoming: false)
-            ]
-        ]
-        defaults.set(try JSONEncoder().encode(meshMessages), forKey: "chat.mesh.messages")
-        defaults.set(try JSONEncoder().encode(privateMessages), forKey: "chat.private.messages")
+        historyStorage.saveMeshMessages(meshMessages)
 
-        let viewModel = ChatViewModel(networkService: service, defaults: defaults)
+        let viewModel = ChatViewModel(
+            networkService: service,
+            identityProvider: identityProvider,
+            historyStorage: historyStorage
+        )
 
         #expect(viewModel.meshMessages.map(\.text) == ["earlier", "later"])
-        #expect(viewModel.messages(for: makePeer(id: "peer", name: "Peer")).map(\.text) == ["first", "second"])
+        #expect(viewModel.privateMessages.isEmpty)
+        #expect(viewModel.messages(for: makePeer(id: "peer", name: "Peer")).isEmpty)
     }
 
-    @Test // проверяет удобность отправки личного соо (чтобы текст стирался, только если реально отправился кому-то)
+    @Test
     @MainActor
     func sendPrivateMessage_requiresTargetPeer_andClearsOnlyNonWhitespaceInput() {
         let defaults = makeDefaults()
-        let service = MPCNetworkServiceImpl(defaults: defaults)
-        let viewModel = ChatViewModel(networkService: service, defaults: defaults)
+        let historyStorage = makeHistoryStorage(defaults: defaults)
+        let identityProvider = makeIdentityProvider(defaults: defaults)
+        let service = MPCNetworkServiceImpl(identityProvider: identityProvider)
+        let viewModel = ChatViewModel(
+            networkService: service,
+            identityProvider: identityProvider,
+            historyStorage: historyStorage
+        )
         let peer = makePeer(id: "peer", name: "Peer")
 
         viewModel.privateInputText = "hello"
@@ -56,12 +63,18 @@ struct ChatViewModelTests {
         #expect(viewModel.privateInputText.isEmpty)
     }
 
-    @Test // проверяет переход между экранами и сброс жизненного цикла (открытие чата должно закрывать модалку пирс и уход в бек должен сбрасывать сетевое состояние вьюмодели)
+    @Test
     @MainActor
     func openChatAndBackgroundLifecycle_updateScreenState() {
         let defaults = makeDefaults()
-        let service = MPCNetworkServiceImpl(defaults: defaults)
-        let viewModel = ChatViewModel(networkService: service, defaults: defaults)
+        let historyStorage = makeHistoryStorage(defaults: defaults)
+        let identityProvider = makeIdentityProvider(defaults: defaults)
+        let service = MPCNetworkServiceImpl(identityProvider: identityProvider)
+        let viewModel = ChatViewModel(
+            networkService: service,
+            identityProvider: identityProvider,
+            historyStorage: historyStorage
+        )
         let peer = makePeer(id: "peer", name: "Peer")
 
         viewModel.isPeersScreenPresented = true
@@ -71,6 +84,7 @@ struct ChatViewModelTests {
 
         viewModel.startIfNeeded()
         #expect(viewModel.isNetworkReady)
+
         viewModel.appMovedToBackground()
         #expect(!viewModel.isNetworkReady)
         #expect(viewModel.discoveredPeers.isEmpty)
@@ -78,16 +92,44 @@ struct ChatViewModelTests {
         #expect(viewModel.connectingPeers.isEmpty)
     }
 
-    @Test // проверяет обработку входящих сообщений во вьюмодель (чтобы переписки не мешались в чате)
+    @Test
     @MainActor
     func didReceive_appendsRelevantMessages_andFiltersForeignPrivateConversation() {
         let defaults = makeDefaults()
-        let service = MPCNetworkServiceImpl(defaults: defaults)
-        let viewModel = ChatViewModel(networkService: service, defaults: defaults)
+        let historyStorage = makeHistoryStorage(defaults: defaults)
+        let identityProvider = makeIdentityProvider(defaults: defaults)
+        let service = MPCNetworkServiceImpl(identityProvider: identityProvider)
+        let viewModel = ChatViewModel(
+            networkService: service,
+            identityProvider: identityProvider,
+            historyStorage: historyStorage
+        )
 
-        let common = makeMessage(text: "mesh", senderID: "a", senderDisplayName: "A", timestamp: .distantPast, isIncoming: true)
-        let privateToMe = makeMessage(text: "dm", senderID: "peer", senderDisplayName: "Peer", recipientID: service.localPeer.id, recipientDisplayName: service.localPeer.displayName, timestamp: .now, isIncoming: true)
-        let privateForeign = makeMessage(text: "skip", senderID: "peer", senderDisplayName: "Peer", recipientID: "other", recipientDisplayName: "Other", timestamp: .now, isIncoming: true)
+        let common = makeMessage(
+            text: "mesh",
+            senderID: "a",
+            senderDisplayName: "A",
+            timestamp: .distantPast,
+            isIncoming: true
+        )
+        let privateToMe = makeMessage(
+            text: "dm",
+            senderID: "peer",
+            senderDisplayName: "Peer",
+            recipientID: service.localPeer.id,
+            recipientDisplayName: service.localPeer.displayName,
+            timestamp: .now,
+            isIncoming: true
+        )
+        let privateForeign = makeMessage(
+            text: "skip",
+            senderID: "peer",
+            senderDisplayName: "Peer",
+            recipientID: "other",
+            recipientDisplayName: "Other",
+            timestamp: .now,
+            isIncoming: true
+        )
 
         viewModel.networkService(service, didReceive: common)
         viewModel.networkService(service, didReceive: privateToMe)
@@ -97,12 +139,19 @@ struct ChatViewModelTests {
         #expect(viewModel.privateMessages["peer"]?.map(\.text) == ["dm"])
     }
 
-    @Test // проверяет реакцию вьюмодели на коллбеки, 
+    @Test
     @MainActor
     func peerAndErrorCallbacks_keepSelectionFresh_andExposeBanner() {
         let defaults = makeDefaults()
-        let service = MPCNetworkServiceImpl(defaults: defaults)
-        let viewModel = ChatViewModel(networkService: service, defaults: defaults)
+        let historyStorage = makeHistoryStorage(defaults: defaults)
+        let identityProvider = makeIdentityProvider(defaults: defaults)
+        let service = MPCNetworkServiceImpl(identityProvider: identityProvider)
+        let viewModel = ChatViewModel(
+            networkService: service,
+            identityProvider: identityProvider,
+            historyStorage: historyStorage
+        )
+
         let selected = makePeer(id: "peer", name: "Old")
         let updated = makePeer(id: "peer", name: "New")
 
@@ -129,6 +178,7 @@ struct ChatViewModelTests {
 
         viewModel.networkService(service, didEncounter: .peerUnavailable)
         #expect(viewModel.bannerText == NetworkServiceError.peerUnavailable.errorDescription)
+
         viewModel.clearBanner()
         #expect(viewModel.bannerText == nil)
     }

@@ -10,7 +10,7 @@ import Testing
 @testable import P2PMessenger
 
 struct PeerSessionCoordinatorTests {
-    @Test // проверяет жизненный цикл координатора, чтобы переход в бек был чистым
+    @Test
     @MainActor
     func lifecycleMethods_toggleRunningAndClearTransientState() {
         let (service, coordinator) = makeServiceAndCoordinator()
@@ -30,7 +30,7 @@ struct PeerSessionCoordinatorTests {
         #expect(coordinator.connectingPeers.isEmpty)
     }
 
-    @Test // проверяет мультикаст событий в приложении (тут сообщение и три изменения состояния пира)
+    @Test
     @MainActor
     func subscriptions_receiveMessagesAndPeerStateNotifications() {
         let (service, coordinator) = makeServiceAndCoordinator()
@@ -45,7 +45,7 @@ struct PeerSessionCoordinatorTests {
         var delivered: [CoreChatMessage] = []
         var peerStateNotificationCount = 0
 
-        coordinator.subscribe { delivered.append($0) }
+        coordinator.subscribe(onMessage: { delivered.append($0) })
         coordinator.subscribePeerStateChanges { peerStateNotificationCount += 1 }
 
         coordinator.networkService(service, didReceive: message)
@@ -59,7 +59,7 @@ struct PeerSessionCoordinatorTests {
         #expect(coordinator.isPeerConnecting(peer))
     }
 
-    @Test // проверяет delegate обновы локально состояния юзера и ошибки, чтобы координатор корректно закидывал системные изменения
+    @Test
     @MainActor
     func delegateCallbacks_updateLocalPeerAndErrorState() {
         let (service, coordinator) = makeServiceAndCoordinator()
