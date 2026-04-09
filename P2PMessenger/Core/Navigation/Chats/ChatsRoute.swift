@@ -6,7 +6,6 @@
 //
 
 enum ChatsRoute: Hashable {
-    case dialog
     case searchDialog
     case addDialog(peer: ChatPeer)
 }

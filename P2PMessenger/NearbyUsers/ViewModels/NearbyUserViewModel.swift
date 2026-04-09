@@ -13,9 +13,9 @@ import Foundation
 @Observable
 final class NearbyUserViewModel {
 
-    private let coordinator: PeerSessionCoordinator
+    private let coordinator: PeerSessionCoordinatorProtocol
 
-    init(coordinator: PeerSessionCoordinator) {
+    init(coordinator: PeerSessionCoordinatorProtocol) {
         self.coordinator = coordinator
     }
 

@@ -10,7 +10,7 @@ import Foundation
 /// Все VM читают пир-состояние напрямую через @Observable.
 @MainActor
 @Observable
-final class PeerSessionCoordinator {
+final class PeerSessionCoordinator: PeerSessionCoordinatorProtocol {
     struct PrivateConversationSnapshot {
         let peerID: String
         let peerDisplayName: String

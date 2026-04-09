@@ -7,10 +7,10 @@ import Foundation
 
 @MainActor
 @Observable
-final class PrivateChatViewModel: @MainActor ChatScreenViewModelProtocol {
+final class PrivateChatViewModel: ChatScreenViewModelProtocol {
 
     let peer: ChatPeer
-    private let coordinator: PeerSessionCoordinator
+    private let coordinator: PeerSessionCoordinatorProtocol
 
     var inputText = ""
     private(set) var messages: [ChatMessage] = []
@@ -46,7 +46,7 @@ final class PrivateChatViewModel: @MainActor ChatScreenViewModelProtocol {
 
     // MARK: - Init
 
-    init(coordinator: PeerSessionCoordinator, peer: ChatPeer) {
+    init(coordinator: PeerSessionCoordinatorProtocol, peer: ChatPeer) {
         self.coordinator = coordinator
         self.peer = peer
         self.messages = coordinator.privateMessages(for: peer.id).map(Self.makeChatMessage(from:))

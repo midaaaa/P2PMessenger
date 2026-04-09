@@ -24,7 +24,7 @@ final class OnboardingStorage: OnboardingStorageProtocol {
 }
 
 @Observable
-final class OnboardingState {
+final class OnboardingState: OnboardingStateProtocol {
     private let storage: OnboardingStorageProtocol
     
     var isOnboardingPassed: Bool {

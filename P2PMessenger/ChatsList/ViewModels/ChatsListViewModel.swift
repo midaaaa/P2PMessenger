@@ -15,7 +15,7 @@ final class ChatsListViewModel {
     }
 
     private var chatsByPeerID: [String: ChatRowViewModel] = [:]
-    private let coordinator: PeerSessionCoordinator
+    private let coordinator: PeerSessionCoordinatorProtocol
     private let storage: KeyValueStorageProtocol
     private let unreadStorageKey = "chats.list.unread.counts"
     private var unreadByPeerID: [String: Int] = [:]
@@ -30,7 +30,7 @@ final class ChatsListViewModel {
         messageChats.filter { $0.unreadCount > 0 }.count
     }
 
-    init(coordinator: PeerSessionCoordinator, storage: KeyValueStorageProtocol) {
+    init(coordinator: PeerSessionCoordinatorProtocol, storage: KeyValueStorageProtocol) {
         self.coordinator = coordinator
         self.storage = storage
         restoreUnreadCounts()
