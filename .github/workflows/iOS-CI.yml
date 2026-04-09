@@ -37,7 +37,7 @@ jobs:
           brew install swiftlint xcbeautify
 
       - name: Run Linter
-        run: swiftlint lint --strict | xcbeautify --renderer github-actions
+        run: set -o pipefail && swiftlint lint --strict | xcbeautify --renderer github-actions
 
   build-app:
     name: Build App
