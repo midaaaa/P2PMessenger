@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Lottie
 
 struct NoBluetoothView: View {
 
@@ -17,9 +18,9 @@ struct NoBluetoothView: View {
             Color.black.opacity(0.45)
                 .ignoresSafeArea()
             VStack(spacing: 24) {
-                Image("bluetooth_slash")
+                LottieView(animation: .named("Bluetooth"))
+                    .playing(loopMode: .loop)
                     .resizable()
-                    .tint(.secondary)
                     .scaledToFit()
                     .frame(width: 50, height: 50)
                 Text("noBluetoothConnection")

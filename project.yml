@@ -1,17 +1,27 @@
 name: P2PMessenger
 include: [local.yml]
+
 options:
   deploymentTarget:
-    iOS: 17.6
+    iOS: 17.0
   generateEmptyDirectories: true
+
+packages:
+  Lottie:
+    url: https://github.com/airbnb/lottie-spm.git
+    from: 4.6.0
 
 targets:
   P2PMessenger:
     type: application
     platform: iOS
     sources: P2PMessenger
+    dependencies:
+      - package: Lottie
     resources:
       - path: Resources/Localizable.xcstrings
+        buildPhase: resources
+      - path: P2PMessenger/LottieAnimations
         buildPhase: resources
     settings:
       GENERATE_INFOPLIST_FILE: YES
@@ -27,6 +37,9 @@ targets:
       INFOPLIST_KEY_UILaunchScreen_Generation: YES
       INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
       INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription: "Bluetooth нужен для поиска собеседников и обмена сообщениями поблизости."
+      INFOPLIST_KEY_UIRequiresFullScreen: YES
+      INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+      INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: UIInterfaceOrientationPortrait
       USE_COMPILER_TO_EXTRACT_SWIFT_STRINGS: YES
       SWIFT_EMIT_LOC_STRINGS: YES
       DEVELOPMENT_LANGUAGE: ru
@@ -82,5 +95,3 @@ schemes:
     test:
       targets:
         - P2PMessengerUITests
-
-
