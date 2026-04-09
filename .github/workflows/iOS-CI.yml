@@ -23,16 +23,10 @@ jobs:
         id: cache-brew
         uses: actions/cache@v4
         with:
-          path: |
-            ~/Library/Caches/Homebrew
-            /opt/homebrew/bin/swiftlint
-            /opt/homebrew/bin/xcbeautify
-            /usr/local/bin/swiftlint
-            /usr/local/bin/xcbeautify
-          key: ${{ runner.os }}-brew-lint-v2-${{ hashFiles('.github/Makefile') }}
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-brew-lint-v3-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
-        if: steps.cache-brew.outputs.cache-hit != 'true'
         run: |
           brew install swiftlint xcbeautify
 
@@ -52,18 +46,10 @@ jobs:
         id: cache-brew
         uses: actions/cache@v4
         with:
-          path: |
-            ~/Library/Caches/Homebrew
-            /opt/homebrew/bin/xcodegen
-            /opt/homebrew/bin/xcbeautify
-            /opt/homebrew/bin/jq
-            /usr/local/bin/xcodegen
-            /usr/local/bin/xcbeautify
-            /usr/local/bin/jq
-          key: ${{ runner.os }}-brew-build-v2-${{ hashFiles('.github/Makefile') }}
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-brew-build-v3-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
-        if: steps.cache-brew.outputs.cache-hit != 'true'
         run: |
           brew install xcodegen xcbeautify jq
 
@@ -116,18 +102,10 @@ jobs:
         id: cache-brew
         uses: actions/cache@v4
         with:
-          path: |
-            ~/Library/Caches/Homebrew
-            /opt/homebrew/bin/xcodegen
-            /opt/homebrew/bin/xcbeautify
-            /opt/homebrew/bin/jq
-            /usr/local/bin/xcodegen
-            /usr/local/bin/xcbeautify
-            /usr/local/bin/jq
-          key: ${{ runner.os }}-brew-build-v2-${{ hashFiles('.github/Makefile') }}
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-brew-build-v3-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
-        if: steps.cache-brew.outputs.cache-hit != 'true'
         run: |
           brew install xcodegen xcbeautify jq
 
@@ -183,18 +161,10 @@ jobs:
         id: cache-brew
         uses: actions/cache@v4
         with:
-          path: |
-            ~/Library/Caches/Homebrew
-            /opt/homebrew/bin/xcodegen
-            /opt/homebrew/bin/xcbeautify
-            /opt/homebrew/bin/jq
-            /usr/local/bin/xcodegen
-            /usr/local/bin/xcbeautify
-            /usr/local/bin/jq
-          key: ${{ runner.os }}-brew-build-v2-${{ hashFiles('.github/Makefile') }}
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-brew-build-v3-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
-        if: steps.cache-brew.outputs.cache-hit != 'true'
         run: |
           brew install xcodegen xcbeautify jq
 
@@ -250,18 +220,10 @@ jobs:
         id: cache-brew
         uses: actions/cache@v4
         with:
-          path: |
-            ~/Library/Caches/Homebrew
-            /opt/homebrew/bin/xcodegen
-            /opt/homebrew/bin/xcbeautify
-            /opt/homebrew/bin/jq
-            /usr/local/bin/xcodegen
-            /usr/local/bin/xcbeautify
-            /usr/local/bin/jq
-          key: ${{ runner.os }}-brew-build-v2-${{ hashFiles('.github/Makefile') }}
+          path: ~/Library/Caches/Homebrew
+          key: ${{ runner.os }}-brew-build-v3-${{ hashFiles('.github/Makefile') }}
 
       - name: Install Tools
-        if: steps.cache-brew.outputs.cache-hit != 'true'
         run: |
           brew install xcodegen xcbeautify jq
 
