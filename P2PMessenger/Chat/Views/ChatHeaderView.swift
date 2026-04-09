@@ -85,7 +85,7 @@ struct ChatHeaderView: View {
             HStack(spacing: ChatUIConstants.Header.backControlSpacing) {
                 Image(systemName: "chevron.left")
                     .font(.system(size: ChatUIConstants.Header.backIconSize, weight: .regular))
-                Text(String(localized: "Назад"))
+                Text(String(localized: "back"))
                     .font(.system(size: ChatUIConstants.Header.backTextSize, weight: .regular))
             }
             .foregroundStyle(Color("P2PTextSecondary"))

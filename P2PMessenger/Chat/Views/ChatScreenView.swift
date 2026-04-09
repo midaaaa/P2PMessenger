@@ -62,9 +62,9 @@ struct ChatScreenView<ViewModel: ChatScreenViewModelProtocol & Observable>: View
     private var chatTypeText: String {
         switch viewModel.headerStyle {
         case .direct:
-            return String(localized: "Сообщение ...")
+            return String(localized: "message")
         case .group:
-            return String(localized: "Сообщение всем ...")
+            return String(localized: "messageEveryone")
         }
     }
 

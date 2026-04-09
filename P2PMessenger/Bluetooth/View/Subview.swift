@@ -22,14 +22,14 @@ struct NoBluetoothView: View {
                     .tint(.secondary)
                     .scaledToFit()
                     .frame(width: 50, height: 50)
-                Text("Нет подключения к Bluetooth")
+                Text("noBluetoothConnection")
                     .font(.headline)
                     .font(.system(size: 50))
                     .multilineTextAlignment(.center)
-                Text("Пожалуйста, включите его в настройках")
+                Text("turnItOnInSettings")
                     .font(.callout)
                     .multilineTextAlignment(.center)
-                Button("Перейти") {
+                Button("moveTo") {
                     openBluetoothSettings()
                 }
                 .buttonStyle(.borderedProminent)

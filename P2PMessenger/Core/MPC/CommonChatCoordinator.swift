@@ -50,28 +50,29 @@ final class CommonChatCoordinator {
     }
 
     var headerStyle: ChatHeaderStyle {
-        .group(title: "Общий чат", subtitle: "\(countParticipant) \(participantWord(for: countParticipant))")
+        .group(title: String(localized: "generalChat"), subtitle: String(localized: "\(countParticipant) \(participantWord(for: countParticipant))"))
     }
 
     private func participantWord(for count: Int) -> String {
         let lastTwo = count % 100
         if (11...14).contains(lastTwo) {
-            return "участников"
+            return String(localized: "users11-14")
         }
 
         switch count % 10 {
         case 1:
-            return "участник"
+            return String(localized: "users1")
         case 2...4:
-            return "участника"
+            return String(localized: "users2-4")
         default:
-            return "участников"
+            return String(localized: "users11-14")
         }
     }
 
     var chatTimelineTitle: String {
         switch headerStyle {
-        case let .group(title, _) : return "Сегодня \(title)"
+        case let .group(title, _) : return String(localized: "today \(title)")
+            //String(format: String(localized: "today"), title)
         case .direct:
             assertionFailure()
             return ""

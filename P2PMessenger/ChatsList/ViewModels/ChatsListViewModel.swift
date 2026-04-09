@@ -57,7 +57,7 @@ final class ChatsListViewModel {
             id: peer.id,
             name: peer.displayName,
             timeOfLastMessage: Date(),
-            lastMessage: String(localized: "Начните диалог"),
+            lastMessage: String(localized: "startDialogue"),
             unreadCount: unreadByPeerID[peer.id] ?? 0,
             isOnline: coordinator.isPeerConnected(peer),
             status: .active

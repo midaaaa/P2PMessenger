@@ -14,9 +14,9 @@ import SwiftUI
 final class WelcomeScreenVM {
 
     let benefitsSectionContent: [BenefitItem] = [
-        BenefitItem(title: "Найдите людей рядом", icon: "1.circle"),
-        BenefitItem(title: "Отправьте запрос на чат", icon: "2.circle"),
-        BenefitItem(title: "Общайтесь в личных и общих чатах", icon: "3.circle")
+        BenefitItem(title: String(localized: "findPeopleNearby"), icon: "1.circle"),
+        BenefitItem(title: String(localized: "sendChatRequest"), icon: "2.circle"),
+        BenefitItem(title: String(localized: "messageInPrivateAndGeneral"), icon: "3.circle")
     ]
 
     private let permissionManager: PermissionManager
@@ -42,8 +42,8 @@ final class WelcomeScreenVM {
     var permissions: [PermissionItem] {
         [
             PermissionItem(id: .bluetooth, title: "Bluetooth", icon: "dot.radiowaves.left.and.right", state: permissionManager.bluetoothState),
-            PermissionItem(id: .localNetwork, title: "Локальная сеть", icon: "wifi", state: permissionManager.localNetworkState),
-            PermissionItem(id: .notifications, title: "Уведомления", icon: "bell.badge", state: permissionManager.notificationsState)
+            PermissionItem(id: .localNetwork, title: String(localized: "localNetwork"), icon: "wifi", state: permissionManager.localNetworkState),
+            PermissionItem(id: .notifications, title: String(localized: "notifications"), icon: "bell.badge", state: permissionManager.notificationsState)
         ]
     }
 

@@ -34,12 +34,12 @@ struct WelcomeScreenView: View {
                 .scaledToFit()
                 .frame(width: 100, height: 100)
                 .padding(.top, 20)
-            Text("Добро пожаловать в P2P Messenger")
+            Text("welcomeToP2PMessenger")
                 .font(.headline)
                 .bold()
                 .foregroundStyle(.p2PBlack)
                 .padding(.bottom, 10)
-            Text("Общайтесь напрямую с людьми рядом без интернета")
+            Text("noInternetMessaging")
                 .font(.subheadline)
                 .fontWeight(.medium)
                 .foregroundStyle(.p2PDarkGray)
@@ -50,7 +50,7 @@ struct WelcomeScreenView: View {
 
     private var howItWorksSection: some View {
         VStack(spacing: 10) {
-            Text("Как это работает")
+            Text("howItWorks")
                 .font(.headline)
                 .fontWeight(.medium)
                 .foregroundStyle(.p2PDarkGray)
@@ -63,7 +63,7 @@ struct WelcomeScreenView: View {
 
     private var permissionsSection: some View {
         VStack(spacing: 10) {
-            Text("Разрешение")
+            Text("permissions")
                 .font(.headline)
                 .fontWeight(.medium)
                 .foregroundStyle(.p2PDarkGray)
@@ -78,12 +78,12 @@ struct WelcomeScreenView: View {
 
     private var nameSection: some View {
         VStack(spacing: 10) {
-            Text("Ваше имя")
+            Text("yourName")
                 .font(.headline)
                 .fontWeight(.medium)
                 .foregroundStyle(.p2PDarkGray)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            TextField("Введите имя", text: $vm.userName)
+            TextField("enterYourName", text: $vm.userName)
                 .frame(height: 60)
                 .accentColor(.p2PBlack)
                 .padding(.leading)
@@ -96,7 +96,7 @@ struct WelcomeScreenView: View {
         Button(action: {
             vm.setOnboardingPassed()
         }) {
-            Text("Начнём!")
+            Text("letsStart")
                 .frame(height: 60)
                 .frame(maxWidth: .infinity)
                 .foregroundStyle(vm.canGoForward ? .white : .p2PBlack)
@@ -175,12 +175,12 @@ fileprivate struct PermissionRow: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 12, height: 12)
-                    Text("Разрешено")
+                    Text("allowed")
                 }
                 .foregroundStyle(.p2PDarkGray)
             } else {
                 Button(action: onRequest) {
-                    Text("Разрешить")
+                    Text("allow")
                         .frame(height: 29)
                         .foregroundStyle(.white)
                         .padding(.horizontal)

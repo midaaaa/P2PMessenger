@@ -24,8 +24,8 @@ final class PrivateChatViewModel: ChatScreenViewModelProtocol {
             isOnline: isOnline
         )
         let subtitle = isOnline
-            ? String(localized: "В сети")
-            : String(localized: "Не в сети")
+            ? String(localized: "online")
+            : String(localized: "offline")
         return .direct(participant: participant, subtitle: subtitle)
     }
 
@@ -40,7 +40,7 @@ final class PrivateChatViewModel: ChatScreenViewModelProtocol {
         return ChatEmptyState(
             participant: participant,
             title: peer.displayName,
-            subtitle: String(localized: "Напишите первое сообщение.\nСобеседник получит запрос на чат.")
+            subtitle: String(localized: "printFirstMessage")
         )
     }
 
