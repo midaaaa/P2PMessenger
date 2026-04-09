@@ -125,7 +125,6 @@ struct CommonChatCoordinatorTests {
         #expect(messages[1].incomingParticipant?.isOnline == true)
     }
 
-/*
     @Test
     @MainActor
     func headerStyle_usesRussianPluralizationBasedOnConnectedPeers() {
@@ -159,7 +158,6 @@ struct CommonChatCoordinatorTests {
             makePeer(id: "d", name: "D")
         ])
         #expect(subtitle() == "5 участников")
-        #expect(coordinator.chatTimelineTitle == "Сегодня Общий чат")
+        #expect(coordinator.chatTimelineTitle == "Сегодня ⋅ Общий чат")
     }
-*/
 }
