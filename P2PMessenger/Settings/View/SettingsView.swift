@@ -16,7 +16,7 @@ struct SettingsView: View {
                 Button {
 
                 } label: {
-                    UserCard(username: viewModel.username)
+                    UserCard(username: $viewModel.username)
                         .tint(.primary)
                 }
             } header: {
@@ -60,7 +60,7 @@ struct SettingsView: View {
 
             Section {
                 Button {
-
+                    viewModel.clearAllData()
                 } label: {
                     DeleteCard()
                 }
@@ -75,5 +75,9 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView(viewModel: SettingsViewModel())
+    let baseStorage = AppKeyValueStorage(defaults: .standard)
+    let profileStorage = AppProfileStorage(storage: baseStorage)
+    let provider = LocalPeerIdentityProvider(profileStorage: profileStorage)
+    let onboardingState = OnboardingState(storage: OnboardingStorage(storage: baseStorage))
+    SettingsView(viewModel: SettingsViewModel(identityProvider: provider, storage: baseStorage, onboardingState: onboardingState))
 }

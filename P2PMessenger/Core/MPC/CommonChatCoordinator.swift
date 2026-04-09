@@ -14,19 +14,18 @@ final class CommonChatCoordinator {
     private var countParticipant = 1
     private let networkService: MPCNetworkService
     private let peerCoordinator: PeerSessionCoordinator
-    private let defaults: UserDefaults
-    private let commonStorageKey = "chat.common.messages"
+    private let chatHistoryStorage: ChatHistoryStorageProtocol
     private var seenMessageIDs = Set<UUID>()
     private var commonChatMessages: [CoreChatMessage] = []
 
     init(
         networkService: MPCNetworkService,
         peerCoordinator: PeerSessionCoordinator,
-        defaults: UserDefaults = .standard
+        chatHistoryStorage: ChatHistoryStorageProtocol
     ) {
         self.networkService = networkService
         self.peerCoordinator = peerCoordinator
-        self.defaults = defaults
+        self.chatHistoryStorage = chatHistoryStorage
 
         restorePersistedState()
         bind()
@@ -112,19 +111,11 @@ final class CommonChatCoordinator {
     }
 
     private func persistState() {
-        if let data = try? JSONEncoder().encode(commonChatMessages) {
-            defaults.set(data, forKey: commonStorageKey)
-        }
+        chatHistoryStorage.saveMeshMessages(commonChatMessages)
     }
 
     private func restorePersistedState() {
-        let decoder = JSONDecoder()
-        guard let data = defaults.data(forKey: commonStorageKey),
-              let messages = try? decoder.decode([CoreChatMessage].self, from: data) else {
-            return
-        }
-
-        commonChatMessages = messages.sorted { $0.timestamp < $1.timestamp }
+        commonChatMessages = chatHistoryStorage.loadMeshMessages()
         trimStoredMessagesIfNeeded()
         seenMessageIDs = Set(commonChatMessages.map(\.id))
     }

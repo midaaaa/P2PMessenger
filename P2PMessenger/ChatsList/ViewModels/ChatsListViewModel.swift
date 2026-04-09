@@ -16,7 +16,7 @@ final class ChatsListViewModel {
 
     private var chatsByPeerID: [String: ChatRowViewModel] = [:]
     private let coordinator: PeerSessionCoordinator
-    private let defaults: UserDefaults
+    private let storage: KeyValueStorageProtocol
     private let unreadStorageKey = "chats.list.unread.counts"
     private var unreadByPeerID: [String: Int] = [:]
 
@@ -30,9 +30,9 @@ final class ChatsListViewModel {
         messageChats.filter { $0.unreadCount > 0 }.count
     }
 
-    init(coordinator: PeerSessionCoordinator, defaults: UserDefaults = .standard) {
+    init(coordinator: PeerSessionCoordinator, storage: KeyValueStorageProtocol) {
         self.coordinator = coordinator
-        self.defaults = defaults
+        self.storage = storage
         restoreUnreadCounts()
         restoreChatsFromHistory()
         coordinator.subscribe(onMessage: { [weak self] message in
@@ -136,11 +136,11 @@ final class ChatsListViewModel {
     private func persistUnreadCounts() {
         let payload = PersistedUnread(countsByPeerID: unreadByPeerID.filter { $0.value > 0 })
         guard let data = try? JSONEncoder().encode(payload) else { return }
-        defaults.set(data, forKey: unreadStorageKey)
+        storage.set(data, forKey: unreadStorageKey)
     }
 
     private func restoreUnreadCounts() {
-        guard let data = defaults.data(forKey: unreadStorageKey),
+        guard let data = storage.data(forKey: unreadStorageKey),
               let payload = try? JSONDecoder().decode(PersistedUnread.self, from: data) else {
             return
         }

@@ -25,7 +25,7 @@ final class ChatScreenViewModel: ChatScreenViewModelProtocol {
         headerStyle: ChatHeaderStyle,
         timelineTitle: String? = nil,
         messages: [ChatMessage] = [],
-        emptyState: ChatEmptyState? = nil,
+        emptyState: ChatEmptyState? = nil
     ) {
         self.networkService = networkService
         self.headerStyle = headerStyle
@@ -39,7 +39,7 @@ final class ChatScreenViewModel: ChatScreenViewModelProtocol {
         guard let targetPeer else { return }
 
         let text = privateInputText
-        networkService.sendPrivate(text: text, to: targetPeer)
+        let _ = networkService.sendPrivate(text: text, to: targetPeer)
 
         if !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             privateInputText = ""
@@ -61,6 +61,12 @@ final class ChatScreenViewModel: ChatScreenViewModelProtocol {
 // MARK: - Конфигурация экрана
 
 extension ChatScreenViewModel {
+    private static var dummyNetworkService: MPCNetworkService {
+        let storage = AppProfileStorage(storage: AppKeyValueStorage(defaults: .standard))
+        let provider = LocalPeerIdentityProvider(profileStorage: storage)
+        return MPCNetworkServiceImpl(identityProvider: provider)
+    }
+
     static func directChat(
         participant: ChatParticipant,
         subtitle: String,
@@ -69,9 +75,10 @@ extension ChatScreenViewModel {
         composerPlaceholder: String = String(localized: "Сообщение...")
     ) -> ChatScreenViewModel {
         ChatScreenViewModel(
-            networkService: MPCNetworkServiceImpl(), headerStyle: .direct(participant: participant, subtitle: subtitle),
+            networkService: dummyNetworkService, 
+            headerStyle: .direct(participant: participant, subtitle: subtitle),
             messages: messages,
-            emptyState: emptyState,
+            emptyState: emptyState
         )
     }
 
@@ -83,15 +90,17 @@ extension ChatScreenViewModel {
         composerPlaceholder: String = String(localized: "Сообщение всем...")
     ) -> ChatScreenViewModel {
         ChatScreenViewModel(
-            networkService: MPCNetworkServiceImpl(), headerStyle: .group(title: title, subtitle: participantsSubtitle),
+            networkService: dummyNetworkService, 
+            headerStyle: .group(title: title, subtitle: participantsSubtitle),
             timelineTitle: timelineTitle,
-            messages: messages,
+            messages: messages
         )
     }
 
     static let empty = ChatScreenViewModel(
-        networkService: MPCNetworkServiceImpl(), headerStyle: .group(title: String(localized: "Чат"), subtitle: ""),
-        messages: [],
+        networkService: dummyNetworkService, 
+        headerStyle: .group(title: String(localized: "Чат"), subtitle: ""),
+        messages: []
     )
 }
 
@@ -106,10 +115,11 @@ extension ChatScreenViewModel {
         )
 
         return ChatScreenViewModel(
-            networkService: MPCNetworkServiceImpl(), headerStyle: headerStyle,
+            networkService: self.networkService, 
+            headerStyle: headerStyle,
             timelineTitle: timelineTitle,
             messages: messages + [newMessage],
-            emptyState: nil,
+            emptyState: nil
         )
     }
 }

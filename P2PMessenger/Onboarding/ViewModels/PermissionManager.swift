@@ -27,16 +27,13 @@ final class PermissionManager: NSObject {
     private var mcBrowser: MCNearbyServiceBrowser?
     @ObservationIgnored
     private let notificationService: NotificationServiceProtocol
+    private var permissionsStorage: PermissionsStorageProtocol
     
     private let fakeDisplayName: String = "probe"
 
-    private enum Keys {
-        static let localNetwork = "permission.localNetwork.granted"
-        static let nearby = "permission.nearby.granted"
-    }
-
-    init(notification: NotificationServiceProtocol) {
+    init(notification: NotificationServiceProtocol, permissionsStorage: PermissionsStorageProtocol) {
         self.notificationService = notification
+        self.permissionsStorage = permissionsStorage
         super.init()
         restorePersistedStates()
         checkBluetoothStatus()
@@ -46,10 +43,10 @@ final class PermissionManager: NSObject {
     // MARK: - Restore on launch
 
     private func restorePersistedStates() {
-        if UserDefaults.standard.bool(forKey: Keys.localNetwork) {
+        if permissionsStorage.isLocalNetworkGranted {
             localNetworkState = .granted
         }
-        if UserDefaults.standard.bool(forKey: Keys.nearby) {
+        if permissionsStorage.isNearbyGranted {
             nearbyState = .granted
         }
     }
@@ -85,14 +82,14 @@ final class PermissionManager: NSObject {
             guard case .failed = state else { return }
             DispatchQueue.main.async {
                 self?.localNetworkState = .granted
-                UserDefaults.standard.set(true, forKey: Keys.localNetwork)
+                self?.permissionsStorage.isLocalNetworkGranted = true
                 browser.cancel()
             }
         }
         browser.browseResultsChangedHandler = { [weak self] _, _ in
             DispatchQueue.main.async {
                 self?.localNetworkState = .granted
-                UserDefaults.standard.set(true, forKey: Keys.localNetwork)
+                self?.permissionsStorage.isLocalNetworkGranted = true
                 browser.cancel()
             }
         }
@@ -100,7 +97,7 @@ final class PermissionManager: NSObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
             guard self?.localNetworkState == .needAction else { return }
             self?.localNetworkState = .granted
-            UserDefaults.standard.set(true, forKey: Keys.localNetwork)
+            self?.permissionsStorage.isLocalNetworkGranted = true
             browser.cancel()
         }
     }
@@ -112,7 +109,7 @@ final class PermissionManager: NSObject {
         mcBrowser?.startBrowsingForPeers()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             self?.nearbyState = .granted
-            UserDefaults.standard.set(true, forKey: Keys.nearby)
+            self?.permissionsStorage.isNearbyGranted = true
             self?.mcBrowser?.stopBrowsingForPeers()
         }
     }
@@ -136,7 +133,7 @@ extension PermissionManager: @preconcurrency MCNearbyServiceBrowserDelegate {
     func browser(_ browser: MCNearbyServiceBrowser, didNotStartBrowsingForPeers error: Error) {
         DispatchQueue.main.async {
             self.nearbyState = .granted
-            UserDefaults.standard.set(true, forKey: Keys.nearby)
+            self.permissionsStorage.isNearbyGranted = true
         }
     }
 

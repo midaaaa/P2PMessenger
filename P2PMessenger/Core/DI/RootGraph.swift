@@ -18,6 +18,11 @@ final class RootGraph {
     @ObservationIgnored
     let bluetoothMonitor: BluetoothMonitor
     
+    // Storage
+    @ObservationIgnored let profileStorage: UserProfileStorageProtocol
+    @ObservationIgnored let identityProvider: LocalPeerIdentityProvider
+    @ObservationIgnored let onboardingState: OnboardingState
+
     // Network layer
     @ObservationIgnored let networkService: MPCNetworkServiceImpl
     @ObservationIgnored let coordinator: PeerSessionCoordinator
@@ -66,10 +71,23 @@ final class RootGraph {
         self.bluetoothMonitor = BluetoothMonitor()
         self.bluetoothStatusViewModel = BluetoothStatusViewModel(monitor: bluetoothMonitor)
         
+        // Storage
+        let baseStorage: KeyValueStorageProtocol = AppKeyValueStorage(defaults: .standard)
+        let profileStorage = AppProfileStorage(storage: baseStorage)
+        self.profileStorage = profileStorage
+        
+        let permissionsStorage = PermissionsStorage(storage: baseStorage)
+        let onboardingStorage = OnboardingStorage(storage: baseStorage)
+        self.onboardingState = OnboardingState(storage: onboardingStorage)
+        let chatHistoryStorage = ChatHistoryStorage(storage: baseStorage)
+        
+        let identityProvider = LocalPeerIdentityProvider(profileStorage: profileStorage)
+        self.identityProvider = identityProvider
+
         // Network
-        let svc = MPCNetworkServiceImpl()
-        let coord = PeerSessionCoordinator(networkService: svc)
-        let commonCoordinator = CommonChatCoordinator(networkService: svc, peerCoordinator: coord)
+        let svc = MPCNetworkServiceImpl(identityProvider: identityProvider)
+        let coord = PeerSessionCoordinator(networkService: svc, storage: baseStorage)
+        let commonCoordinator = CommonChatCoordinator(networkService: svc, peerCoordinator: coord, chatHistoryStorage: chatHistoryStorage)
         self.networkService = svc
         self.coordinator = coord
         
@@ -80,7 +98,8 @@ final class RootGraph {
         // Chats
         self.chatsRootViewModel = ChatsRootViewModel(
             chatListViewModel: ChatsListViewModel(
-                coordinator: coord
+                coordinator: coord,
+                storage: baseStorage
             ),
             chatScreenViewModel: ChatPreviewFixtures.newChat,
             nearbyUserViewModel: nearbyUserViewModel,
@@ -96,11 +115,19 @@ final class RootGraph {
         self.commonChatRootView = CommonChatRootView(viewModel: commonChatViewModel, appRouter: router)
         
         // Settings
-        self.settingsViewModel = SettingsViewModel()
+        self.settingsViewModel = SettingsViewModel(
+            identityProvider: identityProvider,
+            storage: baseStorage,
+            onboardingState: self.onboardingState
+        )
         self.settingsRootView = SettingsRootView(viewModel: settingsViewModel)
         
         // Onboarding
-        self.welcomeScreenVM = WelcomeScreenVM(permissionManager: PermissionManager(notification: notificationService))
+        self.welcomeScreenVM = WelcomeScreenVM(
+            permissionManager: PermissionManager(notification: notificationService, permissionsStorage: permissionsStorage),
+            identityProvider: identityProvider,
+            onboardingState: self.onboardingState
+        )
         self.welcomeScreenView = WelcomeScreenView(vm: welcomeScreenVM)
         
         self.appRootView = AppRootView(
@@ -109,8 +136,10 @@ final class RootGraph {
             chatsRootView: chatsRootView,
             commonChatRootView: commonChatRootView,
             settingsRootView: settingsRootView,
+            welcomeScreenVM: welcomeScreenVM,
+            welcomeScreenView: welcomeScreenView,
             coordinator: coord,
-            welcomeScreenView: welcomeScreenView
+            onboardingState: self.onboardingState
         )
         
         self.chatNotifications = ChatNotificationsController(

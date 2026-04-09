@@ -22,6 +22,9 @@ struct WelcomeScreenView: View {
             }
             .padding()
         }
+        .onAppear {
+            vm.syncDisplayName()
+        }
     }
 
     private var headerSection: some View {
@@ -193,6 +196,12 @@ fileprivate struct PermissionRow: View {
 
 #if DEBUG
 #Preview {
-    WelcomeScreenView(vm: WelcomeScreenVM(permissionManager: PermissionManager(notification: NotificationService())))
+    let storage = AppProfileStorage(storage: AppKeyValueStorage(defaults: .standard))
+    let provider = LocalPeerIdentityProvider(profileStorage: storage)
+    return WelcomeScreenView(vm: WelcomeScreenVM(
+        permissionManager: PermissionManager(notification: NotificationService(), permissionsStorage: PermissionsStorage(storage: AppKeyValueStorage(defaults: .standard))),
+        identityProvider: provider,
+        onboardingState: OnboardingState(storage: OnboardingStorage(storage: AppKeyValueStorage(defaults: .standard)))
+    ))
 }
 #endif

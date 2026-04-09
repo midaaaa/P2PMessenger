@@ -129,9 +129,12 @@ private struct ScanningDotsView: View {
 #if DEBUG
 #Preview {
     NavigationStack {
+        let baseStorage = AppKeyValueStorage(defaults: .standard)
+        let profileStorage = AppProfileStorage(storage: baseStorage)
+        let provider = LocalPeerIdentityProvider(profileStorage: profileStorage)
         NearbyUsersView(
             viewModel: NearbyUserViewModel(
-                coordinator: PeerSessionCoordinator(networkService: MPCNetworkServiceImpl())
+                coordinator: PeerSessionCoordinator(networkService: MPCNetworkServiceImpl(identityProvider: provider), storage: baseStorage)
             ),
             onUserTap: { _ in }
         )

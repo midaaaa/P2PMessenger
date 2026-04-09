@@ -20,11 +20,23 @@ final class WelcomeScreenVM {
     ]
 
     private let permissionManager: PermissionManager
+    private let identityProvider: LocalPeerIdentityReading
 
-    var userName: String = ""
+    var userName: String = "" {
+        didSet {
+            _ = identityProvider.updateDisplayName(userName)
+        }
+    }
 
-    init(permissionManager: PermissionManager) {
+    private let onboardingState: OnboardingState
+
+    init(permissionManager: PermissionManager, 
+         identityProvider: LocalPeerIdentityReading,
+         onboardingState: OnboardingState) {
         self.permissionManager = permissionManager
+        self.identityProvider = identityProvider
+        self.onboardingState = onboardingState
+        self.userName = identityProvider.displayName
     }
 
     var permissions: [PermissionItem] {
@@ -48,10 +60,12 @@ final class WelcomeScreenVM {
         }
     }
     
-    @AppStorage("isOnboardingPassed") @ObservationIgnored private var isOnboardingPassed = false
+    func syncDisplayName() {
+        userName = identityProvider.displayName
+    }
 
     func setOnboardingPassed() {
-        isOnboardingPassed = true
+        onboardingState.markOnboardingPassed()
     }
     
 }

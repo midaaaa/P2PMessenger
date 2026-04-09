@@ -8,19 +8,20 @@
 import SwiftUI
 
 struct AppRootView: View {
+    
     @Bindable var router: AppRouter
     let bluetoothStatusViewModel: BluetoothStatusViewModel
     let chatsRootView: ChatsRootView
     let commonChatRootView: CommonChatRootView
     let settingsRootView: SettingsRootView
-    let coordinator: PeerSessionCoordinator
+    let welcomeScreenVM: WelcomeScreenVM
     let welcomeScreenView: WelcomeScreenView
+    let coordinator: PeerSessionCoordinator
+    let onboardingState: OnboardingState
     @Environment(\.scenePhase) private var scenePhase
     
-    @AppStorage("isOnboardingPassed") private var isOnboardingPassed = false
-    
     var body: some View {
-        if isOnboardingPassed {
+        if onboardingState.isOnboardingPassed {
             TabView(selection: $router.selectedTab) {
                 chatsRootView
                     .tabItem {
@@ -62,10 +63,8 @@ struct AppRootView: View {
                 default: break
                 }
             }
+        } else {
+            welcomeScreenView
         }
-        else{
-           welcomeScreenView
-        }
-       
     }
 }
