@@ -13,7 +13,7 @@ import Testing
 struct MeshTopologyCoordinatorTests {
     private let coordinator = MeshTopologyCoordinator()
 
-    @Test //проверяет расчеты меш сети, чтобы не было гонок, циклов и спама инвайтов
+    @Test // проверяет расчеты меш сети, чтобы не было гонок, циклов и спама инвайтов
     func leaderAndClusterSize_areDerivedFromConnectedPeerSet() {
         let leader = coordinator.currentLeaderID(localUserID: "c", connectedPeerIDs: ["a", "b"])
         let size = coordinator.currentClusterSize(connectedPeerIDs: ["a", "b"])
@@ -24,7 +24,7 @@ struct MeshTopologyCoordinatorTests {
         #expect(coordinator.isLeader(localUserID: "a", connectedPeerIDs: ["c", "b"]))
     }
 
-    @Test //проверяет, кто должен инвайтить из двух узлов, чтобы не было встречных инвайтов
+    @Test // проверяет, кто должен инвайтить из двух узлов, чтобы не было встречных инвайтов
     func shouldInvitePeer_allowsOnlyDeterministicSingleNodeBootstrap() {
         let registry = PeerRegistry()
         let peerState = makeDiscoveredPeerState(stableID: "remote", name: "Remote")
@@ -39,7 +39,7 @@ struct MeshTopologyCoordinatorTests {
         #expect(!coordinator.shouldInvitePeer(localUserID: "z", lifecycleState: lifecycle, peerRegistry: registry, peerState: peerState))
     }
 
-    @Test //проверяет, чтобы инвайт не кидался пиру, если тот уже в сессии
+    @Test // проверяет, чтобы инвайт не кидался пиру, если тот уже в сессии
     func shouldInvitePeer_respectsConnectionAndInvitationGuards() {
         let registry = PeerRegistry()
         let peerState = makeDiscoveredPeerState(stableID: "remote", name: "Remote")
@@ -57,7 +57,7 @@ struct MeshTopologyCoordinatorTests {
         #expect(!coordinator.shouldInvitePeer(localUserID: "local", lifecycleState: lifecycle, peerRegistry: registry, peerState: peerState))
     }
 
-    @Test //проверяет кластеры на их защиту и слияние (можно принимать в кластер либо отдельных пиров, либо кластеры с тем же лидером, всё)
+    @Test // проверяет кластеры на их защиту и слияние (можно принимать в кластер либо отдельных пиров, либо кластеры с тем же лидером, всё)
     func canAcceptInvitation_handlesClusterMergeRules() {
         let registry = PeerRegistry()
         let connectedA = makeDiscoveredPeerState(stableID: "a", name: "Alice", leaderID: "a", clusterSize: 2)
@@ -78,7 +78,7 @@ struct MeshTopologyCoordinatorTests {
         #expect(coordinator.canAcceptInvitation(localUserID: "local", peerRegistry: registry, remoteID: "remote", senderLeaderID: "a", senderClusterSize: 3))
     }
 
-    @Test //проверяет работу retry и invite, чтобы при неудачном подключении не было спама инвайтами, а был выждан retry-time
+    @Test // проверяет работу retry и invite, чтобы при неудачном подключении не было спама инвайтами, а был выждан retry-time
     func evaluateConnection_returnsRetryOrInviteDependingOnRetryWindow() {
         let registry = PeerRegistry()
         let peerState = makeDiscoveredPeerState(stableID: "remote", name: "Remote")
@@ -119,7 +119,7 @@ struct MeshTopologyCoordinatorTests {
         }
     }
 
-    @Test //проверяет корректность работы reevaluation (повторные расчеты меш сети), чтобы она в фоне не спамила расчетами
+    @Test // проверяет корректность работы reevaluation (повторные расчеты меш сети), чтобы она в фоне не спамила расчетами
     func shouldScheduleReevaluation_onlyForActiveLeader() {
         let registry = PeerRegistry()
         registry.markConnected("a")

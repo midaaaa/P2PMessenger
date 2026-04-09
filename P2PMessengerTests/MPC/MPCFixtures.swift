@@ -11,8 +11,13 @@ import MultipeerConnectivity
 @testable import P2PMessenger
 
 func makeDefaults(_ name: String = UUID().uuidString) -> UserDefaults {
-    let defaults = UserDefaults(suiteName: "tests.\(name)")!
-    defaults.removePersistentDomain(forName: "tests.\(name)")
+    let suiteName = "tests.\(name)"
+    
+    guard let defaults = UserDefaults(suiteName: suiteName) else {
+        fatalError("Failed to create UserDefaults with suiteName: \(suiteName)")
+    }
+
+    defaults.removePersistentDomain(forName: suiteName)
     return defaults
 }
 

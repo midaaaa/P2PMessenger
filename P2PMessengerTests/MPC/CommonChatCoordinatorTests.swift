@@ -11,7 +11,7 @@ import Testing
 @testable import P2PMessenger
 
 struct CommonChatCoordinatorTests {
-    @Test //проверяет восстановление истории общего чата из UserDefaults на корректность
+    @Test // проверяет восстановление истории общего чата из UserDefaults на корректность
     @MainActor
     func init_restoresSortedTrimmedPersistedMessages() throws {
         let defaults = makeDefaults()
@@ -39,7 +39,7 @@ struct CommonChatCoordinatorTests {
         #expect(restoredTexts.last == "m0")
     }
 
-    @Test //проверяет фильтрацию соо в общий чат, чтобы туда не попадали дубликаты и личные
+    @Test // проверяет фильтрацию соо в общий чат, чтобы туда не попадали дубликаты и личные
     @MainActor
     func ignoresPrivateAndDuplicateMessages_butAcceptsPublicOnes() {
         let defaults = makeDefaults()
@@ -79,7 +79,7 @@ struct CommonChatCoordinatorTests {
         #expect(coordinator.chatMessages.map(\.text) == ["public"])
     }
 
-    @Test //проверяет преобразование модельки в UI, чтобы тот не ломался и корректно показывал автора сообщения и его состояние
+    @Test // проверяет преобразование модельки в UI, чтобы тот не ломался и корректно показывал автора сообщения и его состояние
     @MainActor
     func chatMessages_mapOutgoingIncomingAndOnlineStatus() {
         let defaults = makeDefaults()
@@ -110,7 +110,7 @@ struct CommonChatCoordinatorTests {
         #expect(messages[1].incomingParticipant?.isOnline == true)
     }
 
-    @Test //проверяет как работает эта надпись "участник/а/ов" с разным количеством юзеров
+    @Test // проверяет как работает эта надпись "участник/а/ов" с разным количеством юзеров
     @MainActor
     func headerStyle_usesRussianPluralizationBasedOnConnectedPeers() {
         let defaults = makeDefaults()

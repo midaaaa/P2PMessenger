@@ -12,7 +12,7 @@ import Testing
 @testable import P2PMessenger
 
 struct PeerRegistryTests {
-    @Test //проверяет обновление состояния найденного пира на корректность (это еще чтобы не увидеть самого есбя в списке и не спамить инвайтами)
+    @Test // проверяет обновление состояния найденного пира на корректность (это еще чтобы не увидеть самого есбя в списке и не спамить инвайтами)
     func updateDiscoveredPeer_ignoresLocalPeerAndStoresRemoteState() {
         let registry = PeerRegistry()
         let remoteID = makeMCPeerID("Remote")
@@ -45,7 +45,7 @@ struct PeerRegistryTests {
         #expect(state?.groupEpoch == 7)
     }
 
-    @Test //проверяет сортировку пиров и чтобы один и тот же чел не попал в несколько списков
+    @Test // проверяет сортировку пиров и чтобы один и тот же чел не попал в несколько списков
     func sortedCollections_returnAlphabeticalPeers_andConnectingExcludesConnected() {
         let registry = PeerRegistry()
         let annaPeerID = makeMCPeerID("Anna device")
@@ -69,7 +69,7 @@ struct PeerRegistryTests {
         #expect(registry.connectingPeersSorted().map(\.displayName) == ["Anna"])
     }
 
-    @Test //проверяет синхронизацию registry с реальной сессией, чтобы фактичсекие состояния сессии и пиров своевременно синхронились с локальными
+    @Test // проверяет синхронизацию registry с реальной сессией, чтобы фактичсекие состояния сессии и пиров своевременно синхронились с локальными
     func refreshConnectedPeers_syncsKnownPeersTracksUnresolvedAndRemovesStaleConnecting() {
         let registry = PeerRegistry()
         let knownPeerID = makeMCPeerID("Known")
@@ -91,7 +91,7 @@ struct PeerRegistryTests {
         #expect(registry.connectingPeerIDs == Set(["known"]))
     }
 
-    @Test //проверяет полную очистку состояния пира, чтобы он не зависал на каком-то конкретном состоянии
+    @Test // проверяет полную очистку состояния пира, чтобы он не зависал на каком-то конкретном состоянии
     func cleanupPeerState_clearsAllTransientFlags_andOptionallyDiscoveryState() {
         let registry = PeerRegistry()
         let peerID = makeMCPeerID("Remote")
