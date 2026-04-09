@@ -136,6 +136,17 @@ jobs:
       - name: Generate Xcode Project
         run: make -f .github/Makefile setup
 
+      - name: Set Simulator Language to Russian
+        run: |
+          SIMULATOR_UDID=$(xcrun simctl list devices available | grep "${{ env.SIMULATOR_NAME }}" | grep -E -o "([0-9A-F]{8}-([0-9A-F]{4}-){3}[0-9A-F]{12})" | head -1)
+          echo "Simulator UDID: $SIMULATOR_UDID"
+        
+          xcrun simctl boot "$SIMULATOR_UDID" || true
+          xcrun simctl spawn "$SIMULATOR_UDID" defaults write NSGlobalDomain AppleLanguages -array "ru"
+          xcrun simctl spawn "$SIMULATOR_UDID" defaults write NSGlobalDomain AppleLocale -string "ru_RU"
+          xcrun simctl shutdown "$SIMULATOR_UDID"
+          xcrun simctl boot "$SIMULATOR_UDID"
+        
       - name: Run Unit Tests
         run: |
           set -o pipefail && xcodebuild test \
