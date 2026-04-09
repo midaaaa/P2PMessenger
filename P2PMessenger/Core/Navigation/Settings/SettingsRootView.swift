@@ -12,5 +12,8 @@ struct SettingsRootView: View {
     var body: some View {
         SettingsView(viewModel: viewModel)
             .navigationTitle("Настройки")
+            .onAppear {
+                viewModel.syncDisplayName()
+            }
     }
 }

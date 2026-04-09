@@ -93,9 +93,12 @@ struct ChatsListView: View {
 
 #if DEBUG
 #Preview {
+    let previewStorage = AppKeyValueStorage(defaults: .standard)
     ChatsListView(
         viewModel: ChatsListViewModel(
-            coordinator: PeerSessionCoordinator(networkService: MPCNetworkServiceImpl())),
+                coordinator: PeerSessionCoordinator(networkService: MPCNetworkServiceImpl(identityProvider: LocalPeerIdentityProvider(profileStorage: AppProfileStorage(storage: previewStorage))), storage: previewStorage),
+                storage: previewStorage
+            ),
        
         plusButtonAction: {},
         chatRowButtonAction: { _ in }

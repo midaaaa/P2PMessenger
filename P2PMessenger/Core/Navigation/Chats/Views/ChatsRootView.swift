@@ -9,9 +9,9 @@ import SwiftUI
 struct ChatsRootView: View {
     private let viewModel: ChatsRootViewModel
     @Bindable private var router: ChatsRouter
-    @Bindable private var appRouter: AppRouter
+    private let appRouter: any AppRouterProtocol
 
-    init(viewModel: ChatsRootViewModel, router: ChatsRouter, appRouter: AppRouter) {
+    init(viewModel: ChatsRootViewModel, router: ChatsRouter, appRouter: any AppRouterProtocol) {
         self.viewModel = viewModel
         self.router = router
         self.appRouter = appRouter
@@ -29,12 +29,6 @@ struct ChatsRootView: View {
             )
             .navigationDestination(for: ChatsRoute.self) { route in
                 switch route {
-                case .dialog:
-                    ChatScreenView(viewModel: viewModel.chatScreenViewModel,
-                                   draftMessage: .constant(""), onBack: router.popToRoot)
-                    .navigationBarBackButtonHidden(true)
-                    
-                    
                 case .searchDialog:
                     VStack(spacing: 16) {
                         NearbyUsersView(
@@ -73,7 +67,7 @@ struct ChatsRootView: View {
 
 private struct PrivateChatView: View {
     @Bindable var viewModel: PrivateChatViewModel
-    @Bindable var appRouter: AppRouter
+    let appRouter: any AppRouterProtocol
     let onBack: () -> Void
 
     var body: some View {

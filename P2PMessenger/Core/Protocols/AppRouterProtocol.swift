@@ -8,8 +8,10 @@
 import Foundation
 import Combine
 
-protocol AppRouterProtocol {
+protocol AppRouterProtocol: AnyObject {
     var selectedTab: AppTab { get set }
-    
     var activeChatId: String? { get set }
+    var isAppActive: Bool { get set }
+    var activeDestination: ChatDestination? { get set }
+    var chatsRouter: ChatsRouter { get }
 }

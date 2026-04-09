@@ -126,11 +126,12 @@ struct ChatScreenView<ViewModel: ChatScreenViewModelProtocol & Observable>: View
             .clipShape(Capsule())
     }
 }
-
 #Preview("Новый чат") {
+    let storage = AppProfileStorage(storage: AppKeyValueStorage(defaults: .standard))
+    let provider = LocalPeerIdentityProvider(profileStorage: storage)
     ChatScreenView(
         viewModel: ChatScreenViewModel(
-            networkService: MPCNetworkServiceImpl(),
+            networkService: MPCNetworkServiceImpl(identityProvider: provider),
             headerStyle: .direct(
                 participant: ChatParticipant(
                     name: "Глеб",
@@ -145,7 +146,7 @@ struct ChatScreenView<ViewModel: ChatScreenViewModelProtocol & Observable>: View
                 ),
                 title: "Глеб",
                 subtitle: "Напишите первое сообщение.\nСобеседник получит запрос на чат."
-            ),
+            )
         ),
         draftMessage: .constant("")
     )
@@ -166,6 +167,7 @@ struct ChatScreenView<ViewModel: ChatScreenViewModelProtocol & Observable>: View
     )
 }
 
+@MainActor
 extension ChatPreviewFixtures {
     fileprivate static let publicChat: ChatScreenViewModel = {
         let vasya = ChatParticipant(name: "Вася", isOnline: true)
