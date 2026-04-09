@@ -7,9 +7,5 @@
 		<string>_meshchat._tcp</string>
 		<string>_meshchat._udp</string>
 	</array>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>Приложение использует локальную сеть для поиска и подключения к людям рядом через Bluetooth и Wi-Fi.</string>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Приложение использует Bluetooth для поиска и подключения к людям рядом.</string>
 </dict>
 </plist>
