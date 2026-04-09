@@ -93,18 +93,21 @@ struct WelcomeScreenView: View {
     }
 
     private var buttonSection: some View {
-        Button(action: {
-            vm.setOnboardingPassed()
-        }) {
-            Text("Начнём!")
-                .frame(height: 60)
-                .frame(maxWidth: .infinity)
-                .foregroundStyle(vm.canGoForward ? .white : .p2PBlack)
-                .padding(.horizontal)
-                .background(vm.canGoForward ? .p2PBlack : .gray.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .padding(.top)
-        }
+        Button(
+            action: {
+                vm.setOnboardingPassed()
+            },
+            label: {
+                Text("Начнём!")
+                    .frame(height: 60)
+                    .frame(maxWidth: .infinity)
+                    .foregroundStyle(vm.canGoForward ? .white : .p2PBlack)
+                    .padding(.horizontal)
+                    .background(vm.canGoForward ? .p2PBlack : .gray.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .padding(.top)
+            }
+        )
         .disabled(!vm.canGoForward)
     }
 }
