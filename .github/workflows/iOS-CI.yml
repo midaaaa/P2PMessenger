@@ -28,7 +28,7 @@ jobs:
 
       - name: Install Tools
         run: |
-          brew install swiftlint xcbeautify
+          brew install swiftlint xcbeautify || brew link --overwrite swiftlint xcbeautify
 
       - name: Run Linter
         run: set -o pipefail && swiftlint lint --strict | xcbeautify --renderer github-actions
@@ -51,7 +51,7 @@ jobs:
 
       - name: Install Tools
         run: |
-          brew install xcodegen xcbeautify jq
+          brew install xcodegen xcbeautify jq || brew link --overwrite xcodegen xcbeautify jq
 
       - name: Select Simulator
         run: |
@@ -107,7 +107,7 @@ jobs:
 
       - name: Install Tools
         run: |
-          brew install xcodegen xcbeautify jq
+          brew install xcodegen xcbeautify jq || brew link --overwrite xcodegen xcbeautify jq
 
       - name: Select Simulator
         run: |
@@ -166,7 +166,7 @@ jobs:
 
       - name: Install Tools
         run: |
-          brew install xcodegen xcbeautify jq
+          brew install xcodegen xcbeautify jq || brew link --overwrite xcodegen xcbeautify jq
 
       - name: Select Simulator
         run: |
@@ -225,7 +225,7 @@ jobs:
 
       - name: Install Tools
         run: |
-          brew install xcodegen xcbeautify jq
+          brew install xcodegen xcbeautify jq || brew link --overwrite xcodegen xcbeautify jq
 
       - name: Select Simulator
         run: |
