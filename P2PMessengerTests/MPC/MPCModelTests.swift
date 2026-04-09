@@ -80,7 +80,7 @@ struct MPCModelTests {
             clusterSize: 1,
             groupEpoch: 1
         )
-        
+
         let chatPacket = WirePacketDTO.chat(wire)
         #expect(chatPacket.kind == "chat")
         #expect(chatPacket.hello == nil)
