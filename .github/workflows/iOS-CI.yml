@@ -138,18 +138,11 @@ jobs:
         
       - name: Run Unit Tests
         run: |
-          xcrun simctl shutdown "${{ env.SIMULATOR_UDID }}" || true
-          xcrun simctl erase "${{ env.SIMULATOR_UDID }}" || true
-          xcrun simctl boot "${{ env.SIMULATOR_UDID }}"
-          xcrun simctl bootstatus "${{ env.SIMULATOR_UDID }}" -b
-          export SIMCTL_CHILD_AppleLanguages='(ru)'
-          export SIMCTL_CHILD_AppleLocale='ru_RU'
-          
           set -o pipefail && xcodebuild test \
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessengerTests" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,id=${{ env.SIMULATOR_UDID }}" \
+            -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }}" \
             -testLanguage ru \
             -testRegion RU \
             ONLY_ACTIVE_ARCH=YES \
