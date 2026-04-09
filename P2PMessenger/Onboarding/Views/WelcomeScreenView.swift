@@ -105,6 +105,7 @@ struct WelcomeScreenView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .padding(.top)
         }
+        .disabled(!vm.canGoForward)
     }
 }
 

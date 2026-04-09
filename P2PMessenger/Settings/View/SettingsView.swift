@@ -11,66 +11,80 @@ struct SettingsView: View {
     @Bindable var viewModel: SettingsViewModel
 
     var body: some View {
-        List {
-            Section {
-                Button {
-
-                } label: {
-                    UserCard(username: $viewModel.username)
-                        .tint(.primary)
+        VStack {
+            headerView()
+            List {
+                Section {
+                    Button {
+                        
+                    } label: {
+                        UserCard(username: $viewModel.username)
+                            .tint(.primary)
+                    }
+                } header: {
+                    Text("profileUpper")
+                        .font(.footnote)
                 }
-            } header: {
-                Text("profileUpper")
-                    .font(.footnote)
-            }
-
-            Section {
-                Toggle(isOn: $viewModel.visibilityToggle) {
-                    TextCard(label: String(localized: "enableToFindMe"),
-                             text: String(localized: "observableByOthers"))
+                
+                Section {
+                    Toggle(isOn: $viewModel.visibilityToggle) {
+                        TextCard(label: String(localized: "enableToFindMe"),
+                                 text: String(localized: "observableByOthers"))
+                    }
+                    .tint(Color("P2PDarkBlue"))
+                    Toggle(isOn: $viewModel.requestToggle) {
+                        TextCard(label: String(localized: "enableRequestsToChat"),
+                                 text: String(localized: "acceptNewRequests"))
+                    }
+                    .tint(Color("P2PDarkBlue"))
+                } header: {
+                    Text("privacyUpper")
+                        .font(.footnote)
                 }
-                .tint(Color("P2PDarkBlue"))
-                Toggle(isOn: $viewModel.requestToggle) {
-                    TextCard(label: String(localized: "enableRequestsToChat"),
-                             text: String(localized: "acceptNewRequests"))
+                
+                Section {
+                    Toggle(isOn: $viewModel.networkToggle) {
+                        TextCard(label: String(localized: "online"),
+                                 text: String(localized: "observableInP2Pnetwork"))
+                    }
+                    .tint(Color("P2PDarkBlue"))
+                } header: {
+                    Text("networkUpper")
+                        .font(.footnote)
                 }
-                .tint(Color("P2PDarkBlue"))
-            } header: {
-                Text("privacyUpper")
-                    .font(.footnote)
-            }
-
-            Section {
-                Toggle(isOn: $viewModel.networkToggle) {
-                    TextCard(label: String(localized: "online"),
-                             text: String(localized: "observableInP2Pnetwork"))
+                
+                Section {
+                    StorageCard(size: viewModel.spaceTaken, progress: $viewModel.progress)
+                } header: {
+                    Text("dataUpper")
+                        .font(.footnote)
                 }
-                .tint(Color("P2PDarkBlue"))
-            } header: {
-                Text("networkUpper")
-                    .font(.footnote)
-            }
-
-            Section {
-                StorageCard(size: viewModel.spaceTaken, progress: $viewModel.progress)
-            } header: {
-                Text("dataUpper")
-                    .font(.footnote)
-            }
-
-            Section {
-                Button {
-                    viewModel.clearAllData()
-                } label: {
-                    DeleteCard()
+                
+                Section {
+                    Button {
+                        viewModel.clearAllData()
+                    } label: {
+                        DeleteCard()
+                    }
                 }
-            }
-
-            Section {} footer: {
-                Text("appNameAndVersion")
-                    .frame(maxWidth: .infinity, alignment: .center)
+                
+                Section {} footer: {
+                    Text("appNameAndVersion")
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
             }
         }
+    }
+    // MARK: Header
+    private func headerView() -> some View {
+        HStack {
+            Text(String(localized: "settings_title"))
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundStyle(Color("P2PBlack"))
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(.white)
     }
 }
 
