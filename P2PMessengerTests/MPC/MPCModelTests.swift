@@ -72,7 +72,7 @@ struct MPCModelTests {
             recipientDisplayName: nil,
             timestamp: .distantPast
         )
-        
+
         let hello = HelloMessageDTO(
             senderID: "alice",
             senderDisplayName: "Alice",
