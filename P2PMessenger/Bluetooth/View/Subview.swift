@@ -37,7 +37,7 @@ struct NoBluetoothView: View {
             .padding(24)
             .padding(30)
             .frame(maxWidth: 320)
-            .background(.ultraThinMaterial)
+            .background(Color("P2PBackground"))
             .cornerRadius(24)
             .shadow(radius: 20)
             .scaleEffect(animateCard ? 1 : 0.8)
