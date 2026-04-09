@@ -98,7 +98,7 @@ extension ChatScreenViewModel {
     }
 
     static let empty = ChatScreenViewModel(
-        networkService: dummyNetworkService, 
+        networkService: dummyNetworkService,
         headerStyle: .group(title: String(localized: "chat"), subtitle: ""),
         messages: []
     )
