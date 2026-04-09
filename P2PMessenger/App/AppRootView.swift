@@ -26,19 +26,25 @@ struct AppRootView: View {
                 get: { router.selectedTab },
                 set: { router.selectedTab = $0 }
             )) {
-                chatsRootView
+                NavigationStack {
+                    chatsRootView
+                }
                     .tabItem {
                         Label("Чаты", systemImage: "message")
                     }
                     .tag(AppTab.chats)
                 
-                commonChatRootView
+                NavigationStack {
+                    commonChatRootView
+                }
                     .tabItem {
                         Label("Общий чат", systemImage: "person.2")
                     }
                     .tag(AppTab.commonChat)
                 
-                settingsRootView
+                NavigationStack {
+                    settingsRootView
+                }
                     .tabItem {
                         Label("Настройки", systemImage: "gearshape")
                     }

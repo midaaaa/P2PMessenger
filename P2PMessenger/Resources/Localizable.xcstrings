@@ -302,6 +302,7 @@
     },
     "settings_title" : {
       "comment" : "Title for SettingsView",
+      "extractionState" : "stale",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
