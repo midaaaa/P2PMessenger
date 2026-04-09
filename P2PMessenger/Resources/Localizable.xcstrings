@@ -714,13 +714,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Write the first message.\\nThe other person will receive a chat request."
+            "value" : "Write the first message.\nThe other person will receive a chat request."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Напишите первое сообщение.\\nСобеседник получит запрос на чат."
+            "value" : "Напишите первое сообщение.\nСобеседник получит запрос на чат."
           }
         }
       }
