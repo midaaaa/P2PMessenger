@@ -20,7 +20,6 @@ struct DeleteCard: View {
             .padding(.trailing, Constants.deleteIconPadding)
             Text("removeAllChats")
             Spacer()
-            Image(systemName: "chevron.right")
         }
         .tint(.primary)
         .padding(.vertical, Constants.verticalPadding)

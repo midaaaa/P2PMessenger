@@ -32,7 +32,6 @@ struct UserCard: View {
                     .font(.title3)
             }
             Spacer()
-            Image(systemName: "chevron.right")
         }
         .padding(.vertical, Constants.userCardPadding)
     }

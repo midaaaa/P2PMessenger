@@ -13,12 +13,7 @@ struct SettingsView: View {
     var body: some View {
         List {
             Section {
-                Button {
-
-                } label: {
-                    UserCard(username: $viewModel.username)
-                        .tint(.primary)
-                }
+                UserCard(username: $viewModel.username)
             } header: {
                 Text("profileUpper")
                     .font(.footnote)
