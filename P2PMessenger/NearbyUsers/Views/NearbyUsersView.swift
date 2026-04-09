@@ -69,7 +69,7 @@ struct NearbyUsersView: View {
             }
         }
         .frame(height: 74)
-        .background(.white)
+        .background(Color("P2PSurface"))
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
             RoundedRectangle(cornerRadius: 16)

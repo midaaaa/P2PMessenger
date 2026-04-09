@@ -21,7 +21,6 @@ struct P2PMessengerApp: App {
                 .onAppear {
                     appDelegate.container = container
                 }
-                .preferredColorScheme(.light)
         }
     }
 }

@@ -103,7 +103,7 @@ struct WelcomeScreenView: View {
                     .frame(maxWidth: .infinity)
                     .foregroundStyle(vm.canGoForward ? .white : .p2PBlack)
                     .padding(.horizontal)
-                    .background(vm.canGoForward ? .p2PBlack : .gray.opacity(0.1))
+                    .background(vm.canGoForward ? .p2PBlack : .p2PLightGray)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .padding(.top)
             }
@@ -146,7 +146,7 @@ private struct WelcomeCardRow<Trailing: View>: View {
         .frame(height: 50)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal)
-        .background(.gray.opacity(0.1))
+        .background(.p2PLightGray)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }

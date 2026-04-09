@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Lottie
 
 struct ChatEmptyStateView: View {
     let state: ChatEmptyState
@@ -41,6 +42,12 @@ struct ChatEmptyStateView: View {
                 .font(.system(size: ChatUIConstants.EmptyState.subtitleFontSize))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(Color("P2PTextTertiary"))
+            
+            LottieView(animation: .named("Bloo Waving"))
+                .playing(loopMode: .loop)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 200, height: 200)
         }
         .padding(.horizontal, ChatUIConstants.EmptyState.horizontalPadding)
     }

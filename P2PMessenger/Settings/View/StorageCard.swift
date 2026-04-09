@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct StorageCard: View {
-    var size: Int
-    @Binding var progress: Double
+    var formattedSize: String
 
     var body: some View {
         HStack {
@@ -23,16 +22,10 @@ struct StorageCard: View {
             .padding(.trailing, Constants.storageIconPadding)
             VStack(alignment: .leading) {
                 Text("spaceTaken")
-                Text(LocalizedStringResource("chatsAndMediafiles", defaultValue: "\(size)"))  // compute size units
+                Text(String(format: NSLocalizedString("chatsAndMediafiles", comment: ""), formattedSize))
                     .foregroundStyle(.secondary)
                     .font(.caption)
             }
-            Spacer()
-            ProgressView(value: progress)
-                .scaleEffect(x: Constants.progressViewWidthScale,
-                             y: Constants.progressViewHeightScale)
-                .tint(.secondary)
-                .frame(maxWidth: Constants.progressViewWidth)
         }
         .padding(.vertical, Constants.verticalPadding)
     }
@@ -53,9 +46,9 @@ private enum Constants {
 
 #Preview {
     Group {
-        StorageCard(size: 1000, progress: Binding.constant(0.5))
-        StorageCard(size: 0, progress: Binding.constant(0))
-        StorageCard(size: 12345, progress: Binding.constant(1))
+        StorageCard(formattedSize: "1.2 MB")
+        StorageCard(formattedSize: "512 KB")
+        StorageCard(formattedSize: "0 KB")
     }
     .padding(8)
 }
