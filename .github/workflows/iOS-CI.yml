@@ -136,13 +136,29 @@ jobs:
       - name: Generate Xcode Project
         run: make -f .github/Makefile setup
 
+      - name: Configure simulator locale (Russian)
+        run: |
+          UDID=$(xcrun simctl list devices available -j | jq -r --arg name "$SIMULATOR_NAME" '
+            [.devices[][] | select(.name == $name and .isAvailable == true)] | first | .udid
+          ')
+          if [ -z "$UDID" ] || [ "$UDID" = "null" ]; then
+            echo "Could not resolve UDID for simulator: $SIMULATOR_NAME"
+            exit 1
+          fi
+          echo "SIMULATOR_UDID=$UDID" >> $GITHUB_ENV
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl spawn "$UDID" defaults write NSGlobalDomain AppleLanguages -array ru
+          xcrun simctl spawn "$UDID" defaults write NSGlobalDomain AppleLocale -string ru_RU
+
       - name: Run Unit Tests
         run: |
           set -o pipefail && xcodebuild test \
             -project "P2PMessenger.xcodeproj" \
             -scheme "P2PMessengerTests" \
             -sdk iphonesimulator \
-            -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }}" \
+            -destination "platform=iOS Simulator,id=${{ env.SIMULATOR_UDID }}" \
+            -testLanguage ru \
+            -testRegion RU \
             ONLY_ACTIVE_ARCH=YES \
             -parallel-testing-enabled YES \
             -parallel-testing-worker-count 2 | xcbeautify --renderer github-actions
@@ -202,6 +218,8 @@ jobs:
             -scheme "P2PMessengerUITests" \
             -sdk iphonesimulator \
             -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }}" \
+            -testLanguage ru \
+            -testRegion RU \
             ONLY_ACTIVE_ARCH=YES \
             -parallel-testing-enabled YES \
             -parallel-testing-worker-count 1 | xcbeautify --renderer github-actions
