@@ -94,3 +94,10 @@ struct ChatHeaderView: View {
         .buttonStyle(.plain)
     }
 }
+
+#Preview {
+    VStack {
+        ChatHeaderView(style: .direct(participant: ChatParticipant(name: "Name", isOnline: true), subtitle: "New chat"), onBack: {})
+        ChatHeaderView(style: .direct(participant: ChatParticipant(name: "Name", isOnline: false), subtitle: "Новый чат"), onBack: {})
+    }
+}

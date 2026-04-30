@@ -122,11 +122,11 @@ struct ChatScreenView<ViewModel: ChatScreenViewModelProtocol & Observable>: View
             .foregroundStyle(Color("P2PTextSecondary"))
             .padding(.horizontal, ChatUIConstants.Screen.timelineHorizontalPadding)
             .padding(.vertical, ChatUIConstants.Screen.timelineVerticalPadding)
-            .background(Color("P2PBorder"))
+            .background(.quaternary)
             .clipShape(Capsule())
     }
 }
-#Preview("Новый чат") {
+#Preview("Новый чат пустой") {
     let storage = AppProfileStorage(storage: AppKeyValueStorage(defaults: .standard))
     let provider = LocalPeerIdentityProvider(profileStorage: storage)
     ChatScreenView(
@@ -152,14 +152,14 @@ struct ChatScreenView<ViewModel: ChatScreenViewModelProtocol & Observable>: View
     )
 }
 
-#Preview("Новый чат hardcode") {
+#Preview("Новый чат") {
     ChatScreenView(
         viewModel: ChatPreviewFixtures.newChat,
         draftMessage: .constant("")
     )
 }
 
-#Preview("Общий чат hardcode") {
+#Preview("Общий чат") {
     ChatScreenView(
         viewModel: ChatPreviewFixtures.publicChat,
         draftMessage: .constant("")
@@ -167,7 +167,20 @@ struct ChatScreenView<ViewModel: ChatScreenViewModelProtocol & Observable>: View
 }
 
 @MainActor
-extension ChatPreviewFixtures {
+enum ChatPreviewFixtures {
+    fileprivate static let newChat: ChatScreenViewModel = {
+        let participant = ChatParticipant(name: "Глеб", isOnline: true)
+
+        return ChatScreenViewModel.directChat(
+            participant: participant,
+            subtitle: "Новый чат",
+            messages: [
+                ChatMessage(sender: .incoming(ChatParticipant(name: "Глеб", isOnline: true)), text: "Привет, друг!", time: "09:34"),
+                ChatMessage(sender: .outgoing, text: "Доброе утро", time: "10:00")
+            ]
+        )
+    }()
+
     fileprivate static let publicChat: ChatScreenViewModel = {
         let vasya = ChatParticipant(name: "Вася", isOnline: true)
         let masha = ChatParticipant(name: "Маша", isOnline: true)

@@ -101,7 +101,7 @@ struct WelcomeScreenView: View {
                 Text("letsStart")
                     .frame(height: 60)
                     .frame(maxWidth: .infinity)
-                    .foregroundStyle(vm.canGoForward ? .white : .p2PBlack)
+                    .foregroundStyle(vm.canGoForward ? .p2PBackground : .primary)
                     .padding(.horizontal)
                     .background(vm.canGoForward ? .p2PBlack : .p2PLightGray)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -174,11 +174,11 @@ private struct PermissionRow: View {
         WelcomeCardRow(title: permission.title, icon: permission.icon) {
             if permission.state == .granted {
                 HStack(spacing: 6) {
+                    Text("allowed")
                     Image(systemName: "checkmark")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 12, height: 12)
-                    Text("allowed")
                 }
                 .foregroundStyle(.p2PDarkGray)
             } else {
@@ -187,7 +187,7 @@ private struct PermissionRow: View {
                         .frame(height: 29)
                         .foregroundStyle(.white)
                         .padding(.horizontal)
-                        .background(.p2PBlack)
+                        .background(.black)
                         .clipShape(Capsule())
                 }
             }

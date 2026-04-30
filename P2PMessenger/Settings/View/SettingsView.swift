@@ -21,17 +21,18 @@ struct SettingsView: View {
 
             Section {
                 StorageCard(formattedSize: viewModel.formattedSpaceTaken)
+                Button {
+                    viewModel.clearAllData()
+                } label: {
+                    DeleteCard()
+                }
             } header: {
                 Text("dataUpper")
                     .font(.footnote)
             }
 
             Section {
-                Button {
-                    viewModel.clearAllData()
-                } label: {
-                    DeleteCard()
-                }
+
             }
 
             Section {} footer: {

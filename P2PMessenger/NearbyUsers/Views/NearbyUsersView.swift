@@ -10,6 +10,7 @@ import SwiftUI
 struct NearbyUsersView: View {
     let viewModel: NearbyUserViewModel
     let onUserTap: (ChatPeer) -> Void
+    @Environment(\.colorScheme) private var colorScheme
 
     init(viewModel: NearbyUserViewModel, onUserTap: @escaping (ChatPeer) -> Void) {
         self.viewModel = viewModel
@@ -32,7 +33,7 @@ struct NearbyUsersView: View {
                     .padding(.bottom, 16)
             }
         }
-        .background(Color("P2PLightGray"))
+        .background(Color("P2PBackground"))
     }
 
     // MARK: - Discovery Status Card
@@ -46,7 +47,7 @@ struct NearbyUsersView: View {
 
                 Image(systemName: "dot.radiowaves.left.and.right")
                     .font(.system(size: 18))
-                    .foregroundStyle(Color("P2PDarkGray"))
+                    .foregroundStyle(.primary)
             }
             .padding(.leading, 16)
 
@@ -69,7 +70,7 @@ struct NearbyUsersView: View {
             }
         }
         .frame(height: 74)
-        .background(Color("P2PSurface"))
+        .background(.p2PSurface)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
             RoundedRectangle(cornerRadius: 16)

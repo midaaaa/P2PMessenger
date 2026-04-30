@@ -65,7 +65,7 @@ struct ChatRowView: View {
                 if chat.unreadCount > 0 {
                     Text("\(chat.unreadCount)")
                         .font(.system(size: 10, weight: .semibold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.p2PBackground)
                         .frame(width: 20, height: 20)
                         .background(Color("P2PDarkBlue"))
                         .clipShape(Circle())
@@ -79,18 +79,45 @@ struct ChatRowView: View {
 
 #if DEBUG
 #Preview {
-    ChatRowView(
-        chat: ChatRowViewModel(
-            id: "preview-peer",
-            name: "Вася",
-            timeOfLastMessage: Date().addingTimeInterval(-3600),
-            lastMessage: "Окей, до встречи!",
-            unreadCount: 2,
-            isOnline: true,
-            status: .active
-        ),
-        onTap: {}
-    )
+    VStack {
+        ChatRowView(
+            chat: ChatRowViewModel(
+                id: "preview-peer",
+                name: "Вася",
+                timeOfLastMessage: Date().addingTimeInterval(-3600),
+                lastMessage: "Окей, до встречи!",
+                unreadCount: 0,
+                isOnline: false,
+                status: .active
+            ),
+            onTap: {}
+        )
+        ChatRowView(
+            chat: ChatRowViewModel(
+                id: "preview-peer",
+                name: "Дима",
+                timeOfLastMessage: Date().addingTimeInterval(-7200),
+                lastMessage: "Привет!",
+                unreadCount: 2,
+                isOnline: true,
+                status: .active
+            ),
+            onTap: {}
+        )
+        ChatRowView(
+            chat: ChatRowViewModel(
+                id: "preview-peer",
+                name: "Сергей",
+                timeOfLastMessage: Date().addingTimeInterval(-1000),
+                lastMessage: "Классно посидели!",
+                unreadCount: 99,
+                isOnline: true,
+                status: .active
+            ),
+            onTap: {}
+        )
+    }
     .padding()
+    .background(Color.p2PBackground)
 }
 #endif

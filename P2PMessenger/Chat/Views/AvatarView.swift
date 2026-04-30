@@ -8,42 +8,29 @@
 import SwiftUI
 
 struct AvatarView: View {
-    let image: Image?
     let initial: String
     let isOnline: Bool
     let size: CGFloat
 
     init(
-        image: Image? = nil,
         initial: String,
         isOnline: Bool,
         size: CGFloat = 48
     ) {
-        self.image = image
         self.initial = initial
         self.isOnline = isOnline
         self.size = size
     }
 
     var body: some View {
-        Group {
-            if let image {
-                image
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: size, height: size)
-                    .clipShape(Circle())
-            } else {
-                Circle()
-                    .fill(Color("P2PBorder"))
-                    .frame(width: size, height: size)
-                    .overlay {
-                        Text(initial)
-                            .font(.system(size: size * 0.42, weight: .medium))
-                            .foregroundStyle(Color("P2PTextSecondary"))
-                    }
+        Circle()
+            .fill(Color("P2PBorder"))
+            .frame(width: size, height: size)
+            .overlay {
+                Text(initial)
+                    .font(.system(size: size * 0.42, weight: .medium))
+                    .foregroundStyle(Color("P2PTextSecondary"))
             }
-        }
         .overlay(alignment: .bottomTrailing) {
             Circle()
                 .fill(statusColor)
@@ -57,6 +44,13 @@ struct AvatarView: View {
     }
 
     private var statusColor: Color {
-        isOnline ? Color("P2PTextSecondary") : Color("P2PBorder")
+        isOnline ? Color.p2PGreen : Color.p2PDarkGray
+    }
+}
+
+#Preview {
+    Group {
+        AvatarView(initial: "P", isOnline: true, size: 100)
+        AvatarView(initial: "M", isOnline: false, size: 100)
     }
 }

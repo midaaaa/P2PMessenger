@@ -31,7 +31,7 @@ struct ChatsListView: View {
 
             chatListView
         }
-        .background(Color("P2PLightGray"))
+        .background(Color("P2PBackground"))
     }
 
     // MARK: Header

@@ -21,7 +21,7 @@ struct NearbyUserRowView: View {
                     .padding(.trailing, 14)
             }
             .frame(height: 78)
-            .background(Color("P2PSurface"))
+            .background(Color.p2PSurface)
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
@@ -60,7 +60,7 @@ struct NearbyUserRowView: View {
                     .foregroundStyle(Color("P2PDarkGray"))
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
-                    .background(Color("P2PLightGray"))
+                    .background(.quinary)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
             }
 
@@ -86,10 +86,23 @@ struct NearbyUserRowView: View {
 
 #if DEBUG
 #Preview {
-    NearbyUserRowView(
-        user: NearbyUserRowViewModel(id: "preview", name: "Глеб", connectionStatus: .connected),
-        onTap: {}
-    )
-    .padding()
+    VStack {
+        NearbyUserRowView(
+            user: NearbyUserRowViewModel(id: "preview", name: "Глеб", connectionStatus: .connected),
+            onTap: {}
+        )
+        .padding()
+        NearbyUserRowView(
+            user: NearbyUserRowViewModel(id: "preview", name: "George", connectionStatus: .connecting),
+            onTap: {}
+        )
+        .padding()
+        NearbyUserRowView(
+            user: NearbyUserRowViewModel(id: "preview", name: "Глеб", connectionStatus: .notConnected),
+            onTap: {}
+        )
+        .padding()
+    }
+    .background(Color.p2PBackground)
 }
 #endif
